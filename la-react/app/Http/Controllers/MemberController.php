@@ -3,48 +3,54 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
-use App\Http\Requests\StoreMemberRequest;
-use App\Http\Requests\UpdateMemberRequest;
+use Illuminate\Http\Request;
+
 
 class MemberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        //
+        return Member::all();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreMemberRequest $request)
+    public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'membership_type' => 'required|max:255',
+            'expiration_date' => 'required|date',
+        ]);
+
+        $member = Member::create($fields);
+
+        return $member;
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(Member $member)
     {
-        //
+        return $member;
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateMemberRequest $request, Member $member)
+
+    public function update(Request $request, Member $member)
     {
-        //
+        $fields = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'membership_type' => 'required|max:255',
+            'expiration_date' => 'required|date',
+        ]);
+
+        $member->update($fields);
+
+        return $member;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Member $member)
     {
-        //
+        $member->delete();
+
+        return ['message' => 'Member deleted'];
     }
 }

@@ -8,59 +8,11 @@ use Illuminate\Auth\Access\Response;
 
 class MemberPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        //
-    }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Member $member): bool
+    public function modify(User $user, Member $member): Response
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Member $member): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Member $member): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Member $member): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Member $member): bool
-    {
-        //
+        return $user->id === $member->user_id
+            ? Response::allow()
+            : Response::deny('You are not allowed to modify this member.');
     }
 }

@@ -24,14 +24,14 @@ class User extends Authenticatable
         'is_member',
     ];
 
-    public function member()
+    public function members()
     {
-        return $this->hasOne(Member::class);
+        return $this->hasMany(Member::class);
     }
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class);
+        return $this->hasOne(Admin::class);
     }
 
     /**

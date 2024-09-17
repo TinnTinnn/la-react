@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use GuzzleHttp\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Gate;
 
 
-class MemberController extends Controller
+class MemberController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new \Illuminate\Routing\Controllers\Middleware('auth:sanctum', except: ['index', 'show'])
+        ];
+    }
 
     public function index(): JsonResponse
     {
@@ -23,7 +32,7 @@ class MemberController extends Controller
             'expiration_date' => 'required|date',
         ]);
 
-        $member = Member::create($fields);
+        $member = $request->user()->members()->create($fields);
 
         return response()->json($member,201);
     }
@@ -37,6 +46,7 @@ class MemberController extends Controller
 
     public function update(Request $request, Member $member): JsonResponse
     {
+        Gate::authorize('modify', $member);
         $fields = $request->validate([
             'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
@@ -50,6 +60,8 @@ class MemberController extends Controller
 
     public function destroy(Member $member): JsonResponse
     {
+        Gate::authorize('modify', $member);
+
         $member->delete();
 
         return response()->json(['message' => 'Member deleted'], 204);

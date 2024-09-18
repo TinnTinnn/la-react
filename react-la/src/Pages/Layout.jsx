@@ -35,6 +35,9 @@ export default function Layout() {
 
                 {user ? (<div className="">
                     <p className="">Welcome back {user.name}</p>
+                    <Link to="/create" className="">
+                        New Member
+                    </Link>
                 <form onSubmit={handleLogout}>
                     <button className="">Log out</button>
                 </form>

@@ -21,7 +21,7 @@ class MemberController extends Controller implements HasMiddleware
 
     public function index(): JsonResponse
     {
-        return response()->json(Member::all(),200);
+        return response()->json(Member::with('user')->latest()->get(),200);
     }
 
     public function store(Request $request): JsonResponse
@@ -34,13 +34,13 @@ class MemberController extends Controller implements HasMiddleware
 
         $member = $request->user()->members()->create($fields);
 
-        return response()->json($member,201);
+        return response()->json(['member' => $member,'user' => $member->user], 201);
     }
 
 
     public function show(Member $member): JsonResponse
     {
-        return response()->json($member, 200);
+        return response()->json(['member' => $member,'user' => $member->user], 200);
     }
 
 
@@ -55,7 +55,7 @@ class MemberController extends Controller implements HasMiddleware
 
         $member->update($fields);
 
-        return response()->json($member, 200);
+        return response()->json(['member' => $member, 'user' => $member->user], 200);
     }
 
     public function destroy(Member $member): JsonResponse

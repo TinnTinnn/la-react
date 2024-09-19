@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 
 
 export default function Home() {
@@ -22,15 +23,17 @@ export default function Home() {
             <h1 className="">Latest Members</h1>
 
             {members.length > 0 ? members.map(members => (
-                <div key={members.id}>
+                <div key={members.id} className="border">
                     <div>
                         <div>
                             <h2>{members.user_id}</h2>
-                            <small>Created by {members.user.name} on{""}
+                            <small>Created by {members.user.name} on{" "}
                                 {new Date(members.created_at).toLocaleTimeString()}
                             </small>
                         </div>
+                        <Link to={`/members/${members.id}`}>Read more</Link>
                     </div>
+                    <p>{members.body}</p>
                 </div>
             )) : <p>There are no members</p>}
         </>

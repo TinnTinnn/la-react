@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('membership_type');
-            $table->string('expiration_date')->nullable();
+            $table->date('expiration_date')->nullable();
 
             $table->timestamps();
         });

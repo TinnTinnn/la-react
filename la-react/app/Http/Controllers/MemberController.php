@@ -23,7 +23,6 @@ class MemberController extends Controller implements HasMiddleware
     {
         return response()->json(Member::with('user')->latest()->get(),200);
     }
-
     public function store(Request $request): JsonResponse
     {
         $fields = $request->validate([

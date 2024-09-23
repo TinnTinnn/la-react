@@ -6,7 +6,7 @@ export default function Layout() {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
 
-    async  function handleLogout(e) {
+    async function handleLogout(e) {
         e.preventDefault();
 
         const res = await fetch("/api/logout", {
@@ -14,38 +14,47 @@ export default function Layout() {
             headers: {
                 Authorization: `Bearer ${token}`,
             }
-        })
-        const data = await res.json()
-        console.log(data)
+        });
 
         if (res.ok) {
+            let data = null;
+            try {
+                data = await res.json();
+            } catch (err) {
+                console.error("Error parsing JSON:", err)
+            }
+
+            console.log(data);
+
             setUser(null)
             setToken(null)
             localStorage.removeItem("token")
             navigate('/')
+        } else {
+            console.error("Logout failed:", res.statusText)
         }
     }
 
     return (<>
         <header>
             <nav>
-                <Link to="/" className="">
+                <Link to="/">
                     Home
                 </Link>
 
-                {user ? (<div className="">
-                    <p className="">Welcome back {user.name}</p>
-                    <Link to="/create" className="">
+                {user ? (<div >
+                    <p >Welcome back {user.name}</p>
+                    <Link to="/create" >
                         New Member
                     </Link>
-                <form onSubmit={handleLogout}>
-                    <button className="">Log out</button>
-                </form>
-                </div>) : (<div className="">
-                    <Link to="/register" className="">
+                    <form onSubmit={handleLogout}>
+                        <button >Log out</button>
+                    </form>
+                </div>) : (<div >
+                    <Link to="/register" >
                         Register
                     </Link>
-                    <Link to="/login" className="">
+                    <Link to="/login" >
                         Login
                     </Link>
                 </div>)}

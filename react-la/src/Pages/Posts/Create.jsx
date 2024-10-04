@@ -1,6 +1,10 @@
 import {useContext, useState} from "react";
 import {AppContext} from "../../Context/AppContext.jsx";
 import {useNavigate} from "react-router-dom";
+import {TextInput, Space, Button, NativeSelect } from "@mantine/core";
+import {IconChevronDown} from "@tabler/icons-react";
+import '@mantine/dates/styles.css'
+import {DatePickerInput} from "@mantine/dates";
 
 
 export default function Create() {
@@ -17,7 +21,6 @@ export default function Create() {
 
     async function handleCreate(e) {
         e.preventDefault();
-
         const res = await fetch('/api/members', {
             method: 'POST',
             headers: {
@@ -47,32 +50,45 @@ export default function Create() {
 
             <form onSubmit={handleCreate} className="">
                 <div>
-                    <input type="text" placeholder="User id"
-                           value={formData.user_id}
-                           onChange={(e) =>
-                               setFormData({...formData, user_id: e.target.value})}/>
+                    <TextInput label="User ID" placeholder="Your id here"
+                               value={formData.user_id}
+                               onChange={(e) =>
+                                   setFormData({...formData, user_id: e.target.value})}/>
                     {errors.user_id && <p className="error">{errors.user_id[0]}</p>}
+                    <Space h="md"/>
                 </div>
 
                 <div>
-                    <select value={membershipType} onChange={handleSelectChange}>
-                        <option value="" disabled>Select MemberShip type</option>
-                        <option value="Platinum">Platinum</option>
-                        <option value="Gold">Gold</option>
-                        <option value="Silver">Silver</option>
-                        <option value="Bronze">Bronze</option>
-                    </select>
+                    <NativeSelect
+                        label="Membership Type"  // ตรงนี้จะเพิ่ม label ให้แสดง
+                        rightSection={<IconChevronDown size={14} stroke={1.5}/>}
+                        value={membershipType}
+                        onChange={handleSelectChange}
+                        data={[
+                            {value: '', label: 'Select type', disabled: true},
+                            {value: 'Platinum', label: 'Platinum'},
+                            {value: 'Gold', label: 'Gold'},
+                            {value: 'Silver', label: 'Silver'},
+                            {value: 'Bronze', label: 'Bronze'},
+                        ]}
+                        placeholder="Select membership type" // แสดง placeholder
+                    />
                     {errors.membership_type && <p className="error">{errors.membership_type[0]}</p>}
+                    <Space h="md"/>
                 </div>
 
                 <div>
-                    <input type="date" placeholder="expiration date" value={formData.expiration_date}
-                           onChange={(e) =>
-                               setFormData({...formData, expiration_date: e.target.value})}/>
+                    <DatePickerInput
+                        label="Pick date"
+                        placeholder="expiration date"
+                        value={formData.expiration_date ? new Date(formData.expiration_date) : null}
+                        onChange={(date) =>
+                            setFormData({...formData, expiration_date: date ? date.toISOString().split("T")[0] : ""})}/>
                     {errors.expiration_date && <p className="error">{errors.expiration_date[0]}</p>}
+                    <Space h="md"/>
                 </div>
 
-                <button className="">Create</button>
+                <Button type="submit" variant="filled" color="green">Create</Button>
             </form>
         </>
     );

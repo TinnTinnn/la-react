@@ -9,23 +9,25 @@ import {AppContext} from "./Context/AppContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
 import Update from "./Pages/Posts/Update.jsx";
-import {MantineProvider, AppShell} from "@mantine/core";
+import {MantineProvider, AppShell, createTheme, } from "@mantine/core";
 import '@mantine/core/styles.css'
+
 
 
 export default function App() {
     const {user} = useContext(AppContext);
+    const theme = createTheme({
+        fontFamily: 'Open Sans, sans-serif',
+        primaryColor: 'cyan',
+    })
 
 
     return (
         <MantineProvider>
             <AppShell
-                header={{height: 60}}
+                theme={theme}
                 padding="md"
             >
-                <AppShell.Header>
-                    <div>Logo</div>
-                </AppShell.Header>
                 <AppShell.Main>
                     <BrowserRouter>
                         <Routes>

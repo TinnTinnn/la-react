@@ -1,6 +1,8 @@
 import {Link, Outlet, useNavigate} from "react-router-dom";
 import {useContext} from "react";
 import {AppContext} from "../Context/AppContext.jsx";
+import { Anchor, Button } from '@mantine/core';
+
 
 export default function Layout() {
     const {user, token, setUser, setToken} = useContext(AppContext);
@@ -37,24 +39,33 @@ export default function Layout() {
 
     return (<>
         <header>
-            <nav>
-                <Link to="/">
+            <nav className="nav-container">
+                <Link to="/" style={{ textDecoration: 'none' , color: 'inherit' }}>
                     Home
                 </Link>
 
-                {user ? (<div >
-                    <p >Welcome back {user.name}</p>
-                    <Link to="/create" >
+                {user ? (<div className="nav-right">
+                    <p>Welcome back&nbsp;
+                        <Anchor
+                            variant="gradient"
+                            gradient={{ from: 'purple', to: 'orange' }}
+                            fw={500}
+                            fz="lg"
+                        >
+                            {user.name}
+                        </Anchor>
+                    </p>
+                    <Link to="/create" style={{ textDecoration: 'none' , color: 'inherit' }}>
                         New Member
                     </Link>
                     <form onSubmit={handleLogout}>
-                        <button >Log out</button>
+                        <Button type="button" onClick={handleLogout} variant="filled" color="#3ABEF9">Log out</Button>
                     </form>
-                </div>) : (<div >
-                    <Link to="/register" >
+                </div>) : (<div className="nav-right">
+                    <Link to="/register" style={{ textDecoration: 'none' , color: 'inherit' }} >
                         Register
                     </Link>
-                    <Link to="/login" >
+                    <Link to="/login" style={{ textDecoration: 'none' , color: 'inherit' }}>
                         Login
                     </Link>
                 </div>)}

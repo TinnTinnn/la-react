@@ -21,3 +21,16 @@
 form {
     margin: 0;
 }
+
+h1 {
+    text-align: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+th {
+    text-align: center !important;
+}
+

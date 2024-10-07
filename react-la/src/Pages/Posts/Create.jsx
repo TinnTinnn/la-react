@@ -59,6 +59,15 @@ export default function Create() {
                 </div>
 
                 <div>
+                    <TextInput label="Member Name" placeholder="Your member name here"
+                               value={formData.member_name}
+                               onChange={(e) =>
+                                   setFormData({...formData, member_name: e.target.value})}/>
+                    {errors.member_name && <p className="error">{errors.member_name[0]}</p>}
+                    <Space h="md"/>
+                </div>
+
+                <div>
                     <NativeSelect
                         label="Membership Type"  // ตรงนี้จะเพิ่ม label ให้แสดง
                         rightSection={<IconChevronDown size={14} stroke={1.5}/>}

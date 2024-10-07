@@ -1,6 +1,7 @@
 import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
+import {TextInput, Space, Button, } from "@mantine/core";
 
 export default function Login() {
     const {setToken} = useContext(AppContext);
@@ -39,23 +40,25 @@ export default function Login() {
 
             <form onSubmit={handleLogin} className="">
                 <div>
-                    <input type="text" placeholder="Email"
+                    <TextInput label="Email" type="text" placeholder="Email"
                            value={formData.email}
                            onChange={(e) => setFormData({
                                ...formData, email: e.target.value
                            })}/>
                     {errors.email && <p className="error">{errors.email[0]}</p>}
+                    <Space h="md"/>
                 </div>
 
                 <div>
-                    <input type="password" placeholder="Password"
+                    <TextInput label="Password" type="password" placeholder="Password"
                            value={formData.password}
                            onChange={(e) => setFormData({
                                ...formData, password: e.target.value
                            })}/>
                     {errors.password && <p className="error">{errors.password[0]}</p>}
+                    <Space h="md"/>
                 </div>
-                <button className="">Login</button>
+                <Button type="submit">Login</Button>
             </form>
         </>
     );

@@ -28,6 +28,7 @@ class MemberController extends Controller implements HasMiddleware
         $fields = $request->validate([
             'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
+            'member_name' => 'required|max:255',
             'expiration_date' => 'required|date',
         ]);
 
@@ -49,6 +50,7 @@ class MemberController extends Controller implements HasMiddleware
         $fields = $request->validate([
             'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
+            'member_name' => 'required|max:255',
             'expiration_date' => 'required|date',
         ]);
 

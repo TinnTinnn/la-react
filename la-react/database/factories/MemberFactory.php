@@ -22,6 +22,7 @@ class MemberFactory extends Factory
         return [
             'user_id' =>User::factory(),
             'membership_type' => $this->faker->randomElement(['Platinum', 'Gold', 'Silver', 'Bronze']),
+            'member_name' => $this->faker->name(),
             'expiration_date' => $this->faker->dateTimeBetween('2025-01-01', '2035-12-31')->format('Y-m-d'),
         ];
     }

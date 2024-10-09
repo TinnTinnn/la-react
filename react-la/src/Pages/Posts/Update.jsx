@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../../Context/AppContext.jsx";
 import {useNavigate, useParams} from "react-router-dom";
+import {Button, Modal, Menu, rem} from '@mantine/core';
 
 
 export default function Update() {

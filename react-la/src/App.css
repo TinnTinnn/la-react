@@ -34,3 +34,7 @@ th {
     text-align: center !important;
 }
 
+.error {
+    color: red;
+}
+

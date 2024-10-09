@@ -13,6 +13,7 @@ export default function Create() {
     const [membershipType, setMembershipType] = useState('')
     const [formData, setFormData] = useState({
         user_id: "",
+        member_name: "",
         membership_type: "",
         expiration_date: "",
     });

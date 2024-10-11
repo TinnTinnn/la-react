@@ -47,8 +47,6 @@ export default function Create() {
     };
     return (
         <>
-            <h1 className=""> Create a new Member</h1>
-
             <form onSubmit={handleCreate} className="">
                 <div>
                     <TextInput label="User ID" placeholder="Your id here"
@@ -93,12 +91,17 @@ export default function Create() {
                         placeholder="expiration date"
                         value={formData.expiration_date ? new Date(formData.expiration_date) : null}
                         onChange={(date) =>
-                            setFormData({...formData, expiration_date: date ? date.toISOString().split("T")[0] : ""})}/>
+                            setFormData({
+                                ...formData,
+                                expiration_date: date ? date.toISOString().split("T")[0] : ""
+                            })}/>
                     {errors.expiration_date && <p className="error">{errors.expiration_date[0]}</p>}
                     <Space h="md"/>
                 </div>
 
-                <Button type="submit" variant="filled" color="green">Create</Button>
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
+                    <Button rightSection type="submit" variant="filled" color="green">Create</Button>
+                </div>
             </form>
         </>
     );

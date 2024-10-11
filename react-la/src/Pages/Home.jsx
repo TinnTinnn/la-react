@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {Link, useNavigate,} from "react-router-dom";
+import {useNavigate,} from "react-router-dom";
 import {Table, Button, Modal, Menu, rem, TextInput, Space, NativeSelect} from '@mantine/core';
 import {AppContext} from "../Context/AppContext.jsx";
 import {IconChevronDown, IconMessage, IconSettings, IconTrash} from "@tabler/icons-react";
@@ -14,8 +14,11 @@ export default function Home() {
     const [confirmModalOpened, setConfirmModalOpened] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState(null);
     const [newMemberModalOpened, setNewMemberModalOpened] = useState(false);
+    const [readMoreModalOpened, setReadMoreModalOpened] = useState(false);
+    const [selectedMember, setSelectedMember] = useState(null);
+    const [editModalOpened, setEditModalOpened] = useState(false);
+    const [memberToEdit, setMemberToEdit] = useState(null);
     const [formData, setFormData] = useState({
-        user_id: "",
         member_name: "",
         membership_type: "",
         expiration_date: "",
@@ -38,8 +41,16 @@ export default function Home() {
 
         const newErrors = {};
 
-        if(formData.user_id !== user.id.toString()) {
-            newErrors.user_id = ["The User Id must match the logged-in user."]
+        if (formData.member_name.trim() === "") {
+            newErrors.member_name = ["Member name is required."];
+        }
+
+        if (formData.membership_type === "") {
+            newErrors.membership_type = ["Membership type is required."];
+        }
+
+        if (formData.expiration_date === "") {
+            newErrors.expiration_date = ["Expiration date is required."];
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -53,7 +64,10 @@ export default function Home() {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+                ...formData,
+                user_id: user.id,
+            }),
         });
 
         const data = await res.json()
@@ -67,10 +81,9 @@ export default function Home() {
         }
 
         setFormData({
-           user_id: "",
-           member_name: "",
-           membership_type: "",
-           expiration_date: "",
+            member_name: "",
+            membership_type: "",
+            expiration_date: "",
         });
         setErrors({});
     }
@@ -83,12 +96,34 @@ export default function Home() {
     function handleEdit(id) {
         const member = members.find(member => member.id === id);
 
-        // ตรวจสอบว่าผู้ใช้เป็นเจ้าของหรือไม่
+        
         if (user && member && user.id === member.user_id) {
-            navigate(`/members/update/${id}`);
+            setMemberToEdit(member);
+            setEditModalOpened(true);
         } else {
             setMessage("You don't have permission to do this.");
             setOpened(true);
+        }
+    }
+
+    async function handleEditFormSubmit(e) {
+        e.preventDefault();
+
+        const res = await fetch(`/api/members/${memberToEdit.id}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(memberToEdit),
+        });
+
+        if (res.ok) {
+            setEditModalOpened(false);  // ปิด Modal
+            getMembers();  // รีเฟรชรายการ members
+        } else {
+            const data = await res.json();
+            console.log(data);  // handle error response
         }
     }
 
@@ -103,6 +138,18 @@ export default function Home() {
             setOpened(true);
         }
     }
+
+    function handleReadMore(member) {
+        setSelectedMember(member);
+        setReadMoreModalOpened(true);
+    }
+
+    function handleEditModal(member) {
+        setMemberToEdit(member);
+        setEditModalOpened(true);
+    }
+
+
 
     async function confirmDelete() {
         if (!memberToDelete) return
@@ -143,7 +190,11 @@ export default function Home() {
             <h1>Latest Members</h1>
 
             <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
-                <Button onClick={() => setNewMemberModalOpened(true)}>New Member</Button>
+                {user ? (
+                    <Button onClick={() => setNewMemberModalOpened(true)}>New Member</Button>
+                ) : (
+                    ""
+                )}
             </div>
 
             <Modal
@@ -153,15 +204,6 @@ export default function Home() {
                 centered
             >
                 <form onSubmit={handleCreate} className="">
-                    <div>
-                        <TextInput label="User ID" placeholder="Your id here"
-                                   value={formData.user_id}
-                                   onChange={(e) =>
-                                       setFormData({...formData, user_id: e.target.value})}/>
-                        {errors.user_id && <p className="error">{errors.user_id[0]}</p>}
-                        <Space h="md"/>
-                    </div>
-
                     <div>
                         <TextInput label="Member Name" placeholder="Your member name here"
                                    value={formData.member_name}
@@ -214,6 +256,7 @@ export default function Home() {
                 opened={opened}
                 onClose={() => setOpened(false)} // ปิด Modal
                 title={<span style={{color: 'red'}}>Alert</span>}
+                centered
             >
                 {message}
             </Modal>
@@ -221,12 +264,84 @@ export default function Home() {
                 opened={confirmModalOpened}
                 onClose={() => setConfirmModalOpened(false)}
                 title={<span style={{color: 'red'}}>Confirm Delete</span>}
+                centered
             >
                 <p>Are you sure you want to delete this member?</p>
                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                     <Button color="red" onClick={confirmDelete}>Confirm</Button> &nbsp;
                     <Button onClick={() => setConfirmModalOpened(false)}>Cancel</Button>
                 </div>
+            </Modal>
+            <Modal opened={readMoreModalOpened}
+                   onClose={() => setReadMoreModalOpened(false)}
+                   title="Member Information"
+                   centered
+            >
+                {selectedMember && (
+                    <div>
+                        <p><strong>ID:</strong> {selectedMember.id}</p>
+                        <p><strong>Member Name:</strong> {selectedMember.member_name}</p>
+                        <p><strong>Membership Type:</strong> {selectedMember.membership_type}</p>
+                        <p><strong>Created By:</strong> {selectedMember.user.name}</p>
+                        <p><strong>User ID:</strong> {selectedMember.user.id}</p>
+                        <p><strong>Email:</strong> {selectedMember.user.email}</p>
+                        <p><strong>Created At:</strong> {new Date(selectedMember.created_at).toLocaleString()}</p>
+                    </div>
+                )}
+            </Modal>
+
+            <Modal
+                opened={editModalOpened}
+                onClose={() => setEditModalOpened(false)}
+                title="Edit Member Information"
+                centered
+            >
+                {memberToEdit && (
+                    <form onSubmit={(e) => handleEditFormSubmit(e)}>
+                        <div>
+                            <TextInput
+                                label="Member Name"
+                                value={memberToEdit.member_name}
+                                onChange={(e) =>
+                                    setMemberToEdit({...memberToEdit, member_name: e.target.value})
+                                }
+                            />
+                        </div>
+
+                        <div>
+                            <NativeSelect
+                                label="Membership Type"
+                                value={memberToEdit.membership_type}
+                                onChange={(e) =>
+                                    setMemberToEdit({...memberToEdit, membership_type: e.target.value})
+                                }
+                                data={[
+                                    {value: 'Platinum', label: 'Platinum'},
+                                    {value: 'Gold', label: 'Gold'},
+                                    {value: 'Silver', label: 'Silver'},
+                                    {value: 'Bronze', label: 'Bronze'},
+                                ]}
+                            />
+                        </div>
+
+                        <div>
+                            <DatePickerInput
+                                label="Pick expiration date"
+                                value={memberToEdit.expiration_date ? new Date(memberToEdit.expiration_date) : null}
+                                onChange={(date) =>
+                                    setMemberToEdit({
+                                        ...memberToEdit,
+                                        expiration_date: date ? date.toISOString().split("T")[0] : ""
+                                    })
+                                }
+                            />
+                        </div>
+
+                        <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
+                            <Button type="submit" variant="filled" color="green">Save Changes</Button>
+                        </div>
+                    </form>
+                )}
             </Modal>
             {members.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
@@ -262,14 +377,13 @@ export default function Home() {
                                         <Menu.Dropdown>
                                             <Menu.Label>Application</Menu.Label>
                                             <Menu.Item
-                                                component={Link}
-                                                to={`/members/${member.id}`}
+                                                onClick={() => handleReadMore(member)}
                                                 leftSection={<IconMessage style={{width: rem(14), height: rem(14)}}/>}>
                                                 Read more
                                             </Menu.Item>
                                             <Menu.Item
                                                 leftSection={<IconSettings style={{width: rem(14), height: rem(14)}}/>}
-                                                onClick={() => handleEdit(member.id)}
+                                                onClick={() => handleEditModal(member)}
                                             >
                                                 Edit
                                             </Menu.Item>

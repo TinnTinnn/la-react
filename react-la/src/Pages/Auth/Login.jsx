@@ -2,8 +2,8 @@ import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
 import {TextInput, Space, Button, } from "@mantine/core";
-
-export default function Login() {
+import PropTypes from 'prop-types';
+export default function Login( {closeModal} ) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
 
@@ -18,6 +18,9 @@ export default function Login() {
         e.preventDefault();
         const res = await fetch('/api/login', {
             method: "post",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(formData),
         });
 
@@ -28,6 +31,7 @@ export default function Login() {
         } else {
             localStorage.setItem("token", data.token);
             setToken(data.token);
+            closeModal();
             navigate('/');
         }
 
@@ -41,25 +45,31 @@ export default function Login() {
             <form onSubmit={handleLogin} className="">
                 <div>
                     <TextInput label="Email" type="text" placeholder="Email"
-                           value={formData.email}
-                           onChange={(e) => setFormData({
-                               ...formData, email: e.target.value
-                           })}/>
+                               value={formData.email}
+                               onChange={(e) => setFormData({
+                                   ...formData, email: e.target.value
+                               })}/>
                     {errors.email && <p className="error">{errors.email[0]}</p>}
                     <Space h="md"/>
                 </div>
 
                 <div>
                     <TextInput label="Password" type="password" placeholder="Password"
-                           value={formData.password}
-                           onChange={(e) => setFormData({
-                               ...formData, password: e.target.value
-                           })}/>
+                               value={formData.password}
+                               onChange={(e) => setFormData({
+                                   ...formData, password: e.target.value
+                               })}/>
                     {errors.password && <p className="error">{errors.password[0]}</p>}
                     <Space h="md"/>
                 </div>
-                <Button type="submit">Login</Button>
+                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                    <Button type="submit">Login</Button>
+                </div>
             </form>
         </>
-    );
+);
 }
+
+Login.propTypes = {
+    closeModal: PropTypes.func.isRequired, // กำหนดประเภทเป็นฟังก์ชัน
+};

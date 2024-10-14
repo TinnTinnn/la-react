@@ -96,7 +96,6 @@ export default function Home() {
     function handleEdit(id) {
         const member = members.find(member => member.id === id);
 
-        
         if (user && member && user.id === member.user_id) {
             setMemberToEdit(member);
             setEditModalOpened(true);
@@ -143,13 +142,6 @@ export default function Home() {
         setSelectedMember(member);
         setReadMoreModalOpened(true);
     }
-
-    function handleEditModal(member) {
-        setMemberToEdit(member);
-        setEditModalOpened(true);
-    }
-
-
 
     async function confirmDelete() {
         if (!memberToDelete) return
@@ -383,7 +375,7 @@ export default function Home() {
                                             </Menu.Item>
                                             <Menu.Item
                                                 leftSection={<IconSettings style={{width: rem(14), height: rem(14)}}/>}
-                                                onClick={() => handleEditModal(member)}
+                                                onClick={() => handleEdit(member.id)}
                                             >
                                                 Edit
                                             </Menu.Item>

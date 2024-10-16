@@ -1,8 +1,10 @@
 import {Button, Menu, rem, Table} from "@mantine/core";
 import {IconMessage, IconSettings, IconTrash} from "@tabler/icons-react";
+import PropTypes from "prop-types";
 
 
-function MembersTable({ members, handleReadMore, handleEdit, handleDelete }) {
+function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
+
     return (
         <>
             {members.length > 0 ? (
@@ -70,3 +72,19 @@ function MembersTable({ members, handleReadMore, handleEdit, handleDelete }) {
         </>
     )
 }
+
+
+MembersTable.propTypes = {
+    members: PropTypes.arrayOf(
+        PropTypes.shape({
+            member_name: PropTypes.string.isRequired,
+            membership_type: PropTypes.string.isRequired,
+            expiration_date: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+    handleReadMore: PropTypes.func.isRequired,
+    handleEdit: PropTypes.func.isRequired,
+    handleDelete: PropTypes.func.isRequired,
+};
+
+export default MembersTable

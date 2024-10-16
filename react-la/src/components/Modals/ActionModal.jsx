@@ -1,6 +1,6 @@
 import {Button, Modal, NativeSelect, TextInput} from "@mantine/core";
 import {DatePickerInput} from "@mantine/dates";
-
+import PropTypes from "prop-types";
 
 function ActionModal({
                          opened,
@@ -99,5 +99,38 @@ function ActionModal({
             </Modal>
         </>)
 }
+
+
+ActionModal.propTypes = {
+    opened: PropTypes.bool.isRequired,
+    setOpened: PropTypes.func.isRequired,
+    message: PropTypes.string,
+    confirmModalOpened: PropTypes.bool.isRequired,
+    setConfirmModalOpened: PropTypes.func.isRequired,
+    confirmDelete: PropTypes.func.isRequired,
+    readMoreModalOpened: PropTypes.bool.isRequired,
+    setReadMoreModalOpened: PropTypes.func.isRequired,
+    selectedMember: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        member_name: PropTypes.string.isRequired,
+        membership_type: PropTypes.string.isRequired,
+        user: PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            name: PropTypes.string.isRequired,
+            email: PropTypes.string.isRequired,
+        }),
+        created_at: PropTypes.string.isRequired,
+    }),
+    editModalOpened: PropTypes.bool.isRequired,
+    setEditModalOpened: PropTypes.func.isRequired,
+    memberToEdit: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        member_name: PropTypes.string.isRequired,
+        membership_type: PropTypes.string.isRequired,
+        expiration_date: PropTypes.string,
+    }),
+    setMemberToEdit: PropTypes.func.isRequired,
+    handleEditFormSubmit: PropTypes.func.isRequired,
+};
 
 export default ActionModal;

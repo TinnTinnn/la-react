@@ -1,6 +1,7 @@
 import {Button, Modal, NativeSelect, Space, TextInput} from "@mantine/core";
 import {IconChevronDown} from "@tabler/icons-react";
 import {DatePickerInput} from "@mantine/dates";
+import PropTypes from "prop-types";
 
 
 function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors, membershipType, setMembershipType}) {
@@ -67,4 +68,22 @@ function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors, 
     )
 }
 
+CreateModal.propTypes = {
+    opened: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    formData: PropTypes.shape({
+        member_name: PropTypes.string.isRequired,
+        membership_type: PropTypes.string.isRequired,
+        expiration_date: PropTypes.string.isRequired,
+    }).isRequired,
+    setFormData: PropTypes.func.isRequired,
+    errors: PropTypes.shape({
+        member_name: PropTypes.arrayOf(PropTypes.string),
+        membership_type: PropTypes.arrayOf(PropTypes.string),
+        expiration_date: PropTypes.arrayOf(PropTypes.string),
+    }).isRequired,
+    membershipType: PropTypes.string.isRequired,
+    setMembershipType: PropTypes.func.isRequired,
+};
 export default CreateModal;

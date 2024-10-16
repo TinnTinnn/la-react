@@ -78,6 +78,8 @@ export default function Home() {
         } else {
             setNewMemberModalOpened(false);
             getMembers();
+            setMessage("New member has been created successfully.");
+            setOpened(true);
         }
 
         setFormData({
@@ -116,6 +118,8 @@ export default function Home() {
         if (res.ok) {
             setEditModalOpened(false);  // ปิด Modal
             getMembers();  // รีเฟรชรายการ members
+            setMessage("Your information has been updated.");
+            setOpened(true);// เปิด Modal แสดงข้อความ
         } else {
             const data = await res.json();
             console.log(data);  // handle error response
@@ -165,7 +169,6 @@ export default function Home() {
         }
         setConfirmModalOpened(false);
         setMemberToDelete(null);
-
     }
 
     useEffect(() => {

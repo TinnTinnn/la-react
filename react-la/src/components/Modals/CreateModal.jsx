@@ -4,11 +4,8 @@ import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
 
 
-function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors, membershipType, setMembershipType}) {
-    const handleSelectChange = (e) => {
-        setMembershipType(e.target.value);
-        setFormData({...formData, membership_type: e.target.value});
-    };
+function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors,}) {
+
 
     return (
         <Modal
@@ -29,10 +26,10 @@ function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors, 
 
                 <div>
                     <NativeSelect
-                        label="Membership Type"  // ตรงนี้จะเพิ่ม label ให้แสดง
+                        label="Membership Type"
                         rightSection={<IconChevronDown size={14} stroke={1.5}/>}
-                        value={membershipType}
-                        onChange={handleSelectChange}
+                        value={formData.membership_type}
+                        onChange={(e) => setFormData({...formData, membership_type: e.currentTarget.value})}
                         data={[
                             {value: '', label: 'Select type', disabled: true},
                             {value: 'Platinum', label: 'Platinum'},
@@ -48,17 +45,29 @@ function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors, 
 
                 <div>
                     <DatePickerInput
-                        label="Pick date"
+                        label="Pick expiration date"
                         placeholder="expiration date"
-                        value={formData.expiration_date ? new Date(formData.expiration_date) : null}
-                        onChange={(date) =>
-                            setFormData({
-                                ...formData,
-                                expiration_date: date ? date.toISOString().split("T")[0] : ""
-                            })}/>
+                        value={formData.expiration_date ? new Date(formData.expiration_date + 'T00:00:00') : null} // เพิ่ม 'T00:00:00'
+                        onChange={(date) => {
+                            if (date) {
+                                // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น
+                                const formattedDate = date.toLocaleDateString('en-CA'); // ใช้ 'en-CA' เพื่อให้ได้รูปแบบ YYYY-MM-DD
+                                setFormData({
+                                    ...formData,
+                                    expiration_date: formattedDate,
+                                });
+                            } else {
+                                setFormData({
+                                    ...formData,
+                                    expiration_date: "",
+                                });
+                            }
+                        }}
+                    />
                     {errors.expiration_date && <p className="error">{errors.expiration_date[0]}</p>}
                     <Space h="md"/>
                 </div>
+
 
                 <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
                     <Button rightSection type="submit" variant="filled" color="green">Create</Button>

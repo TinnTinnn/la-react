@@ -1,5 +1,5 @@
 import {Button, Menu, rem, Table} from "@mantine/core";
-import {IconMessage, IconSettings, IconTrash} from "@tabler/icons-react";
+import {IconMessage, IconSettings, IconTrash, IconDotsVertical} from "@tabler/icons-react";
 import PropTypes from "prop-types";
 
 
@@ -35,7 +35,9 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                                 <Table.Td>
                                     <Menu shadow="md" width={200}>
                                         <Menu.Target>
-                                            <Button>More</Button>
+                                            <Button variant="subtle" color="gray" compact>
+                                                <IconDotsVertical size={16} />
+                                            </Button>
                                         </Menu.Target>
 
                                         <Menu.Dropdown>

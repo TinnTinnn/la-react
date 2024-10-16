@@ -85,10 +85,22 @@ function ActionModal({
                     <div>
                         <DatePickerInput
                             label="Pick expiration date"
-                            value={memberToEdit.expiration_date ? new Date(memberToEdit.expiration_date) : null}
-                            onChange={(date) => setMemberToEdit({
-                                ...memberToEdit, expiration_date: date ? date.toISOString().split("T")[0] : ""
-                            })}
+                            value={memberToEdit.expiration_date ? new Date(memberToEdit.expiration_date + 'T00:00:00') : null} // เพิ่ม 'T00:00:00'
+                            onChange={(date) => {
+                                if (date) {
+                                    // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น
+                                    const formattedDate = date.toLocaleDateString('en-CA'); // ใช้ 'en-CA' เพื่อให้ได้รูปแบบ YYYY-MM-DD
+                                    setMemberToEdit({
+                                        ...memberToEdit,
+                                        expiration_date: formattedDate,
+                                    });
+                                } else {
+                                    setMemberToEdit({
+                                        ...memberToEdit,
+                                        expiration_date: "",
+                                    });
+                                }
+                            }}
                         />
                     </div>
 

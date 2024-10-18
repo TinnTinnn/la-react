@@ -178,7 +178,7 @@ export default function Home() {
 
     return (
         <>
-            <h1>Welcome to the Member Management</h1>
+            <h1 style={{ marginTop: '80px' }}>Welcome to the Member Management</h1>
 
             <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
                 {user ? (

@@ -1,9 +1,9 @@
 import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
-import {TextInput, Space, Button, } from "@mantine/core";
+import {TextInput, Space, Button, Anchor} from "@mantine/core";
 import PropTypes from 'prop-types';
-export default function Login( {closeModal} ) {
+export default function Login( { closeModal, toggleForm } ) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
 
@@ -62,7 +62,10 @@ export default function Login( {closeModal} ) {
                     {errors.password && <p className="error">{errors.password[0]}</p>}
                     <Space h="md"/>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <Anchor onClick={toggleForm} style={{ cursor: 'pointer' }}>
+                        Do not have an account? Register
+                    </Anchor>
                     <Button type="submit">Login</Button>
                 </div>
             </form>
@@ -71,5 +74,6 @@ export default function Login( {closeModal} ) {
 }
 
 Login.propTypes = {
-    closeModal: PropTypes.func.isRequired, // กำหนดประเภทเป็นฟังก์ชัน
+    closeModal: PropTypes.func.isRequired,
+    toggleForm: PropTypes.func.isRequired,
 };

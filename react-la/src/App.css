@@ -2,12 +2,31 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 70%;
     padding: 1rem;
-    color: white;
-    background-color: #3572EF;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    color: #3572EF;
+    background-color: white;
+    box-shadow: 0 0px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
+.close-button {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .burger-hidden {
+        visibility: hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    .burger-hidden {
+        visibility: visible;
+    }
+}
 .nav-right {
     display: flex;
     align-items: center;

@@ -9,13 +9,15 @@ import {AppContext} from "./Context/AppContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
 import Update from "./Pages/Posts/Update.jsx";
-import {MantineProvider, AppShell, createTheme, } from "@mantine/core";
+import {MantineProvider, AppShell, createTheme, Text, CloseButton,} from "@mantine/core";
 import '@mantine/core/styles.css'
-
+import {useDisclosure} from "@mantine/hooks";
+import HeaderContent from "./components/HeaderContent.jsx";
 
 
 export default function App() {
     const {user} = useContext(AppContext);
+    const [opened, {toggle}] = useDisclosure();
     const theme = createTheme({
         fontFamily: 'Open Sans, sans-serif',
         primaryColor: 'cyan',
@@ -24,15 +26,41 @@ export default function App() {
 
     return (
         <MantineProvider>
-            <AppShell
-                theme={theme}
-                padding="md"
-            >
-                <AppShell.Main>
-                    <BrowserRouter>
+            <BrowserRouter>
+                <AppShell
+                    // header={{height:70}}
+                    navbar={{
+                        width: 300,
+                        breakpoint: 'sm',
+                        collapsed: {mobile: !opened},
+                    }}
+                    theme={theme}
+                    padding="md"
+                >
+                    <AppShell.Header
+                        style={{
+                            borderBottom: 'none',
+                            boxShadow: 'none',
+                        }}
+                    >
+                        <HeaderContent opened={opened} toggle={toggle}/>
+                    </AppShell.Header>
+                    <AppShell.Navbar p="md" style={{color: 'white', backgroundColor: '#3572EF'}}
+                    >
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <Text>DashBoard</Text>
+                            {opened && (
+                                <div onClick={toggle} className="close-button">
+                                    <CloseButton  size={24} color="white"/>
+                                </div>
+                            )}
+                        </div>
+
+                    </AppShell.Navbar>
+                    <AppShell.Main>
                         <Routes>
                             <Route path="/" element={<Layout/>}>
-                                <Route index element={<Home />} />
+                                <Route index element={<Home/>}/>
                                 <Route path="/register" element={user ? <Home/> : <Register/>}/>
                                 <Route path="/login" element={user ? <Home/> : <Login/>}/>
                                 <Route path="/create" element={user ? <Create/> : <Login/>}/>
@@ -40,9 +68,10 @@ export default function App() {
                                 <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
                             </Route>
                         </Routes>
-                    </BrowserRouter>
-                </AppShell.Main>
-            </AppShell>
+
+                    </AppShell.Main>
+                </AppShell>
+            </BrowserRouter>
         </MantineProvider>);
 }
 

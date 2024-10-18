@@ -51,7 +51,8 @@ function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors,}
                         onChange={(date) => {
                             if (date) {
                                 // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น
-                                const formattedDate = date.toLocaleDateString('en-CA'); // ใช้ 'en-CA' เพื่อให้ได้รูปแบบ YYYY-MM-DD
+                                const formattedDate =
+                                    date.toLocaleDateString('en-CA'); // ใช้ 'en-CA' เพื่อให้ได้รูปแบบ YYYY-MM-DD ไม่แน่ใจว่าเพราะ Mantine หรือเปล่า ถ้าเปลี่ยนเป็นของประเทศอื่นจะแสดงเละไปเลย
                                 setFormData({
                                     ...formData,
                                     expiration_date: formattedDate,

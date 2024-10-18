@@ -1,13 +1,26 @@
-import {Button, Menu, rem, Table} from "@mantine/core";
+import {Button, Menu, rem, Table, Pagination } from "@mantine/core";
 import {IconMessage, IconSettings, IconTrash, IconDotsVertical} from "@tabler/icons-react";
 import PropTypes from "prop-types";
+import {useState} from "react";
 
 
 function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
 
+    // สำหรับการทำ Paginate
+    const [activePage, setActivePage] = useState(1);
+    const itemsPerPage = 5; // จำนวนสมาชิกต่อหน้า
+
+    // คำนวณความยาวหน้า
+    const totalMembers = members.length;
+    const totalPages = Math.ceil(totalMembers / itemsPerPage);
+
+    // คำนวณเริ่มต้นและสิ้นสุดของหน้า
+    const startIndex = (activePage - 1) * itemsPerPage;
+    const currentMembers = members.slice(startIndex, startIndex + itemsPerPage);
+
     return (
         <>
-            {members.length > 0 ? (
+            {currentMembers.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
                     <Table.Tr>
                         <Table.Th>ID</Table.Th>
@@ -20,7 +33,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                         <Table.Th>Action</Table.Th>
                     </Table.Tr>
                     <Table.Tbody>
-                        {members.map((member) =>
+                        { currentMembers.map((member) =>
                             <Table.Tr key={member.id}>
                                 <Table.Td>{member.id}</Table.Td>
                                 <Table.Td>{member.user_id}</Table.Td>
@@ -71,6 +84,14 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
             ) : (
                 <p className="text-center">There are no members</p>
             )}
+
+            <Pagination
+                total={totalPages}
+                page={activePage}
+                onChange={setActivePage}
+                style={{ marginTop: 20}}
+            />
+
         </>
     )
 }

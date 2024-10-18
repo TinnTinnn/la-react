@@ -1,11 +1,11 @@
 import {useContext, useState} from "react";
 import { useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
-import {TextInput, Space, Button,} from "@mantine/core";
+import {TextInput, Space, Button, Anchor} from "@mantine/core";
 import PropTypes from 'prop-types'
 
 
-export default function Register({ openSuccessModal, closeModal  }) {
+export default function Register({ openSuccessModal, closeModal, toggleForm  }) {
     const { setToken } = useContext(AppContext)
     const navigate = useNavigate();
 
@@ -87,9 +87,10 @@ export default function Register({ openSuccessModal, closeModal  }) {
                     <Space h="md"/>
                 </div>
 
-
-
-                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <Anchor onClick={toggleForm} style={{ cursor: 'pointer' }}>
+                        Have and account? Login
+                    </Anchor>
                 <Button type="submit" variant="filled" color="green">Register</Button>
                 </div>
             </form>
@@ -100,4 +101,5 @@ export default function Register({ openSuccessModal, closeModal  }) {
 Register.propTypes = {
     openSuccessModal: PropTypes.func.isRequired,
     closeModal: PropTypes.func.isRequired,
+    toggleForm: PropTypes.func.isRequired,
 };

@@ -9,7 +9,7 @@ import {AppContext} from "./Context/AppContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
 import Update from "./Pages/Posts/Update.jsx";
-import {MantineProvider, AppShell, createTheme, Text, CloseButton,} from "@mantine/core";
+import {MantineProvider, AppShell, createTheme, Text, CloseButton, Menu,} from "@mantine/core";
 import '@mantine/core/styles.css'
 import {useDisclosure} from "@mantine/hooks";
 import HeaderContent from "./components/HeaderContent.jsx";
@@ -47,14 +47,34 @@ export default function App() {
                     </AppShell.Header>
                     <AppShell.Navbar p="md" style={{color: 'white', backgroundColor: '#3572EF'}}
                     >
-                        <div style={{ display: "flex", justifyContent: "space-between" }}>
-                            <Text>DashBoard</Text>
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <Text>TinnTinn</Text>
                             {opened && (
                                 <div onClick={toggle} className="close-button">
-                                    <CloseButton  size={24} color="white"/>
+                                    <CloseButton size={24} color="white"/>
                                 </div>
                             )}
                         </div>
+                        <hr style={{
+                            border: '1px solid  grey',
+                            width: '100%',
+                            marginTop: '10px',
+                            marginBottom: '10px'
+                        }}/>
+                        <Menu trigger="hover" openDelay={100} closeDelay={400} shadow="md">
+                            <Text>
+                                Dashboard
+                            </Text>
+                            <Menu.Item>
+                                Member Management
+                            </Menu.Item>
+                            <Menu.Item>
+                                Analytics
+                            </Menu.Item>
+                            <Menu.Item>
+                                Sass
+                            </Menu.Item>
+                        </Menu>
 
                     </AppShell.Navbar>
                     <AppShell.Main>

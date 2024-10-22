@@ -1,31 +1,37 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Routes, Route, } from "react-router-dom";
 import Layout from "./Pages/Layout.jsx";
-import Home from "./Pages/Home.jsx";
+import MemberManagement from "./Pages/Navbar/MemberManagement.jsx";
 import './App.css'
 import Register from "./Pages/Auth/Register.jsx";
 import Login from "./Pages/Auth/Login.jsx";
-import {useContext} from "react";
+import {useContext,} from "react";
 import {AppContext} from "./Context/AppContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
 import Update from "./Pages/Posts/Update.jsx";
-import {MantineProvider, AppShell, createTheme, Text, CloseButton, Menu,} from "@mantine/core";
+import {MantineProvider, AppShell, createTheme, Text, CloseButton, } from "@mantine/core";
 import '@mantine/core/styles.css'
-import {useDisclosure} from "@mantine/hooks";
+import {useDisclosure,} from "@mantine/hooks";
 import HeaderContent from "./components/HeaderContent.jsx";
+import DashboardButtons from "./Pages/Navbar/DashboardButtons.jsx";
+import Overview from "./Pages/Navbar/Overview.jsx";
+
 
 
 export default function App() {
+
     const {user} = useContext(AppContext);
     const [opened, {toggle}] = useDisclosure();
     const theme = createTheme({
         fontFamily: 'Open Sans, sans-serif',
-        primaryColor: 'cyan',
-    })
+        colors: {
+            primary: ['#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#26C6DA', '#00BCD4', '#00ACC1', '#0097A7', '#00838F', '#00695C'],
+        },
+    });
 
 
     return (
-        <MantineProvider>
+        <MantineProvider theme={theme}>
             <BrowserRouter>
                 <AppShell
                     // header={{height:70}}
@@ -45,10 +51,10 @@ export default function App() {
                     >
                         <HeaderContent opened={opened} toggle={toggle}/>
                     </AppShell.Header>
-                    <AppShell.Navbar p="md" style={{color: 'white', backgroundColor: '#3572EF'}}
+                    <AppShell.Navbar style={{color: 'white', backgroundColor: '#3572EF'}}
                     >
                         <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <Text>TinnTinn</Text>
+                            <Text style={{paddingLeft: '20px', paddingTop: '10px'}}>TinnTinn</Text>
                             {opened && (
                                 <div onClick={toggle} className="close-button">
                                     <CloseButton size={24} color="white"/>
@@ -61,34 +67,24 @@ export default function App() {
                             marginTop: '10px',
                             marginBottom: '10px'
                         }}/>
-                        <Menu trigger="hover" openDelay={100} closeDelay={400} shadow="md">
-                            <Text>
-                                Dashboard
-                            </Text>
-                            <Menu.Item>
-                                Member Management
-                            </Menu.Item>
-                            <Menu.Item>
-                                Analytics
-                            </Menu.Item>
-                            <Menu.Item>
-                                Sass
-                            </Menu.Item>
-                        </Menu>
-
+                        <div style={{marginTop: '10px', marginLeft: '20px', marginBottom: '10px'}}>
+                            Dashboard
+                        </div>
+                        <DashboardButtons />
                     </AppShell.Navbar>
                     <AppShell.Main>
                         <Routes>
                             <Route path="/" element={<Layout/>}>
-                                <Route index element={<Home/>}/>
-                                <Route path="/register" element={user ? <Home/> : <Register/>}/>
-                                <Route path="/login" element={user ? <Home/> : <Login/>}/>
+                                <Route index element={<MemberManagement/>}/>
+                                <Route path="/membermanagement" element={<MemberManagement/>}/>
+                                <Route path="/overview" element={<Overview/>}/>
+                                <Route path="/register" element={user ? <MemberManagement/> : <Register/>}/>
+                                <Route path="/login" element={user ? <MemberManagement/> : <Login/>}/>
                                 <Route path="/create" element={user ? <Create/> : <Login/>}/>
                                 <Route path="/members/:id" element={<Show/>}/>
                                 <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
                             </Route>
                         </Routes>
-
                     </AppShell.Main>
                 </AppShell>
             </BrowserRouter>

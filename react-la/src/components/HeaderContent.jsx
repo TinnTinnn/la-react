@@ -70,7 +70,7 @@ const HeaderContent = ({opened, toggle}) => {
         <>
                 <nav className="nav-container">
                     {/*<Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>*/}
-                    {/*    Home*/}
+                    {/*    MemberManagement*/}
                     {/*</Link>*/}
                     <Burger
                         opened={opened}

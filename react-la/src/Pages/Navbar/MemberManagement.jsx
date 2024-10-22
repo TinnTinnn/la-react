@@ -1,13 +1,13 @@
 import {useContext, useEffect, useState} from "react";
 // import {useNavigate,} from "react-router-dom";
 import {Button, } from '@mantine/core';
-import {AppContext} from "../Context/AppContext.jsx";
-import CreateModal from "../components/Modals/CreateModal.jsx";
-import ActionModal from "../components/Modals/ActionModal.jsx";
-import MembersTable from "../components/MembersTable.jsx";
+import {AppContext} from "../../Context/AppContext.jsx";
+import CreateModal from "../../components/Modals/CreateModal.jsx";
+import ActionModal from "../../components/Modals/ActionModal.jsx";
+import MembersTable from "../../components/MembersTable.jsx";
 
 
-export default function Home() {
+export default function MemberManagement() {
     const [members, setMembers] = useState([]);
     const {user, token} = useContext(AppContext);
     const [message, setMessage] = useState(null);

@@ -1,8 +1,13 @@
 import {Button, Stack} from "@mantine/core";
 import {useNavigate} from "react-router-dom";
+import PropTypes from "prop-types";
 
-function  DashboardButtons () {
+function  DashboardButtons ({ toggle } ) {
     const navigate = useNavigate();
+    const handleNavigate = (path) => {
+        navigate(path);
+        toggle();
+    };
     return (
         <Stack
             align="stretch"
@@ -10,7 +15,7 @@ function  DashboardButtons () {
             gap={0}
         >
             <Button
-                onClick={() => navigate("/overview")}
+                onClick={() => handleNavigate("/overview")}
                 variant="subtle"
                 radius="xs"
                 fullWidth
@@ -26,7 +31,7 @@ function  DashboardButtons () {
                 Overview
             </Button>
             <Button
-                onClick={() => navigate("/membermanagement")}
+                onClick={() => handleNavigate("/membermanagement")}
                 variant="subtle"
                 radius="xs"
                 fullWidth
@@ -42,7 +47,7 @@ function  DashboardButtons () {
                 Member Management
             </Button>
             <Button
-                onClick={() => navigate("/analytics")}
+                onClick={() => handleNavigate("/analytics")}
                 variant="subtle"
                 radius="xs"
                 fullWidth
@@ -58,7 +63,7 @@ function  DashboardButtons () {
                 Analytics
             </Button>
             <Button
-                onClick={() => navigate("/saas")}
+                onClick={() => handleNavigate("/saas")}
                 variant="subtle"
                 radius="xs"
                 fullWidth
@@ -77,4 +82,7 @@ function  DashboardButtons () {
     )
 }
 
+DashboardButtons.propTypes = {
+    toggle: PropTypes.func.isRequired,
+};
 export default  DashboardButtons

@@ -2,6 +2,6 @@ import {Text} from "@mantine/core";
 
 export default function Analytics () {
     return (
-        <Text>Analytics page</Text>
+        <Text style={{ marginTop: '80px' }}>Analytics page</Text>
     )
 }

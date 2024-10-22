@@ -4,7 +4,7 @@ import MemberManagement from "./Pages/Navbar/MemberManagement.jsx";
 import './App.css'
 import Register from "./Pages/Auth/Register.jsx";
 import Login from "./Pages/Auth/Login.jsx";
-import {useContext,} from "react";
+import {useContext, useEffect, useState,} from "react";
 import {AppContext} from "./Context/AppContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
@@ -15,11 +15,12 @@ import {useDisclosure,} from "@mantine/hooks";
 import HeaderContent from "./components/HeaderContent.jsx";
 import DashboardButtons from "./Pages/Navbar/DashboardButtons.jsx";
 import Overview from "./Pages/Navbar/Overview.jsx";
+import Analytics from "./Pages/Navbar/Analytics.jsx";
+import Saas from "./Pages/Navbar/Saas.jsx";
 
 
 
 export default function App() {
-
     const {user} = useContext(AppContext);
     const [opened, {toggle}] = useDisclosure();
     const theme = createTheme({
@@ -28,7 +29,14 @@ export default function App() {
             primary: ['#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#26C6DA', '#00BCD4', '#00ACC1', '#0097A7', '#00838F', '#00695C'],
         },
     });
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
+    useEffect(() => {
+        const handleResize = () => setScreenWidth(window.innerWidth);
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <MantineProvider theme={theme}>
@@ -55,7 +63,7 @@ export default function App() {
                     >
                         <div style={{display: "flex", justifyContent: "space-between"}}>
                             <Text style={{paddingLeft: '20px', paddingTop: '10px'}}>TinnTinn</Text>
-                            {opened && (
+                            {opened && screenWidth < 768 && (
                                 <div onClick={toggle} className="close-button">
                                     <CloseButton size={24} color="white"/>
                                 </div>
@@ -70,7 +78,7 @@ export default function App() {
                         <div style={{marginTop: '10px', marginLeft: '20px', marginBottom: '10px'}}>
                             Dashboard
                         </div>
-                        <DashboardButtons />
+                        <DashboardButtons toggle={toggle} />
                     </AppShell.Navbar>
                     <AppShell.Main>
                         <Routes>
@@ -78,6 +86,8 @@ export default function App() {
                                 <Route index element={<MemberManagement/>}/>
                                 <Route path="/membermanagement" element={<MemberManagement/>}/>
                                 <Route path="/overview" element={<Overview/>}/>
+                                <Route path="/analytics" element={<Analytics/>}/>
+                                <Route path="/saas" element={<Saas/>}/>
                                 <Route path="/register" element={user ? <MemberManagement/> : <Register/>}/>
                                 <Route path="/login" element={user ? <MemberManagement/> : <Login/>}/>
                                 <Route path="/create" element={user ? <Create/> : <Login/>}/>

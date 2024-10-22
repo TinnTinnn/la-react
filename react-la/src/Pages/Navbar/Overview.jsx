@@ -1,7 +1,8 @@
 import {Text} from "@mantine/core";
 
 export default function Overview () {
+    console.log("Overview component rendered");
     return (
-        <Text>Overview page</Text>
+        <Text style={{ marginTop: '80px' }}>Overview page</Text>
     )
 }

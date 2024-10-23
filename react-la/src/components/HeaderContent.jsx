@@ -1,10 +1,13 @@
 import {useContext, useState} from "react";
 import {AppContext} from "../Context/AppContext.jsx";
-import { useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
-import {Anchor, Burger, Button, Menu, Modal, rem} from "@mantine/core";
+import {Anchor, Burger, Button, Menu, Modal,} from "@mantine/core";
 import Login from "../Pages/Auth/Login.jsx";
 import Register from "../Pages/Auth/Register.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faRightFromBracket} from "@fortawesome/free-solid-svg-icons";
+import PropTypes from "prop-types";
 
 
 const HeaderContent = ({opened, toggle}) => {
@@ -67,57 +70,57 @@ const HeaderContent = ({opened, toggle}) => {
 
     return (
         <>
-                <nav className="nav-container">
-                    {/*<Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>*/}
-                    {/*    MemberManagement*/}
-                    {/*</Link>*/}
-                    <Burger
-                        opened={opened}
-                        onClick={toggle}
-                        className="burger-hidden"
-                        size="sm"
-                    />
+            <nav className="nav-container">
+                {/*<Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>*/}
+                {/*    MemberManagement*/}
+                {/*</Link>*/}
+                <Burger
+                    opened={opened}
+                    onClick={toggle}
+                    className="burger-hidden"
+                    size="sm"
+                />
 
-                    {user ?
-                        (<div className="nav-right" style={{ display: "flex", justifyContent: "flex-end" }}>
-                            {/*ส่วนแสดงชื่อ User ที่พร้อมเข้า Menu ต่างๆ */}
-                            <p>Welcome back&nbsp;&nbsp;&nbsp;
-                                <Menu trigger="hover" openDelay={100} closeDelay={400} shadow="md">
-                                    <Menu.Target>
-                                        <Anchor
-                                            variant="gradient"
-                                            gradient={{from: 'purple', to: 'orange'}}
-                                            fw={500}
-                                            fz="lg"
-                                            style={{cursor: "pointer"}}
+                {user ?
+                    (<div className="nav-right" style={{display: "flex", justifyContent: "flex-end"}}>
+                        {/*ส่วนแสดงชื่อ User ที่พร้อมเข้า Menu ต่างๆ */}
+                        <p>Welcome back&nbsp;&nbsp;&nbsp;
+                            <Menu trigger="hover" openDelay={100} closeDelay={400} shadow="md">
+                                <Menu.Target>
+                                    <Anchor
+                                        variant="gradient"
+                                        gradient={{from: 'purple', to: 'orange'}}
+                                        fw={500}
+                                        fz="lg"
+                                        style={{cursor: "pointer"}}
+                                    >
+                                        {user.name}
+                                    </Anchor>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Item>My Account</Menu.Item>
+                                    <Menu.Item>My Member</Menu.Item>
+                                    <Menu.Divider>
+                                        <Menu.Item
+                                            onClick={handleLogout}
                                         >
-                                            {user.name}
-                                        </Anchor>
-                                    </Menu.Target>
-                                    <Menu.Dropdown>
-                                        <Menu.Item>My Account</Menu.Item>
-                                        <Menu.Item>My Member</Menu.Item>
-                                        <Menu.Divider>
-                                            <Menu.Item
-                                                onClick={handleLogout}
-                                                leftSection={<IconLogout style={{width: rem(14), height: rem(14)}}/>}
-                                            >
-                                                Log out
-                                            </Menu.Item>
-                                        </Menu.Divider>
-                                    </Menu.Dropdown>
-                                </Menu>
-                            </p>
-                        </div>) : (<div className="nav-right">
-                            {/*ส่วนสำหรับปุ่ม Register และ Login ตอนที่ยังไม่ได้ Login หรือ Register*/}
-                            <Button variant="filled" color="teal" onClick={openRegisterModal}>
-                                Register
-                            </Button>
-                            <Button variant="filled" color="indigo" onClick={openLoginModal}>
-                                Login
-                            </Button>
-                        </div>)}
-                </nav>
+                                            <FontAwesomeIcon style={{marginRight: '8px'}} icon={faRightFromBracket}/>
+                                            Log out
+                                        </Menu.Item>
+                                    </Menu.Divider>
+                                </Menu.Dropdown>
+                            </Menu>
+                        </p>
+                    </div>) : (<div className="nav-right">
+                        {/*ส่วนสำหรับปุ่ม Register และ Login ตอนที่ยังไม่ได้ Login หรือ Register*/}
+                        <Button variant="filled" color="teal" onClick={openRegisterModal}>
+                            Register
+                        </Button>
+                        <Button variant="filled" color="indigo" onClick={openLoginModal}>
+                            Login
+                        </Button>
+                    </div>)}
+            </nav>
 
             {/*Modal สำหรับ Toggle ระหว่าง Register และ Login */}
             <Modal opened={openedRegister || openedLogin}
@@ -144,4 +147,8 @@ const HeaderContent = ({opened, toggle}) => {
 
 }
 
+HeaderContent.propTypes = {
+    opened : PropTypes.bool.isRequired,
+    toggle: PropTypes.func.isRequired,
+}
 export default HeaderContent;

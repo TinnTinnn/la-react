@@ -1,6 +1,8 @@
 import {Button, Stack} from "@mantine/core";
 import {useLocation, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChartLine, faChartPie, faChartSimple, faUserGear} from "@fortawesome/free-solid-svg-icons";
 
 function  DashboardButtons ({ toggle } ) {
     const location = useLocation();
@@ -36,6 +38,7 @@ function  DashboardButtons ({ toggle } ) {
                     },
                 }}
             >
+                <FontAwesomeIcon style={{ marginRight: '8px'}} icon={faChartLine} />
                 Overview
             </Button>
             <Button
@@ -52,6 +55,7 @@ function  DashboardButtons ({ toggle } ) {
                     },
                 }}
             >
+                <FontAwesomeIcon style={{ marginRight: '8px'}} icon={faUserGear} />
                 Member Management
             </Button>
             <Button
@@ -68,6 +72,7 @@ function  DashboardButtons ({ toggle } ) {
                     },
                 }}
             >
+                <FontAwesomeIcon  style={{ marginRight: '10px'}} icon={faChartSimple} />
                 Analytics
             </Button>
             <Button
@@ -84,6 +89,7 @@ function  DashboardButtons ({ toggle } ) {
                     },
                 }}
             >
+                <FontAwesomeIcon style={{ marginRight: '10px'}} icon={faChartPie} />
                 SaaS
             </Button>
         </Stack>

@@ -2,6 +2,8 @@ import {Button, Modal, NativeSelect, Space, TextInput} from "@mantine/core";
 
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 
 
 function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors,}) {
@@ -27,7 +29,7 @@ function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors,}
                 <div>
                     <NativeSelect
                         label="Membership Type"
-                        // rightSection={<IconChevronDown size={14} stroke={1.5}/>}
+                        rightSection={<FontAwesomeIcon icon={faCaretDown} />}
                         value={formData.membership_type}
                         onChange={(e) => setFormData({...formData, membership_type: e.currentTarget.value})}
                         data={[

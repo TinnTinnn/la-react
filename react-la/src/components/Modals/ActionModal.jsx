@@ -1,6 +1,8 @@
 import {Button, Modal, NativeSelect, TextInput} from "@mantine/core";
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 
 function ActionModal({
                          opened,
@@ -74,6 +76,7 @@ function ActionModal({
                     <div>
                         <NativeSelect
                             label="Membership Type"
+                            rightSection={<FontAwesomeIcon icon={faCaretDown} />}
                             value={memberToEdit.membership_type}
                             onChange={(e) => setMemberToEdit({...memberToEdit, membership_type: e.target.value})}
                             data={[{value: 'Platinum', label: 'Platinum'}, {

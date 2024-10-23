@@ -1,6 +1,8 @@
-import {Button, Menu, rem, Table, Pagination } from "@mantine/core";
+import {Button, Menu, Table, Pagination} from "@mantine/core";
 import PropTypes from "prop-types";
 import {useState} from "react";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faCommentDots, faEllipsisVertical, faTrash, faUserPen} from "@fortawesome/free-solid-svg-icons";
 
 
 function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
@@ -22,19 +24,19 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
             {currentMembers.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
                     <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th>ID</Table.Th>
-                        <Table.Th>User ID</Table.Th>
-                        <Table.Th>Member Name</Table.Th>
-                        <Table.Th>Member Type</Table.Th>
-                        <Table.Th>Created By</Table.Th>
-                        <Table.Th>Created At</Table.Th>
-                        <Table.Th>Email</Table.Th>
-                        <Table.Th>Action</Table.Th>
-                    </Table.Tr>
+                        <Table.Tr>
+                            <Table.Th>ID</Table.Th>
+                            <Table.Th>User ID</Table.Th>
+                            <Table.Th>Member Name</Table.Th>
+                            <Table.Th>Member Type</Table.Th>
+                            <Table.Th>Created By</Table.Th>
+                            <Table.Th>Created At</Table.Th>
+                            <Table.Th>Email</Table.Th>
+                            <Table.Th>Action</Table.Th>
+                        </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
-                        { currentMembers.map((member) =>
+                        {currentMembers.map((member) =>
                             <Table.Tr key={member.id}>
                                 <Table.Td>{member.id}</Table.Td>
                                 <Table.Td>{member.user_id}</Table.Td>
@@ -50,7 +52,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                                     <Menu shadow="md" width={200}>
                                         <Menu.Target>
                                             <Button variant="subtle" color="gray">
-                                                {/*<IconDotsVertical size={16} />*/}
+                                                <FontAwesomeIcon icon={faEllipsisVertical}/>
                                             </Button>
                                         </Menu.Target>
 
@@ -58,21 +60,20 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                                             <Menu.Label>Application</Menu.Label>
                                             <Menu.Item
                                                 onClick={() => handleReadMore(member)}>
-
+                                                <FontAwesomeIcon style={{marginRight: '12px'}} icon={faCommentDots}/>
                                                 Read more
                                             </Menu.Item>
                                             <Menu.Item
-
-                                                onClick={() => handleEdit(member.id)}
-                                            >
+                                                onClick={() => handleEdit(member.id)}>
+                                                <FontAwesomeIcon style={{marginRight: '8px'}} icon={faUserPen}/>
                                                 Edit
                                             </Menu.Item>
                                             <Menu.Label>Danger Zone</Menu.Label>
                                             <Menu.Item
                                                 color="red"
-
                                                 onClick={() => handleDelete(member.id)}
                                             >
+                                                <FontAwesomeIcon style={{marginRight: '12px'}} icon={faTrash}/>
                                                 Delete Member
                                             </Menu.Item>
                                         </Menu.Dropdown>
@@ -90,7 +91,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                 total={totalPages}
                 page={activePage}
                 onChange={setActivePage}
-                style={{ marginTop: 20}}
+                style={{marginTop: 20}}
             />
 
         </>

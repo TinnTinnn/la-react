@@ -99,7 +99,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
 }
 
 Register.propTypes = {
-    openSuccessModal: PropTypes.func.isRequired,
-    closeModal: PropTypes.func.isRequired,
-    toggleForm: PropTypes.func.isRequired,
+    openSuccessModal: PropTypes.func,
+    closeModal: PropTypes.func,
+    toggleForm: PropTypes.func,
 };

@@ -1,5 +1,4 @@
 import {Button, Menu, rem, Table, Pagination } from "@mantine/core";
-import {IconMessage, IconSettings, IconTrash, IconDotsVertical} from "@tabler/icons-react";
 import PropTypes from "prop-types";
 import {useState} from "react";
 
@@ -22,6 +21,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
         <>
             {currentMembers.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
+                    <Table.Thead>
                     <Table.Tr>
                         <Table.Th>ID</Table.Th>
                         <Table.Th>User ID</Table.Th>
@@ -32,6 +32,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                         <Table.Th>Email</Table.Th>
                         <Table.Th>Action</Table.Th>
                     </Table.Tr>
+                    </Table.Thead>
                     <Table.Tbody>
                         { currentMembers.map((member) =>
                             <Table.Tr key={member.id}>
@@ -48,20 +49,20 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                                 <Table.Td>
                                     <Menu shadow="md" width={200}>
                                         <Menu.Target>
-                                            <Button variant="subtle" color="gray" compact>
-                                                <IconDotsVertical size={16} />
+                                            <Button variant="subtle" color="gray">
+                                                {/*<IconDotsVertical size={16} />*/}
                                             </Button>
                                         </Menu.Target>
 
                                         <Menu.Dropdown>
                                             <Menu.Label>Application</Menu.Label>
                                             <Menu.Item
-                                                onClick={() => handleReadMore(member)}
-                                                leftSection={<IconMessage style={{width: rem(14), height: rem(14)}}/>}>
+                                                onClick={() => handleReadMore(member)}>
+
                                                 Read more
                                             </Menu.Item>
                                             <Menu.Item
-                                                leftSection={<IconSettings style={{width: rem(14), height: rem(14)}}/>}
+
                                                 onClick={() => handleEdit(member.id)}
                                             >
                                                 Edit
@@ -69,7 +70,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                                             <Menu.Label>Danger Zone</Menu.Label>
                                             <Menu.Item
                                                 color="red"
-                                                leftSection={<IconTrash style={{width: rem(14), height: rem(14)}}/>}
+
                                                 onClick={() => handleDelete(member.id)}
                                             >
                                                 Delete Member

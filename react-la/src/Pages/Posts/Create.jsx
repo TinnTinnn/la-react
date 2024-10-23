@@ -2,7 +2,7 @@ import {useContext, useState} from "react";
 import {AppContext} from "../../Context/AppContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {TextInput, Space, Button, NativeSelect } from "@mantine/core";
-import {IconChevronDown} from "@tabler/icons-react";
+
 import '@mantine/dates/styles.css'
 import {DatePickerInput} from "@mantine/dates";
 
@@ -69,7 +69,7 @@ export default function Create() {
                 <div>
                     <NativeSelect
                         label="Membership Type"  // ตรงนี้จะเพิ่ม label ให้แสดง
-                        rightSection={<IconChevronDown size={14} stroke={1.5}/>}
+                        
                         value={membershipType}
                         onChange={handleSelectChange}
                         data={[

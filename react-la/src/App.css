@@ -57,3 +57,17 @@ th {
     color: red;
 }
 
+.button-default {
+    background-color: #3572EF !important;
+    color: white !important;
+}
+
+.button-default:hover {
+    background-color: white!important;
+    color: #3572EF !important;
+}
+
+.button-selected {
+    background-color: white !important;
+    color: #3572EF !important;
+}

@@ -74,6 +74,6 @@ export default function Login( { closeModal, toggleForm } ) {
 }
 
 Login.propTypes = {
-    closeModal: PropTypes.func.isRequired,
-    toggleForm: PropTypes.func.isRequired,
+    closeModal: PropTypes.func,
+    toggleForm: PropTypes.func,
 };

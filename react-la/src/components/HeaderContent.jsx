@@ -3,7 +3,6 @@ import {AppContext} from "../Context/AppContext.jsx";
 import { useNavigate} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
 import {Anchor, Burger, Button, Menu, Modal, rem} from "@mantine/core";
-import {IconLogout} from "@tabler/icons-react";
 import Login from "../Pages/Auth/Login.jsx";
 import Register from "../Pages/Auth/Register.jsx";
 

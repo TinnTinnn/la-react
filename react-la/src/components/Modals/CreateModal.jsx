@@ -1,5 +1,5 @@
 import {Button, Modal, NativeSelect, Space, TextInput} from "@mantine/core";
-import {IconChevronDown} from "@tabler/icons-react";
+
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
 
@@ -27,7 +27,7 @@ function CreateModal({opened, onClose, onSubmit, formData, setFormData, errors,}
                 <div>
                     <NativeSelect
                         label="Membership Type"
-                        rightSection={<IconChevronDown size={14} stroke={1.5}/>}
+                        // rightSection={<IconChevronDown size={14} stroke={1.5}/>}
                         value={formData.membership_type}
                         onChange={(e) => setFormData({...formData, membership_type: e.currentTarget.value})}
                         data={[

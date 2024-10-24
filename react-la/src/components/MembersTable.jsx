@@ -2,7 +2,7 @@ import {Button, Menu, Table, Pagination} from "@mantine/core";
 import PropTypes from "prop-types";
 import {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCommentDots, faEllipsisVertical, faTrash, faUserPen} from "@fortawesome/free-solid-svg-icons";
+import {faCommentDots, faEllipsisVertical, faTrash, faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
 
 
 function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
@@ -73,7 +73,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                                                 color="red"
                                                 onClick={() => handleDelete(member.id)}
                                             >
-                                                <FontAwesomeIcon style={{marginRight: '12px'}} icon={faTrash}/>
+                                                <FontAwesomeIcon style={{marginRight: '12px'}} icon={faUserMinus}/>
                                                 Delete Member
                                             </Menu.Item>
                                         </Menu.Dropdown>

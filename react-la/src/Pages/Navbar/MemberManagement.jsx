@@ -5,6 +5,8 @@ import {AppContext} from "../../Context/AppContext.jsx";
 import CreateModal from "../../components/Modals/CreateModal.jsx";
 import ActionModal from "../../components/Modals/ActionModal.jsx";
 import MembersTable from "../../components/MembersTable.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faUserPlus} from "@fortawesome/free-solid-svg-icons";
 
 
 export default function MemberManagement() {
@@ -178,11 +180,16 @@ export default function MemberManagement() {
 
     return (
         <>
-            <h1 style={{ marginTop: '80px' }}>Welcome to the Member Management</h1>
+            <h1 style={{ marginTop: '50px' }}>Welcome to the Member Management</h1>
 
             <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
                 {user ? (
-                    <Button onClick={() => setNewMemberModalOpened(true)}>New Member</Button>
+                    <Button
+                        leftSection={<FontAwesomeIcon icon={faUserPlus} />}
+                        onClick={() => setNewMemberModalOpened(true)}>
+
+                        New Member
+                    </Button>
                 ) : (
                     ""
                 )}

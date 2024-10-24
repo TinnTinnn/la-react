@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route, } from "react-router-dom";
+import {BrowserRouter, Routes, Route,} from "react-router-dom";
 import Layout from "./Pages/Layout.jsx";
 import MemberManagement from "./Pages/Navbar/MemberManagement.jsx";
 import './App.css'
@@ -9,7 +9,7 @@ import {AppContext} from "./Context/AppContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
 import Update from "./Pages/Posts/Update.jsx";
-import {MantineProvider, AppShell, createTheme, Text, CloseButton, } from "@mantine/core";
+import {MantineProvider, AppShell, createTheme, Text, CloseButton,} from "@mantine/core";
 import '@mantine/core/styles.css'
 import {useDisclosure,} from "@mantine/hooks";
 import HeaderContent from "./components/HeaderContent.jsx";
@@ -17,7 +17,8 @@ import DashboardButtons from "./Pages/Navbar/DashboardButtons.jsx";
 import Overview from "./Pages/Navbar/Overview.jsx";
 import Analytics from "./Pages/Navbar/Analytics.jsx";
 import Saas from "./Pages/Navbar/Saas.jsx";
-
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSignature} from "@fortawesome/free-solid-svg-icons";
 
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
                         style={{
                             borderBottom: 'none',
                             boxShadow: 'none',
+                            height: 65,
                         }}
                     >
                         <HeaderContent opened={opened} toggle={toggle}/>
@@ -62,7 +64,10 @@ export default function App() {
                     <AppShell.Navbar style={{color: 'white', backgroundColor: '#3572EF'}}
                     >
                         <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <Text style={{paddingLeft: '20px', paddingTop: '10px'}}>TinnTinn</Text>
+                            <Text style={{paddingLeft: '20px', paddingTop: '10px'}}>
+                                <FontAwesomeIcon icon={faSignature}/>
+                                MyMember
+                            </Text>
                             {opened && screenWidth < 768 && (
                                 <div onClick={toggle} className="close-button">
                                     <CloseButton size={24} color="white"/>
@@ -78,7 +83,7 @@ export default function App() {
                         <div style={{marginTop: '10px', marginLeft: '20px', marginBottom: '10px'}}>
                             Dashboard
                         </div>
-                        <DashboardButtons toggle={toggle} />
+                        <DashboardButtons toggle={toggle}/>
                     </AppShell.Navbar>
                     <AppShell.Main>
                         <Routes>

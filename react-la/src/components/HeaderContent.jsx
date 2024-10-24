@@ -71,9 +71,6 @@ const HeaderContent = ({opened, toggle}) => {
     return (
         <>
             <nav className="nav-container">
-                {/*<Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>*/}
-                {/*    MemberManagement*/}
-                {/*</Link>*/}
                 <Burger
                     opened={opened}
                     onClick={toggle}

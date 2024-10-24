@@ -1,5 +1,6 @@
 import { Card, Text, Grid, Container, Group, Title, RingProgress, Paper } from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {useEffect, useState} from "react";
 
 const data = [
     { date: 'Jan', apples: 4000, oranges: 2400, tomatoes: 2400 },
@@ -10,6 +11,41 @@ const data = [
 ];
 
 export default function Overview() {
+    // state สำหรับเก็บข้อมูลจำนวนสมาชิกและจำนวนสมาชิกใหม่
+    const [memberStats, setMemberStats] = useState({
+        totalMembers: 0,
+        newMembers: 0,
+    });
+
+    // ดึงข้อมูล จาก API เมื่อ component ถูกโหลด
+    useEffect(() => {
+        async  function fetchMemberStats() {
+            try {
+                const res = await fetch(`/api/members/stats`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await res.json()
+
+                // อัพเดท state ด้วยข้อมูลที่ได้รับจาก  API
+                if (res.ok) {
+                    setMemberStats({
+                        totalMembers: data.totalMembers,
+                        newMembers: data.newMembers,
+                    });
+                } else {
+                    console.error("Failed to fetch member stats", data);
+                }
+            } catch (error) {
+                console.error("Error fetching member stats", error);
+            }
+        }
+
+        fetchMemberStats();
+    }, []);
+
     return (
         <Container size="xl" style={{ marginTop: '50px' }}>
             <Title order={2} align="center" mb="lg">
@@ -18,17 +54,23 @@ export default function Overview() {
 
             {/* ส่วนบนสำหรับแสดงข้อมูลทั่วไป */}
             <Grid gutter="xl">
-                <Grid.Col span={3}>
+                <Grid.Col span={4}>
                     <Card shadow="md" padding="lg" radius="md" withBorder>
                         <Group position="apart">
-                            <Text weight={700} size="lg">Users</Text>
+                            <Text weight={700} size="lg">Total Members</Text>
                         </Group>
-                        <Text size="xl" weight={600}>1,254</Text>
-                        <Text color="dimmed" size="sm">Active users this month</Text>
+                        <Text size="xl" weight={600}>{memberStats.totalMembers}</Text> {/* จำนวนสมาชิกทั้งหมด */}
+                        <Text color="dimmed" size="sm">Current members in the system</Text> {/* คำอธิบาย */}
+
+                        <Group position="apart" mt="md">
+                            <Text weight={700} size="lg">New Members this Month</Text>
+                        </Group>
+                        <Text size="xl" weight={600}>{memberStats.newMembers}</Text> {/* จำนวนสมาชิกใหม่ที่ลงทะเบียนเดือนนี้ */}
+                        <Text color="dimmed" size="sm">Registered this month</Text> {/* คำอธิบาย */}
                     </Card>
                 </Grid.Col>
 
-                <Grid.Col span={3}>
+                <Grid.Col span={4}>
                     <Card shadow="md" padding="lg" radius="md" withBorder>
                         <Group position="apart">
                             <Text weight={700} size="lg">Revenue</Text>
@@ -38,7 +80,7 @@ export default function Overview() {
                     </Card>
                 </Grid.Col>
 
-                <Grid.Col span={3}>
+                <Grid.Col span={4}>
                     <Card shadow="md" padding="lg" radius="md" withBorder>
                         <Group position="apart">
                             <Text weight={700} size="lg">Performance</Text>
@@ -51,16 +93,6 @@ export default function Overview() {
                             label={<Text align="center" size="md">80%</Text>}
                         />
                         <Text color="dimmed" size="sm">Efficiency rate</Text>
-                    </Card>
-                </Grid.Col>
-
-                <Grid.Col span={3}>
-                    <Card shadow="md" padding="lg" radius="md" withBorder>
-                        <Group position="apart">
-                            <Text weight={700} size="lg">Sales</Text>
-                        </Group>
-                        <Text size="xl" weight={600}>$10,000</Text>
-                        <Text color="dimmed" size="sm">Total sales this month</Text>
                     </Card>
                 </Grid.Col>
             </Grid>

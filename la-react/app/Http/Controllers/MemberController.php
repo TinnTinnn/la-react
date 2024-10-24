@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 
 class MemberController extends Controller implements HasMiddleware
@@ -21,8 +22,9 @@ class MemberController extends Controller implements HasMiddleware
 
     public function index(): JsonResponse
     {
-        return response()->json(Member::with('user')->latest()->get(),200);
+        return response()->json(Member::with('user')->latest()->get(), 200);
     }
+
     public function store(Request $request): JsonResponse
     {
         $fields = $request->validate([
@@ -34,13 +36,29 @@ class MemberController extends Controller implements HasMiddleware
 
         $member = $request->user()->members()->create($fields);
 
-        return response()->json(['member' => $member,'user' => $member->user], 201);
+        return response()->json(['member' => $member, 'user' => $member->user], 201);
     }
 
 
     public function show(Member $member): JsonResponse
     {
-        return response()->json(['member' => $member,'user' => $member->user], 200);
+        return response()->json(['member' => $member, 'user' => $member->user], 200);
+    }
+
+    public function stats(): JsonResponse
+    {
+        $totalMembers = Member::count();
+
+        $newMembers = Member::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)->count();
+
+//        Log::info('Total Members: ' . $totalMembers);
+//        Log::info('New Members this Month: '. $newMembers);
+
+        return response()->json([
+            'totalMembers' => $totalMembers,
+            'newMembers' => $newMembers,
+        ], 200);
     }
 
 

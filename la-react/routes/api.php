@@ -15,4 +15,4 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 //    ->middleware('throttle:login'); //middleware สำหรับ Ratelimiting
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
+Route::get('/members/stats', [MemberController::class, 'stats']);

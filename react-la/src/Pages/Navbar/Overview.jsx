@@ -1,8 +1,10 @@
-import { Card, Text, Grid, Container, Group, Title, RingProgress, Paper } from '@mantine/core';
+import { Card, Text, Grid, Container, Group, Title,  Paper } from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import {useEffect, useState} from "react";
+import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
+import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
 
-const data = [
+const fakedata = [
     { date: 'Jan', apples: 4000, oranges: 2400, tomatoes: 2400 },
     { date: 'Feb', apples: 3000, oranges: 1398, tomatoes: 2210 },
     { date: 'Mar', apples: 2000, oranges: 9800, tomatoes: 2290 },
@@ -11,40 +13,43 @@ const data = [
 ];
 
 export default function Overview() {
-    // state สำหรับเก็บข้อมูลจำนวนสมาชิกและจำนวนสมาชิกใหม่
-    const [memberStats, setMemberStats] = useState({
+    const [stats, setStats] = useState({
         totalMembers: 0,
         newMembers: 0,
+        activeMembers: 0,
+        expiredMembers: 0,
     });
 
-    // ดึงข้อมูล จาก API เมื่อ component ถูกโหลด
     useEffect(() => {
-        async  function fetchMemberStats() {
+        async function fetchStats() {
             try {
-                const res = await fetch(`/api/members/stats`, {
-                    method: "GET",
+                const res = await fetch('/api/members/stats', {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 });
-                const data = await res.json()
+                const data = await res.json();
 
-                // อัพเดท state ด้วยข้อมูลที่ได้รับจาก  API
+                // อัพเดท state ด้วยข้อมูลที่ได้รับจาก API
                 if (res.ok) {
-                    setMemberStats({
+                    setStats({
                         totalMembers: data.totalMembers,
                         newMembers: data.newMembers,
+                        activeMembers: data.activeMembers,
+                        expiredMembers: data.expiredMembers,
                     });
                 } else {
                     console.error("Failed to fetch member stats", data);
                 }
             } catch (error) {
-                console.error("Error fetching member stats", error);
+                console.error("Error fetching member stats:", error);
             }
         }
 
-        fetchMemberStats();
-    }, []);
+        fetchStats();
+    }, []);  // useEffect จะทำงานแค่ครั้งเดียวเมื่อ component ถูก mount
+
 
     return (
         <Container size="xl" style={{ marginTop: '50px' }}>
@@ -55,19 +60,10 @@ export default function Overview() {
             {/* ส่วนบนสำหรับแสดงข้อมูลทั่วไป */}
             <Grid gutter="xl">
                 <Grid.Col span={4}>
-                    <Card shadow="md" padding="lg" radius="md" withBorder>
-                        <Group position="apart">
-                            <Text weight={700} size="lg">Total Members</Text>
-                        </Group>
-                        <Text size="xl" weight={600}>{memberStats.totalMembers}</Text> {/* จำนวนสมาชิกทั้งหมด */}
-                        <Text color="dimmed" size="sm">Current members in the system</Text> {/* คำอธิบาย */}
-
-                        <Group position="apart" mt="md">
-                            <Text weight={700} size="lg">New Members this Month</Text>
-                        </Group>
-                        <Text size="xl" weight={600}>{memberStats.newMembers}</Text> {/* จำนวนสมาชิกใหม่ที่ลงทะเบียนเดือนนี้ */}
-                        <Text color="dimmed" size="sm">Registered this month</Text> {/* คำอธิบาย */}
-                    </Card>
+                    <MemberStatsCard
+                        totalMembers={stats.totalMembers}
+                        newMembers={stats.newMembers}
+                    />
                 </Grid.Col>
 
                 <Grid.Col span={4}>
@@ -75,24 +71,16 @@ export default function Overview() {
                         <Group position="apart">
                             <Text weight={700} size="lg">Revenue</Text>
                         </Group>
-                        <Text size="xl" weight={600}>$12,345</Text>
+                        <MembershipExpirationChart
+                            activeMembers={stats.activeMembers}
+                            expiredMembers={stats.expiredMembers}
+                        />
                         <Text color="dimmed" size="sm">Total revenue this month</Text>
                     </Card>
                 </Grid.Col>
 
                 <Grid.Col span={4}>
                     <Card shadow="md" padding="lg" radius="md" withBorder>
-                        <Group position="apart">
-                            <Text weight={700} size="lg">Performance</Text>
-                        </Group>
-                        <RingProgress
-                            size={80}
-                            thickness={8}
-                            roundCaps
-                            sections={[{ value: 80, color: 'teal' }]}
-                            label={<Text align="center" size="md">80%</Text>}
-                        />
-                        <Text color="dimmed" size="sm">Efficiency rate</Text>
                     </Card>
                 </Grid.Col>
             </Grid>
@@ -100,7 +88,7 @@ export default function Overview() {
             {/* ส่วนล่างสำหรับแสดงข้อมูลรายละเอียด */}
             <Paper shadow="md" p="lg" radius="md" mt="sm">
                 <Title order={3} mb="md">Sales Overview</Title>
-                <LineChart width={600} height={300} data={data}>
+                <LineChart width={600} height={300} data={fakedata}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />

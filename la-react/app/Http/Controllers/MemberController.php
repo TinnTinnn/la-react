@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use Carbon\Carbon;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,9 @@ class MemberController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            new \Illuminate\Routing\Controllers\Middleware('auth:sanctum', except: ['index', 'show'])
+            new \Illuminate\Routing\Controllers\Middleware(
+                'auth:sanctum', except: ['index', 'show', 'memberOverview',]
+            )
         ];
     }
 
@@ -45,22 +48,6 @@ class MemberController extends Controller implements HasMiddleware
         return response()->json(['member' => $member, 'user' => $member->user], 200);
     }
 
-    public function stats(): JsonResponse
-    {
-        $totalMembers = Member::count();
-
-        $newMembers = Member::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)->count();
-
-//        Log::info('Total Members: ' . $totalMembers);
-//        Log::info('New Members this Month: '. $newMembers);
-
-        return response()->json([
-            'totalMembers' => $totalMembers,
-            'newMembers' => $newMembers,
-        ], 200);
-    }
-
 
     public function update(Request $request, Member $member): JsonResponse
     {
@@ -75,6 +62,31 @@ class MemberController extends Controller implements HasMiddleware
         $member->update($fields);
 
         return response()->json(['member' => $member, 'user' => $member->user], 200);
+    }
+
+    public function memberOverview(): JsonResponse
+    {
+        // จำนวนสมาชิกทั้งหมด
+        $totalMembers = Member::count();
+
+        // จำนวนสมาชิกใหม่ในเดือนนี้
+        $newMembers = Member::whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        // กำหนดวันที่วันนี้
+        $today = Carbon::today();
+        // จำนวนสมาชิกที่ยังไม่หมดอายุ
+        $activeMembers = Member::where('expiration_date', '>', $today)->count();
+        // จำนวนสมาชิกที่หมดอายุ
+        $expiredMembers = Member::where('expiration_date', '<=', $today)->count();
+
+        return response()->json([
+            'totalMembers' => $totalMembers,
+            'newMembers' => $newMembers,
+            'activeMembers' => $activeMembers,
+            'expiredMembers' => $expiredMembers,
+        ], 200);
     }
 
     public function destroy(Member $member): JsonResponse

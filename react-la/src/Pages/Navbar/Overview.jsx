@@ -1,4 +1,4 @@
-import { Card, Text, Grid, Container, Group, Title,  Paper } from '@mantine/core';
+import {Card, Text, Grid, Container, Group, Title, Paper, RingProgress} from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import {useEffect, useState} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
@@ -67,20 +67,26 @@ export default function Overview() {
                 </Grid.Col>
 
                 <Grid.Col span={4}>
-                    <Card shadow="md" padding="lg" radius="md" withBorder>
-                        <Group position="apart">
-                            <Text weight={700} size="lg">Revenue</Text>
-                        </Group>
                         <MembershipExpirationChart
                             activeMembers={stats.activeMembers}
                             expiredMembers={stats.expiredMembers}
+                            totalMembers={stats.totalMembers}
                         />
-                        <Text color="dimmed" size="sm">Total revenue this month</Text>
-                    </Card>
                 </Grid.Col>
 
-                <Grid.Col span={4}>
+                <Grid.Col span={3}>
                     <Card shadow="md" padding="lg" radius="md" withBorder>
+                        <Group position="apart">
+                            <Text weight={700} size="lg">Performance</Text>
+                        </Group>
+                        <RingProgress
+                            size={80}
+                            thickness={8}
+                            roundCaps
+                            sections={[{ value: 80, color: 'teal' }]}
+                            label={<Text align="center" size="md">80%</Text>}
+                        />
+                        <Text color="dimmed" size="sm">Efficiency rate</Text>
                     </Card>
                 </Grid.Col>
             </Grid>

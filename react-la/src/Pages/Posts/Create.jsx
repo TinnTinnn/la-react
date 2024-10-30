@@ -69,7 +69,7 @@ export default function Create() {
                 <div>
                     <NativeSelect
                         label="Membership Type"  // ตรงนี้จะเพิ่ม label ให้แสดง
-                        
+
                         value={membershipType}
                         onChange={handleSelectChange}
                         data={[

@@ -34,8 +34,17 @@ class MemberController extends Controller implements HasMiddleware
             'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
             'member_name' => 'required|max:255',
+            'age'=> 'required|integer|min:10|max:80',
+            'gender' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:members,email',
+            'address' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|string|max:255',
             'expiration_date' => 'required|date',
         ]);
+
+        Log::info('Creating Member', ['data' => $fields]);
 
         $member = $request->user()->members()->create($fields);
 
@@ -56,6 +65,13 @@ class MemberController extends Controller implements HasMiddleware
             'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
             'member_name' => 'required|max:255',
+            'age'=> 'required|integer|min:10|max:80',
+            'gender' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:255',
+            'email' => 'required|email|unique:members,email'.$member->id,
+            'address' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|string|max:255',
             'expiration_date' => 'required|date',
         ]);
 

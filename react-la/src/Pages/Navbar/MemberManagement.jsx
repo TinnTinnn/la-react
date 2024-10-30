@@ -23,6 +23,13 @@ export default function MemberManagement() {
     const [memberToEdit, setMemberToEdit] = useState(null);
     const [formData, setFormData] = useState({
         member_name: "",
+        age: null,
+        gender: "",
+        phone_number: "",
+        email: "",
+        address: "",
+        notes: "",
+        profile_picture: "",
         membership_type: "",
         expiration_date: "",
     });
@@ -45,6 +52,22 @@ export default function MemberManagement() {
 
         if (formData.member_name.trim() === "") {
             newErrors.member_name = ["Member name is required."];
+        }
+
+        if (formData.age === "") {
+            newErrors.age = ["Age is required."];
+        }
+
+        if (formData.gender === "") {
+            newErrors.gender = ["Gender is required."];
+        }
+
+        if (formData.email === "") {
+            newErrors.email = ["Email is required."];
+        }
+
+        if (formData.phone_number === "") {
+            newErrors.phone_number = ["Phone number is required."];
         }
 
         if (formData.membership_type === "") {

@@ -2,14 +2,14 @@ import {Button, Menu, Table, Pagination} from "@mantine/core";
 import PropTypes from "prop-types";
 import {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCommentDots, faEllipsisVertical, faTrash, faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
+import {faCommentDots, faEllipsisVertical,  faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
 
 
 function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
 
     // สำหรับการทำ Paginate
     const [activePage, setActivePage] = useState(1);
-    const itemsPerPage = 5; // จำนวนสมาชิกต่อหน้า
+    const itemsPerPage = 6; // จำนวนสมาชิกต่อหน้า
 
     // คำนวณความยาวหน้า
     const totalMembers = members.length;

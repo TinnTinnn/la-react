@@ -13,8 +13,14 @@ class Member extends Model
         'user_id',
         'membership_type',
         'member_name',
+        'age',
+        'gender',
+        'phone_number',
+        'email',
+        'address',
+        'notes',
+        'profile_picture',
         'expiration_date',
-
     ];
     public function user() {
         return $this->belongsTo(User::class);

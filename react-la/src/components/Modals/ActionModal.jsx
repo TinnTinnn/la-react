@@ -1,8 +1,7 @@
-import {Button, Modal, NativeSelect, TextInput} from "@mantine/core";
-import {DatePickerInput} from "@mantine/dates";
+import {Button, Modal,} from "@mantine/core";
 import PropTypes from "prop-types";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
+import CreateModal from "./CreateModal.jsx";
+
 
 function ActionModal({
                          opened,
@@ -18,7 +17,8 @@ function ActionModal({
                          setEditModalOpened,
                          memberToEdit,
                          setMemberToEdit,
-                         handleEditFormSubmit
+                         handleEditFormSubmit,
+                         errors,
                      }) {
     return (
         <>
@@ -58,60 +58,15 @@ function ActionModal({
                 </div>)}
             </Modal>
 
-            <Modal
+            <CreateModal
                 opened={editModalOpened}
                 onClose={() => setEditModalOpened(false)}
-                title="Edit Member Information"
-                centered
-            >
-                {memberToEdit && (<form onSubmit={(e) => handleEditFormSubmit(e)}>
-                    <div>
-                        <TextInput
-                            label="Member Name"
-                            value={memberToEdit.member_name}
-                            onChange={(e) => setMemberToEdit({...memberToEdit, member_name: e.target.value})}
-                        />
-                    </div>
-
-                    <div>
-                        <NativeSelect
-                            label="Membership Type"
-                            rightSection={<FontAwesomeIcon icon={faCaretDown} />}
-                            value={memberToEdit.membership_type}
-                            onChange={(e) => setMemberToEdit({...memberToEdit, membership_type: e.target.value})}
-                            data={[{value: 'Platinum', label: 'Platinum'}, {
-                                value: 'Gold', label: 'Gold'
-                            }, {value: 'Silver', label: 'Silver'}, {value: 'Bronze', label: 'Bronze'},]}
-                        />
-                    </div>
-
-                    <div>
-                        <DatePickerInput
-                            label="Pick expiration date"
-                            value={memberToEdit.expiration_date ? new Date(memberToEdit.expiration_date + 'T00:00:00') : null} // เพิ่ม 'T00:00:00'
-                            onChange={(date) => {
-                                if (date) {
-                                    // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น
-                                    const formattedDate = date.toLocaleDateString('en-CA'); // ใช้ 'en-CA' เพื่อให้ได้รูปแบบ YYYY-MM-DD
-                                    setMemberToEdit({
-                                        ...memberToEdit,
-                                        expiration_date: formattedDate,
-                                    });
-                                } else {
-                                    setMemberToEdit({
-                                        ...memberToEdit,
-                                        expiration_date: "",
-                                    });
-                                }
-                            }}
-                        />
-                    </div>
-
-                    <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
-                        <Button type="submit" variant="filled" color="green">Save Changes</Button>
-                    </div>
-                </form>)}
-            </Modal>
+                onSubmit={handleEditFormSubmit}
+                formData={memberToEdit || {}}
+                setFormData={setMemberToEdit}
+                errors={errors}
+                isEditing={true}
+            />
         </>)
 }
 
@@ -146,6 +101,8 @@ ActionModal.propTypes = {
     }),
     setMemberToEdit: PropTypes.func.isRequired,
     handleEditFormSubmit: PropTypes.func.isRequired,
+    errors: PropTypes.object.isRequired,
+
 };
 
 export default ActionModal;

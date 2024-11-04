@@ -8,26 +8,25 @@ import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 
 
 
-function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors, isEditing = false, }) {
+function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,  }) {
+
+
 
     return (
         <Modal
-            width={{ width: '600px'}}
             opened={opened}
             onClose={onClose}
-            title={isEditing ? "Edit Member" : "Create New Member"}
+            title="Create New Member"
             centered
         >
             <form onSubmit={onSubmit} className="">
                 <div>
                     <TextInput label="Member Name" placeholder="Your member name here"
-                               value={formData.member_name || ""}
-                               required={false}
+                               value={formData.member_name}
+                               required={true}
                                onChange={(e) =>
                                    setFormData({...formData, member_name: e.target.value})}/>
-                    {errors.member_name && errors.member_name.map((error, index) => (
-                        <div key={index} style={{ color: 'red', fontSize: '10px', marginTop: '4px'}}>{error}</div>
-                    ))}
+                    {errors.member_name && <p className="error">{errors.member_name[0]}</p>}
                     <Space h="md"/>
                 </div>
 
@@ -40,7 +39,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                          setFormData({...formData, age: value})}
                                      min={10}
                                      max={60}
-                                     required={false}
+                                     required={true}
                         />
                         {errors.age && <p className="error">{errors.age[0]}</p>}
                     </div>
@@ -59,7 +58,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                 {value: 'Other', label: 'Other'},
                             ]}
                             placeholder="Select gender"
-                            required={false}
+                            required={true}
                         />
                         {errors.gender && <p className="error">{errors.gender}</p>}
                     </div>
@@ -74,11 +73,9 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             placeholder="Your phone number here"
                             value={formData.phone_number}
                             onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-                            required={false}
+                            required={true}
                         />
-                        {errors.phone_number && errors.phone_number.map((error, index) => (
-                            <div key={index} style={{ color: 'red', fontSize: '10px', marginTop: '4px'}}>{error}</div>
-                        ))}
+                        {errors.phone_number && <p className="error">{errors.phone_number[0]}</p>}
                     </div>
 
                     <div>
@@ -87,11 +84,9 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             placeholder="Your email here"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
-                            required={false}
+                            required={true}
                         />
-                        {errors.email && errors.email.map((error, index) => (
-                            <div key={index} style={{ color: 'red', fontSize: '10px', marginTop: '4px'}}>{error}</div>
-                        ))}
+                        {errors.email && <p className="error">{errors.email[0]}</p>}
                     </div>
                 </Group>
 
@@ -112,7 +107,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                 {value: 'Bronze', label: 'Bronze'},
                             ]}
                             placeholder="Select membership type"
-                            required={false}
+                            required={true}
                         />
                         {errors.membership_type && <p className="error">{errors.membership_type[0]}</p>}
                     </div>
@@ -122,7 +117,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             label="Pick expiration date"
                             placeholder="expiration date"
                             value={formData.expiration_date ? new Date(formData.expiration_date + 'T00:00:00') : null} // เพิ่ม 'T00:00:00'
-                            required={false}
+                            required={true}
                             onChange={(date) => {
                                 if (date) {
                                     // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น
@@ -150,7 +145,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     <Textarea
                         label="Address"
                         placeholder="Your address here"
-                        value={formData.address || ""}
+                        value={formData.address}
                         onChange={(e) => setFormData({...formData, address: e.target.value})}
                         required={false}
                     />
@@ -162,7 +157,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     <Textarea
                         label="Notes"
                         placeholder="Your notes here"
-                        value={formData.notes || ""}
+                        value={formData.notes}
                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
                         required={false} // ถ้าไม่ต้องการให้เป็นฟิลด์ที่จำเป็น
                     />
@@ -173,7 +168,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                 <Group position="apart" grow>
                     {/*<div>*/}
                     {/*    <FileInput*/}
-                    {/*        label="Profile Picture"*/}
+                    {/*        lable="Profile Picture"*/}
                     {/*        placeholder="Select an image"*/}
                     {/*        accept="image/*"*/}
                     {/*        value={formData.profile_picture}*/}
@@ -183,7 +178,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     {/*</div>*/}
 
                     <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
-                        <Button rightSection type="submit" variant="filled" color="green">{isEditing ? 'Update' : 'Create'}</Button>
+                        <Button rightSection type="submit" variant="filled" color="green">Create</Button>
                     </div>
                 </Group>
             </form>
@@ -196,7 +191,7 @@ CreateModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSubmit: PropTypes.func.isRequired, // เพิ่มการตรวจสอบสำหรับ onSubmit
     formData: PropTypes.shape({ // ตรวจสอบว่า formData มีโครงสร้างอย่างไร
-        member_name: PropTypes.string,
+        member_name: PropTypes.string.isRequired,
         age: PropTypes.number,
         gender: PropTypes.string,
         phone_number: PropTypes.string,
@@ -218,6 +213,7 @@ CreateModal.propTypes = {
         address: PropTypes.arrayOf(PropTypes.string),
         notes: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
-    isEditing: PropTypes.bool,
+    membershipType: PropTypes.string, // เพิ่มการตรวจสอบสำหรับ membershipType
+    setMembershipType: PropTypes.func.isRequired, // เพิ่มการตรวจสอบสำหรับ setMembershipType
 };
 export default CreateModal;

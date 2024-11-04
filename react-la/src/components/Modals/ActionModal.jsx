@@ -17,7 +17,7 @@ function ActionModal({
                          setEditModalOpened,
                          memberToEdit,
                          setMemberToEdit,
-                         handleEditFormSubmit,
+                         handleMemberFormSubmit,
                          errors,
                      }) {
     return (
@@ -61,7 +61,7 @@ function ActionModal({
             <CreateModal
                 opened={editModalOpened}
                 onClose={() => setEditModalOpened(false)}
-                onSubmit={handleEditFormSubmit}
+                onSubmit={(e) => handleMemberFormSubmit(e, true)} // ส่ง true เพื่อระบุว่าเป็นการแก้ไข
                 formData={memberToEdit || {}}
                 setFormData={setMemberToEdit}
                 errors={errors}
@@ -100,7 +100,7 @@ ActionModal.propTypes = {
         expiration_date: PropTypes.string,
     }),
     setMemberToEdit: PropTypes.func.isRequired,
-    handleEditFormSubmit: PropTypes.func.isRequired,
+    handleMemberFormSubmit: PropTypes.func.isRequired,
     errors: PropTypes.object.isRequired,
 
 };

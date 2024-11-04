@@ -23,7 +23,7 @@ export default function MemberManagement() {
     const [memberToEdit, setMemberToEdit] = useState(null);
 
     // สำหรับ การตรวจสอบ user กรอก หมายเลขโทรศัพท์
-    const isValidPhoneNumber = (phone) =>{
+    const isValidPhoneNumber = (phone) => {
         const phoneRegex = /^(?:\+?\d{1,3})?[-.\s]?(\d{3})[-.\s]?(\d{3})[-.\s]?(\d{4})$/;
         return phoneRegex.test(phone);
     }
@@ -58,102 +58,102 @@ export default function MemberManagement() {
         }
     }
 
-    async function handleCreate(e) {
-        e.preventDefault();
-
-        try {
-
-            const newErrors = {};
-
-            if (formData.member_name.trim() === "") {
-                newErrors.member_name = ["Member name is required."];
-            }
-
-            if (formData.age === null) {
-                newErrors.age = ["Age is required."];
-            }
-
-            if (formData.gender === "") {
-                newErrors.gender = ["Gender is required."];
-            }
-
-            if (formData.email === "") {
-                newErrors.email = ["Email is required."];
-            }
-
-            if (formData.phone_number === "") {
-                newErrors.phone_number = ["Phone number is required."];
-            } else if (!isValidPhoneNumber(formData.phone_number)) { // เมื่อผ่านการกรอกเบอร์แล้วแต่ format ไม่ถูกต้อง จะแจ้งเตือน
-                newErrors.phone_number = ["Phone number is not valid."];
-            }
-
-            if (formData.membership_type === "") {
-                newErrors.membership_type = ["Membership type is required."];
-            }
-
-            if (formData.expiration_date === "") {
-                newErrors.expiration_date = ["Expiration date is required."];
-            }
-
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
-                return; // หยุดการทำงานหากมีข้อผิดพลาด
-            }
-
-            // เรียกใช้ ฟังค์ชั่น formatPhoneNumber ส่วนนี้หลังจากได้รับหมายเลขโทรศัพท์มาแล้ว
-            const formattedPhoneNumber = formatPhoneNumber(formData.phone_number);
-
-            const res = await fetch('/api/members', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    phone_number: formattedPhoneNumber,
-                    user_id: user.id,
-                }),
-            });
-
-            const data = await res.json()
-
-
-
-            if (!res.ok) {
-                if (data.errors) {
-                    setErrors(data.errors); // จัดการ errors จาก backend
-                    return;
-                }
-            } else {
-                setNewMemberModalOpened(false);
-                getMembers();
-                setMessage("New member has been created successfully.");
-                setOpened(true);
-            }
-
-            setFormData({
-                member_name: "",
-                age: "",
-                gender: "",
-                phone_number: "",
-                email: "",
-                address: "",
-                notes: "",
-                profile_picture: "",
-                membership_type: "",
-                expiration_date: "",
-            });
-            setErrors({});
-        } catch (error) {
-            if (error.response && error.response.data.errors) {
-                setErrors(error.response.data.errors);
-            } else {
-                console.error ("An unexpected error occurred:", error);
-            }
-        }
-
-    }
+    // async function handleCreate(e) {
+    //     e.preventDefault();
+    //
+    //     try {
+    //
+    //         const newErrors = {};
+    //
+    //         if (formData.member_name.trim() === "") {
+    //             newErrors.member_name = ["Member name is required."];
+    //         }
+    //
+    //         if (formData.age === null) {
+    //             newErrors.age = ["Age is required."];
+    //         }
+    //
+    //         if (formData.gender === "") {
+    //             newErrors.gender = ["Gender is required."];
+    //         }
+    //
+    //         if (formData.email === "") {
+    //             newErrors.email = ["Email is required."];
+    //         }
+    //
+    //         if (formData.phone_number === "") {
+    //             newErrors.phone_number = ["Phone number is required."];
+    //         } else if (!isValidPhoneNumber(formData.phone_number)) { // เมื่อผ่านการกรอกเบอร์แล้วแต่ format ไม่ถูกต้อง จะแจ้งเตือน
+    //             newErrors.phone_number = ["Phone number is not valid."];
+    //         }
+    //
+    //         if (formData.membership_type === "") {
+    //             newErrors.membership_type = ["Membership type is required."];
+    //         }
+    //
+    //         if (formData.expiration_date === "") {
+    //             newErrors.expiration_date = ["Expiration date is required."];
+    //         }
+    //
+    //         if (Object.keys(newErrors).length > 0) {
+    //             setErrors(newErrors);
+    //             return; // หยุดการทำงานหากมีข้อผิดพลาด
+    //         }
+    //
+    //         // เรียกใช้ ฟังค์ชั่น formatPhoneNumber ส่วนนี้หลังจากได้รับหมายเลขโทรศัพท์มาแล้ว
+    //         const formattedPhoneNumber = formatPhoneNumber(formData.phone_number);
+    //
+    //         const res = await fetch('/api/members', {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 ...formData,
+    //                 phone_number: formattedPhoneNumber,
+    //                 user_id: user.id,
+    //             }),
+    //         });
+    //
+    //         const data = await res.json()
+    //
+    //
+    //
+    //         if (!res.ok) {
+    //             if (data.errors) {
+    //                 setErrors(data.errors); // จัดการ errors จาก backend
+    //                 return;
+    //             }
+    //         } else {
+    //             setNewMemberModalOpened(false);
+    //             getMembers();
+    //             setMessage("New member has been created successfully.");
+    //             setOpened(true);
+    //         }
+    //
+    //         setFormData({
+    //             member_name: "",
+    //             age: "",
+    //             gender: "",
+    //             phone_number: "",
+    //             email: "",
+    //             address: "",
+    //             notes: "",
+    //             profile_picture: "",
+    //             membership_type: "",
+    //             expiration_date: "",
+    //         });
+    //         setErrors({});
+    //     } catch (error) {
+    //         if (error.response && error.response.data.errors) {
+    //             setErrors(error.response.data.errors);
+    //         } else {
+    //             console.error ("An unexpected error occurred:", error);
+    //         }
+    //     }
+    //
+    // }
 
     function handleEdit(id) {
         const member = members.find(member => member.id === id);
@@ -167,41 +167,43 @@ export default function MemberManagement() {
         }
     }
 
-    async function handleEditFormSubmit(e) {
+    async function handleMemberFormSubmit(e, isEdit = false)  {
         e.preventDefault();
 
         // แจ้งใน Log ว่า Update member
-        console.log("Updating member:", memberToEdit);
+        console.log(isEdit ? "Updating member:" : "Creating member:", memberToEdit || formData);
 
         // การตรวจสอบเบอร์โทรศัพท์
         let newErrors = {};
-        if (memberToEdit.member_name.trim() === "") {
+        const dataToValidate = isEdit ? memberToEdit : formData;
+
+        if (dataToValidate.member_name.trim() === "") {
             newErrors.member_name = ["Member name is required."];
         }
 
-        if (memberToEdit.age === null) {
+        if (dataToValidate.age === null) {
             newErrors.age = ["Age is required."];
         }
 
-        if (memberToEdit.gender === "") {
+        if (dataToValidate.gender === "") {
             newErrors.gender = ["Gender is required."];
         }
 
-        if (memberToEdit.email === "") {
+        if (dataToValidate.email === "") {
             newErrors.email = ["Email is required."];
         }
 
-        if (memberToEdit.phone_number === "") {
+        if (dataToValidate.phone_number === "") {
             newErrors.phone_number = ["Phone number is required."];
-        } else if (!isValidPhoneNumber(memberToEdit.phone_number)) { // เมื่อผ่านการกรอกเบอร์แล้วแต่ format ไม่ถูกต้อง จะแจ้งเตือน
+        } else if (!isValidPhoneNumber(dataToValidate.phone_number)) { // เมื่อผ่านการกรอกเบอร์แล้วแต่ format ไม่ถูกต้อง จะแจ้งเตือน
             newErrors.phone_number = ["Phone number is not valid."];
         }
 
-        if (memberToEdit.membership_type === "") {
+        if (dataToValidate.membership_type === "") {
             newErrors.membership_type = ["Membership type is required."];
         }
 
-        if (memberToEdit.expiration_date === "") {
+        if (dataToValidate.expiration_date === "") {
             newErrors.expiration_date = ["Expiration date is required."];
         }
 
@@ -211,47 +213,74 @@ export default function MemberManagement() {
         }
 
         // จัดรูปแบบหมายเลขโทรศัพท์
-        const formattedPhoneNumber = formatPhoneNumber(memberToEdit.phone_number);
+        const formattedPhoneNumber = formatPhoneNumber(dataToValidate.phone_number);
         const updatedMemberData = {
-            ...memberToEdit,
+            ...dataToValidate,
             phone_number: formattedPhoneNumber, // ใช้หมายเลขโทรศัพท์ที่จัดรูปแบบแล้ว
+            user_id: isEdit ? undefined : user.id, // ไม่ต้องส่ง user_id เมื่อแก้ไข
         };
 
-        // ใช้เงื่อนไขเพื่อตรวจตสอบว่ากำลังแก้ไขหรือสร้าง
+        if (!isEdit) {
+            updatedMemberData.user_id = user.id;
+        }
 
 
-        const res  = await fetch(`/api/members/${memberToEdit.id}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedMemberData),
-        });
+        try {
+            // ใช้เงื่อนไขเพื่อตรวจตสอบว่ากำลังแก้ไขหรือสร้าง
+            const res = await fetch(
+                isEdit ? `/api/members/${dataToValidate.id}` : '/api/members',
+                {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedMemberData),
+                });
 
 
-        if (res.ok) {
-            setEditModalOpened(false);  // ปิด Modal
-            getMembers();  // รีเฟรชรายการ members
-            setMessage("Your information has been updated.");
-            setOpened(true);// เปิด Modal แสดงข้อความ
-        } else {
-            const data = await res.json();
+            if (res.ok) {
+                setEditModalOpened(false);
 
-            if (data.errors && data.errors.member_name) {
-                newErrors.member_name = data.errors.member_name;
-            }
+                getMembers();  // รีเฟรชรายการ members
+                setMessage("Your information has been updated.");
+                setOpened(true);// เปิด Modal แสดงข้อความ
 
-            if (data.errors && data.errors.phone_number) {
-                newErrors.phone_number = data.errors.phone_number;
-            }
 
-            if (data.errors && data.errors.email) {
-                newErrors.email = data.errors.email;
+                // รีเซ็ตฟอร์มหลังจากสร้างหรือแก้ไขสมาชิกใหม่สำเร็จ
+                setFormData({
+                    member_name: "",
+                    age: "",
+                    gender: "",
+                    phone_number: "",
+                    email: "",
+                    address: "",
+                    notes: "",
+                    profile_picture: "",
+                    membership_type: "",
+                    expiration_date: "",
+                });
+                setErrors({});
             } else {
-                console.log(data);  // handle error response
+                const data = await res.json();
+
+                if (data.errors && data.errors.member_name) {
+                    newErrors.member_name = data.errors.member_name;
+                }
+
+                if (data.errors && data.errors.phone_number) {
+                    newErrors.phone_number = data.errors.phone_number;
+                }
+
+                if (data.errors && data.errors.email) {
+                    newErrors.email = data.errors.email;
+                } else {
+                    console.log(data);  // handle error response
+                }
+                setErrors(newErrors);
             }
-            setErrors(newErrors);
+        } catch (error) {
+            console.error("An error occurred while submitting the form:", error)
         }
     }
 
@@ -307,7 +336,7 @@ export default function MemberManagement() {
     // สำหรับ รีเซ็ท errors เมื่อ Modal ปิดตัวลง
     useEffect(() => {
         if (!editModalOpened && !newMemberModalOpened) {
-            setErrors ({}); // อันนี้เอาไว้ รีเซ้ทสถานะ errors เมื่อ Modal สองอันนี้ไม่แสดง
+            setErrors({}); // อันนี้เอาไว้ รีเซ้ทสถานะ errors เมื่อ Modal สองอันนี้ไม่แสดง
         }
     }, [editModalOpened, newMemberModalOpened]);
 
@@ -333,7 +362,7 @@ export default function MemberManagement() {
             <CreateModal
                 opened={newMemberModalOpened}
                 onClose={() => setNewMemberModalOpened(false)}
-                onSubmit={handleCreate}
+                onSubmit={(e) => handleMemberFormSubmit(e, false)} // ส่ง false เพื่อระบุว่าเป็นการสร้าง
                 formData={formData}
                 setFormData={setFormData}
                 errors={errors}
@@ -356,7 +385,7 @@ export default function MemberManagement() {
                 setEditModalOpened={setEditModalOpened}
                 memberToEdit={memberToEdit}
                 setMemberToEdit={setMemberToEdit}
-                handleEditFormSubmit={handleEditFormSubmit}
+                handleMemberFormSubmit={(e) => handleMemberFormSubmit(e, true)}
                 errors={errors}
             />
 

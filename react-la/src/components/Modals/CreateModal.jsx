@@ -12,6 +12,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
 
     return (
         <Modal
+            width={{ width: '600px'}}
             opened={opened}
             onClose={onClose}
             title={isEditing ? "Edit Member" : "Create New Member"}
@@ -25,9 +26,9 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                onChange={(e) =>
                                    setFormData({...formData, member_name: e.target.value})}/>
                     {errors.member_name && errors.member_name.map((error, index) => (
-                        <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
+                        <div key={index} style={{ color: 'red', fontSize: '10px', marginTop: '4px'}}>{error}</div>
                     ))}
-                    <Space h="sm"/>
+                    <Space h="md"/>
                 </div>
 
                 <Group position="apart" grow>
@@ -64,7 +65,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     </div>
                 </Group>
 
-                <Space h="sm"/>
+                <Space h="md"/>
 
                 <Group position="apart" grow>
                     <div>
@@ -76,7 +77,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             required={false}
                         />
                         {errors.phone_number && errors.phone_number.map((error, index) => (
-                            <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
+                            <div key={index} style={{ color: 'red', fontSize: '10px', marginTop: '4px'}}>{error}</div>
                         ))}
                     </div>
 
@@ -89,12 +90,12 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             required={false}
                         />
                         {errors.email && errors.email.map((error, index) => (
-                            <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
+                            <div key={index} style={{ color: 'red', fontSize: '10px', marginTop: '4px'}}>{error}</div>
                         ))}
                     </div>
                 </Group>
 
-                <Space h="sm"/>
+                <Space h="md"/>
 
                 <Group position="apart" grow>
                     <div>
@@ -143,7 +144,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     </div>
                 </Group>
 
-                <Space h="sm"/>
+                <Space h="md"/>
 
                 <div>
                     <Textarea
@@ -154,7 +155,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                         required={false}
                     />
                     {errors.address && <p className="error">{errors.address[0]}</p>}
-                    <Space h="sm"/>
+                    <Space h="md"/>
                 </div>
 
                 <div>
@@ -166,7 +167,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                         required={false} // ถ้าไม่ต้องการให้เป็นฟิลด์ที่จำเป็น
                     />
                     {errors.notes && <p className="error">{errors.notes[0]}</p>}
-                    <Space h="sm"/>
+                    <Space h="md"/>
                 </div>
 
                 <Group position="apart" grow>

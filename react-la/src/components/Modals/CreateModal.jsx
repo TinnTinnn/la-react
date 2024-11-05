@@ -1,4 +1,4 @@
-import {Button, FileInput, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput} from "@mantine/core";
+import {Button, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput} from "@mantine/core";
 
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
@@ -21,7 +21,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                 <div>
                     <TextInput label="Member Name" placeholder="Your member name here"
                                value={formData.member_name || ""}
-                               required={false}
+                               required={true}
                                onChange={(e) =>
                                    setFormData({...formData, member_name: e.target.value})}/>
                     {errors.member_name && errors.member_name.map((error, index) => (
@@ -39,7 +39,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                          setFormData({...formData, age: value})}
                                      min={10}
                                      max={60}
-                                     required={false}
+                                     required={true}
                         />
                         {errors.age && <p className="error">{errors.age[0]}</p>}
                     </div>
@@ -58,7 +58,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                 {value: 'Other', label: 'Other'},
                             ]}
                             placeholder="Select gender"
-                            required={false}
+                            required={true}
                         />
                         {errors.gender && <p className="error">{errors.gender}</p>}
                     </div>
@@ -73,7 +73,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             placeholder="Your phone number here"
                             value={formData.phone_number}
                             onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-                            required={false}
+                            required={true}
                         />
                         {errors.phone_number && errors.phone_number.map((error, index) => (
                             <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
@@ -86,7 +86,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             placeholder="Your email here"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
-                            required={false}
+                            required={true}
                         />
                         {errors.email && errors.email.map((error, index) => (
                             <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
@@ -111,7 +111,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                 {value: 'Bronze', label: 'Bronze'},
                             ]}
                             placeholder="Select membership type"
-                            required={false}
+                            required={true}
                         />
                         {errors.membership_type && <p className="error">{errors.membership_type[0]}</p>}
                     </div>
@@ -121,7 +121,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             label="Pick expiration date"
                             placeholder="expiration date"
                             value={formData.expiration_date ? new Date(formData.expiration_date + 'T00:00:00') : null} // เพิ่ม 'T00:00:00'
-                            required={false}
+                            required={true}
                             onChange={(date) => {
                                 if (date) {
                                     // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น

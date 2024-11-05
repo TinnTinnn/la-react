@@ -50,11 +50,16 @@ function ActionModal({
                 {selectedMember && (<div>
                     <p><strong>ID:</strong> {selectedMember.id}</p>
                     <p><strong>Member Name:</strong> {selectedMember.member_name}</p>
+                    <p><strong>Age:</strong> {selectedMember.age}</p>
+                    <p><strong>Gender:</strong> {selectedMember.gender}</p>
+                    <p><strong>Phone number:</strong> {selectedMember.phone_number}</p>
                     <p><strong>Membership Type:</strong> {selectedMember.membership_type}</p>
+                    <p><strong>Email:</strong> {selectedMember.email}</p>
+                    <p><strong>Address:</strong> {selectedMember.address}</p>
+                    <p><strong>Notes:</strong> {selectedMember.notes}</p>
                     <p><strong>Created By:</strong> {selectedMember.user.name}</p>
-                    <p><strong>User ID:</strong> {selectedMember.user.id}</p>
-                    <p><strong>Email:</strong> {selectedMember.user.email}</p>
                     <p><strong>Created At:</strong> {new Date(selectedMember.created_at).toLocaleString()}</p>
+                    <p><strong>Expiration Date:</strong> {selectedMember.expiration_date}</p>
                 </div>)}
             </Modal>
 
@@ -89,7 +94,14 @@ ActionModal.propTypes = {
             name: PropTypes.string.isRequired,
             email: PropTypes.string.isRequired,
         }),
+        age: PropTypes.number.isRequired,
+        gender: PropTypes.string.isRequired,
+        phone_number: PropTypes.string.isRequired,
+        email: PropTypes.string.isRequired,
+        address: PropTypes.string,
+        notes: PropTypes.string,
         created_at: PropTypes.string.isRequired,
+        expiration_date: PropTypes.string,
     }),
     editModalOpened: PropTypes.bool.isRequired,
     setEditModalOpened: PropTypes.func.isRequired,
@@ -97,6 +109,12 @@ ActionModal.propTypes = {
         id: PropTypes.number.isRequired,
         member_name: PropTypes.string.isRequired,
         membership_type: PropTypes.string.isRequired,
+        age: PropTypes.number.isRequired,
+        gender: PropTypes.string.isRequired,
+        phone_number: PropTypes.string.isRequired,
+        email: PropTypes.string.isRequired,
+        address: PropTypes.string,
+        notes: PropTypes.string,
         expiration_date: PropTypes.string,
     }),
     setMemberToEdit: PropTypes.func.isRequired,

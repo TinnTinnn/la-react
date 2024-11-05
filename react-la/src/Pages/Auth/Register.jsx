@@ -1,7 +1,7 @@
 import {useContext, useState} from "react";
 import { useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
-import {TextInput, Space, Button, Anchor} from "@mantine/core";
+import {TextInput, Space, Button, Anchor, PasswordInput} from "@mantine/core";
 import PropTypes from 'prop-types'
 
 
@@ -69,7 +69,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                 </div>
 
                 <div>
-                    <TextInput label="Password" type="password" placeholder="Password"
+                    <PasswordInput label="Password" type="password" placeholder="Password"
                            value={formData.password}
                            onChange={(e) => setFormData({
                                ...formData, password: e.target.value
@@ -79,7 +79,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                 </div>
 
                 <div>
-                    <TextInput label="Confirm Password" type="password" placeholder="Confirm Password"
+                    <PasswordInput label="Confirm Password" type="password" placeholder="Confirm Password"
                            value={formData.password_confirmation}
                            onChange={(e) => setFormData({
                                ...formData, password_confirmation: e.target.value

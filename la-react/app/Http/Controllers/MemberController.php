@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 
 class MemberController extends Controller implements HasMiddleware
@@ -31,24 +32,54 @@ class MemberController extends Controller implements HasMiddleware
     public function store(Request $request): JsonResponse
     {
         $fields = $request->validate([
-            'user_id' => 'required|exists:users,id',
+//            'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
             'member_name' => 'required|max:255|unique:members,member_name',
-            'age'=> 'required|integer|min:10|max:80',
+            'age' => 'required|integer|min:10|max:80',
             'gender' => 'required|string|max:255',
             'phone_number' => 'nullable|string|max:255|unique:members,phone_number',
             'email' => 'required|email|unique:members,email,',
             'address' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
-            'profile_picture' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'expiration_date' => 'required|date',
         ]);
 
+        // กำหนด user_id จากผู้ใช้ที่ล็อกอิน
+        $fields['user_id'] = auth()->user()->id;  // ดึง user_id จากการล็อกอิน
+
+        // เพิ่มข้อมูลสมาชิกที่เหลือ
+        $fields['member_name'] = $request->input('member_name');
+        $fields['age'] = $request->input('age');
+        $fields['gender'] = $request->input('gender');
+        $fields['phone_number'] = $request->input('phone_number');
+        $fields['email'] = $request->input('email');
+        $fields['address'] = $request->input('address');
+        $fields['notes'] = $request->input('notes');
+        $fields['membership_type'] = $request->input('membership_type');
+        $fields['expiration_date'] = $request->input('expiration_date');
+
         Log::info('Creating Member', ['data' => $fields]);
 
+        // ส่วนรับผิดชอบในการอัพโหลดไฟล์สำหรับ profile_picture
+        if ($request->hasFile('profile_picture')) {
+            // อัปโหลดไฟล์และเก็บ URL
+            $fields['profile_picture'] = $request->file('profile_picture')
+                ->store('profile_pictures', 'public');
+        } else {
+            // หากไม่มีการอัปโหลด ให้ตั้งค่าเป้น null
+            $fields['profile_picture'] = null;
+        }
+
+        // สำหรับ Create member
         $member = $request->user()->members()->create($fields);
 
-        return response()->json(['member' => $member, 'user' => $member->user], 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Member created successfully',
+            'member' => $member,
+            'user' => $member->user
+        ], 201);
     }
 
 
@@ -62,22 +93,54 @@ class MemberController extends Controller implements HasMiddleware
     {
         Gate::authorize('modify', $member);
         $fields = $request->validate([
-            'user_id' => 'required|exists:users,id',
+//            'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
             'member_name' => 'required|max:255|unique:members,member_name,' . $member->id,
-            'age'=> 'required|integer|min:10|max:80',
+            'age' => 'required|integer|min:10|max:80',
             'gender' => 'required|string|max:255',
             'phone_number' => 'nullable|string|max:255|unique:members,phone_number,' . $member->id,
-            'email' => 'required|email|unique:members,email,'.$member->id,
+            'email' => 'required|email|unique:members,email,' . $member->id,
             'address' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
-            'profile_picture' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'expiration_date' => 'required|date',
         ]);
 
+        // ส่วนข้างล่างนี่ จะทำให้ เมื่อผู้ใช้ล็อกอินอยู่ ระบบจะดึง user_id จาก auth() โดยตรง ไม่ต้องรับค่าจาก FormData
+        // กำหนด user_id จากผู้ใช้ที่ล็อกอิน
+        $fields['user_id'] = auth()->user()->id;  // ดึง user_id จากการล็อกอิน
+
+        // เพิ่มข้อมูลสมาชิกที่เหลือ
+        $fields['member_name'] = $request->input('member_name');
+        $fields['age'] = $request->input('age');
+        $fields['gender'] = $request->input('gender');
+        $fields['phone_number'] = $request->input('phone_number');
+        $fields['email'] = $request->input('email');
+        $fields['address'] = $request->input('address');
+        $fields['notes'] = $request->input('notes');
+        $fields['membership_type'] = $request->input('membership_type');
+        $fields['expiration_date'] = $request->input('expiration_date');
+
+        // ตรวจสอบว่ามีการอัพโหลดไฟล์ใหม่มั้ย
+        if ($request->hasFile('profile_picture')) {
+            // ลบรูปโปรไฟล์เดิม (ถ้ามี)
+            if ($member->profile_picture) {
+                Storage::disk('public')->delete($member->profile_picture);
+            }
+
+            // อัพโหลดไฟล์ใหม่และเก็บ URL
+            $fields['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
+        // update ข้อมูลสมาชิก
         $member->update($fields);
 
-        return response()->json(['member' => $member, 'user' => $member->user], 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Member updated successfully',
+            'member' => $member,
+            'user' => $member->user
+        ], 201);
     }
 
     public function memberOverview(): JsonResponse

@@ -7,6 +7,7 @@ import ActionModal from "../../components/Modals/ActionModal.jsx";
 import MembersTable from "../../components/MembersTable.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserPlus} from "@fortawesome/free-solid-svg-icons";
+import  Axios from "axios";
 
 
 export default function MemberManagement() {
@@ -22,8 +23,9 @@ export default function MemberManagement() {
     const [editModalOpened, setEditModalOpened] = useState(false);
     const [memberToEdit, setMemberToEdit] = useState(null);
 
+
     // สำหรับ การตรวจสอบ user กรอก หมายเลขโทรศัพท์
-    const isValidPhoneNumber = (phone) =>{
+    const isValidPhoneNumber = (phone) => {
         const phoneRegex = /^(?:\+?\d{1,3})?[-.\s]?(\d{3})[-.\s]?(\d{3})[-.\s]?(\d{4})$/;
         return phoneRegex.test(phone);
     }
@@ -62,6 +64,8 @@ export default function MemberManagement() {
         e.preventDefault();
 
         try {
+            // เพิ่มการตรวจสอบค่าของ user
+            console.log('User  :', user);
 
             const newErrors = {};
 
@@ -103,25 +107,48 @@ export default function MemberManagement() {
             // เรียกใช้ ฟังค์ชั่น formatPhoneNumber ส่วนนี้หลังจากได้รับหมายเลขโทรศัพท์มาแล้ว
             const formattedPhoneNumber = formatPhoneNumber(formData.phone_number);
 
-            const res = await fetch('/api/members', {
+            // สร้าง FormData
+            // const formDataToSend = new FormData();
+
+            // formDataToSend.append('user_id', user.id);
+            // formDataToSend.append('member_name', formData.member_name);
+            // formDataToSend.append('age', formData.age);
+            // formDataToSend.append('gender', formData.gender);
+            // formDataToSend.append('phone_number', formattedPhoneNumber);
+            // formDataToSend.append('email', formData.email);
+            // formDataToSend.append('address', formData.address);
+            // formDataToSend.append('notes', formData.notes);
+            // formDataToSend.append('membership_type', formData.membership_type);
+            // formDataToSend.append('expiration_date', formData.expiration_date);
+
+            // ตรวจสอบว่ามีการอัปโหลดไฟล์หรือไม่
+            // if (formData.profile_picture) {
+            //     formDataToSend.append('profile_picture', formData.profile_picture);
+            // }
+
+
+            const res = await fetch(`/api/members`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    // ให้เลือกไม่ตั้งค่า Content -type ตรงนี้ หากต้องการอัพโหลดไฟล์รูปภาพ จะส่งมาเป็น Json ไม่ได้
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    phone_number: formattedPhoneNumber,
-                    user_id: user.id,
-                }),
+                body:
+                // formDataToSend,
+                    JSON.stringify({
+                        ...formData,
+                        phone_number: formattedPhoneNumber,
+                        user_id: user.id,
+                    }),
             });
 
             const data = await res.json()
-
-
+            console.log('Response data:', data);
 
             if (!res.ok) {
                 if (data.errors) {
+                    console.log('Errors from API:', data.errors);
                     setErrors(data.errors); // จัดการ errors จาก backend
                     return;
                 }
@@ -134,13 +161,13 @@ export default function MemberManagement() {
 
             setFormData({
                 member_name: "",
-                age: "",
+                age: null,
                 gender: "",
                 phone_number: "",
                 email: "",
                 address: "",
                 notes: "",
-                profile_picture: "",
+                profile_picture: null, // เปลี่ยนเป็น null แทน "" เพื่อให้ตรงกับประเภทข้อมูลที่พึ่งกำหนดไป
                 membership_type: "",
                 expiration_date: "",
             });
@@ -149,10 +176,9 @@ export default function MemberManagement() {
             if (error.response && error.response.data.errors) {
                 setErrors(error.response.data.errors);
             } else {
-                console.error ("An unexpected error occurred:", error);
+                console.error("An unexpected error occurred:", error);
             }
         }
-
     }
 
     function handleEdit(id) {
@@ -218,7 +244,7 @@ export default function MemberManagement() {
         };
 
 
-        const res  = await fetch(`/api/members/${memberToEdit.id}`, {
+        const res = await fetch(`/api/members/${memberToEdit.id}`, {
             method: 'PUT',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -226,6 +252,9 @@ export default function MemberManagement() {
             },
             body: JSON.stringify(updatedMemberData),
         });
+
+        const data = await res.json()
+        console.log('Response data:', data);
 
 
         if (res.ok) {
@@ -252,6 +281,35 @@ export default function MemberManagement() {
             setErrors(newErrors);
         }
     }
+
+    async function handleUploadImg(file){
+        try {
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+
+            const res =await Axios.post(`/api/members`, formData, {
+                header: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data', // เพื่อให้ server เข้าใจว่าเป็นการส่งไฟล์
+                },
+            });
+
+            const data =res.data;
+            if (res.status === 200) {
+                setMessage("Profile picture uploaded successfully.");
+                setOpened(true);
+                return data.filepath; // ส่ง path ของรูปภาพที่ถูกอัปโหลดกลับมา
+            } else {
+                setMessage("Failed to upload profile picture.");
+                setOpened(true);
+            }
+        } catch (error) {
+            console.error("An error occurred during image upload:", error);
+            setMessage("An error occurred during image upload.");
+            setOpened(true);
+        }
+    }
+
 
     async function handleDelete(id) {
         const member = members.find(member => member.id === id);
@@ -305,7 +363,7 @@ export default function MemberManagement() {
     // สำหรับ รีเซ็ท errors เมื่อ Modal ปิดตัวลง
     useEffect(() => {
         if (!editModalOpened && !newMemberModalOpened) {
-            setErrors ({}); // อันนี้เอาไว้ รีเซ้ทสถานะ errors เมื่อ Modal สองอันนี้ไม่แสดง
+            setErrors({}); // อันนี้เอาไว้ รีเซ้ทสถานะ errors เมื่อ Modal สองอันนี้ไม่แสดง
         }
     }, [editModalOpened, newMemberModalOpened]);
 
@@ -337,6 +395,7 @@ export default function MemberManagement() {
                 errors={errors}
                 membershipType={membershipType}
                 setMembershipType={setMembershipType}
+                handleUploadImg={handleUploadImg}
             />
 
             {/*สำหรับปุ่ม Action จาก component ActionModal*/}

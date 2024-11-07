@@ -32,6 +32,7 @@
     "@tiptap/extension-link": "^2.6.6",
     "@tiptap/react": "^2.6.6",
     "@tiptap/starter-kit": "^2.6.6",
+    "axios": "^1.7.7",
     "chart.js": "^4.4.5",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^8.3.0",

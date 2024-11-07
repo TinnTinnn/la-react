@@ -1,4 +1,4 @@
-import {Button, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput} from "@mantine/core";
+import {Button, FileButton, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput, } from "@mantine/core";
 
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
@@ -8,7 +8,7 @@ import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 
 
 
-function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors, isEditing = false, }) {
+function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors, isEditing = false, handleUploadImg }) {
 
     return (
         <Modal
@@ -19,7 +19,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
         >
             <form onSubmit={onSubmit} className="">
                 <div>
-                    <TextInput label="Member Name" placeholder="Your member name here"
+                    <TextInput label="Member Name" placeholder="Name here"
                                value={formData.member_name || ""}
                                required={true}
                                onChange={(e) =>
@@ -33,7 +33,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                 <Group position="apart" grow>
                     <div>
                         <NumberInput label="Age"
-                                     placeholder="Your member age here"
+                                     placeholder="Age here"
                                      value={formData.age}
                                      onChange={(value) =>
                                          setFormData({...formData, age: value})}
@@ -70,7 +70,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     <div>
                         <TextInput
                             label="Phone Number"
-                            placeholder="Your phone number here"
+                            placeholder="Phone number here"
                             value={formData.phone_number}
                             onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
                             required={true}
@@ -83,7 +83,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                     <div>
                         <TextInput
                             label="Email"
-                            placeholder="Your email here"
+                            placeholder="Email here"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
                             required={true}
@@ -148,7 +148,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                 <div>
                     <Textarea
                         label="Address"
-                        placeholder="Your address here"
+                        placeholder="Address here"
                         value={formData.address || ""}
                         onChange={(e) => setFormData({...formData, address: e.target.value})}
                         required={false}
@@ -160,7 +160,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                 <div>
                     <Textarea
                         label="Notes"
-                        placeholder="Your notes here"
+                        placeholder="Notes here"
                         value={formData.notes || ""}
                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
                         required={false} // ถ้าไม่ต้องการให้เป็นฟิลด์ที่จำเป็น
@@ -170,18 +170,19 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                 </div>
 
                 <Group position="apart" grow>
-                    {/*<div>*/}
-                    {/*    <FileInput*/}
-                    {/*        label="Profile Picture"*/}
-                    {/*        placeholder="Select an image"*/}
-                    {/*        accept="image/*"*/}
-                    {/*        value={formData.profile_picture}*/}
-                    {/*        onChange={(file) => setFormData({...formData, profile_picture: file })}*/}
-                    {/*    />*/}
-                    {/*    {errors.profile_picture && <p className="error">{errors.profile_picture[0]}</p>}*/}
-                    {/*</div>*/}
+                    <div style={{display: 'flex', justifyContent: 'flex-start', marginBottom: '10px'}}>
+                        <FileButton
+                            onChange={(file) => {
+                                setFormData({...formData, profile_picture: file});
+                                handleUploadImg(file);
+                            }}
+                            accept="image/*"
+                        >
+                        {(props) => <Button {...props}>Upload Picture</Button>}
+                        </FileButton>
+                    </div>
 
-                    <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
+                    <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
                         <Button rightSection type="submit" variant="filled" color="green">{isEditing ? 'Update' : 'Create'}</Button>
                     </div>
                 </Group>
@@ -204,11 +205,15 @@ CreateModal.propTypes = {
         expiration_date: PropTypes.string,
         address: PropTypes.string,
         notes: PropTypes.string,
+        profile_picture: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.instanceOf(File),
+        ]),
     }).isRequired,
     setFormData: PropTypes.func.isRequired, // เพิ่มการตรวจสอบสำหรับ setFormData
     errors: PropTypes.shape({ // ตรวจสอบว่า errors มีโครงสร้างอย่างไร
         member_name: PropTypes.arrayOf(PropTypes.string),
-        age: PropTypes.arrayOf(PropTypes.string),
+        age: PropTypes.arrayOf(PropTypes.number),
         gender: PropTypes.arrayOf(PropTypes.string),
         phone_number: PropTypes.arrayOf(PropTypes.string),
         email: PropTypes.arrayOf(PropTypes.string),
@@ -218,5 +223,6 @@ CreateModal.propTypes = {
         notes: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
     isEditing: PropTypes.bool,
+    handleUploadImg: PropTypes.func,
 };
 export default CreateModal;

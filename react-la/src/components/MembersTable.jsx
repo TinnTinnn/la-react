@@ -26,12 +26,11 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                     <Table.Thead>
                         <Table.Tr>
                             <Table.Th>ID</Table.Th>
-                            <Table.Th>User ID</Table.Th>
+                            <Table.Th>Profile</Table.Th>
                             <Table.Th>Member Name</Table.Th>
                             <Table.Th>Member Type</Table.Th>
-                            <Table.Th>Created By</Table.Th>
-                            <Table.Th>Created At</Table.Th>
                             <Table.Th>Email</Table.Th>
+                            <Table.Th>Created By</Table.Th>
                             <Table.Th>Action</Table.Th>
                         </Table.Tr>
                     </Table.Thead>
@@ -39,15 +38,11 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                         {currentMembers.map((member) =>
                             <Table.Tr key={member.id}>
                                 <Table.Td>{member.id}</Table.Td>
-                                <Table.Td>{member.user_id}</Table.Td>
+                                <Table.Td>{member.profile_picture}</Table.Td>
                                 <Table.Td>{member.member_name}</Table.Td>
                                 <Table.Td>{member.membership_type}</Table.Td>
+                                <Table.Td>{member.email}</Table.Td>
                                 <Table.Td>{member.user.name}</Table.Td>
-                                <Table.Td>
-                                    {new Date(member.created_at).toLocaleTimeString()} <br/>
-                                    {new Date(member.created_at).toLocaleDateString()}
-                                </Table.Td>
-                                <Table.Td>{member.user.email}</Table.Td>
                                 <Table.Td>
                                     <Menu shadow="md" width={200}>
                                         <Menu.Target>

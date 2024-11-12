@@ -1,4 +1,4 @@
-import {Button, FileButton, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput, } from "@mantine/core";
+import {Button, FileButton, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput,} from "@mantine/core";
 
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
@@ -6,9 +6,16 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCaretDown} from "@fortawesome/free-solid-svg-icons";
 
 
-
-
-function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors, isEditing = false, handleUploadImg }) {
+function CreateModal({
+                         opened,
+                         onClose,
+                         onSubmit,
+                         formData,
+                         setFormData,
+                         errors,
+                         isEditing = false,
+                         handleUpload,
+                     }) {
 
     return (
         <Modal
@@ -25,7 +32,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                                onChange={(e) =>
                                    setFormData({...formData, member_name: e.target.value})}/>
                     {errors.member_name && errors.member_name.map((error, index) => (
-                        <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
+                        <div key={index} style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
                     ))}
                     <Space h="sm"/>
                 </div>
@@ -76,7 +83,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             required={true}
                         />
                         {errors.phone_number && errors.phone_number.map((error, index) => (
-                            <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
+                            <div key={index} style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
                         ))}
                     </div>
 
@@ -89,7 +96,7 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                             required={true}
                         />
                         {errors.email && errors.email.map((error, index) => (
-                            <div key={index} style={{ color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
+                            <div key={index} style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
                         ))}
                     </div>
                 </Group>
@@ -174,16 +181,17 @@ function CreateModal({ opened, onClose, onSubmit, formData, setFormData, errors,
                         <FileButton
                             onChange={(file) => {
                                 setFormData({...formData, profile_picture: file});
-                                handleUploadImg(file);
+                                handleUpload(file);
                             }}
                             accept="image/*"
                         >
-                        {(props) => <Button {...props}>Upload Picture</Button>}
+                            {(props) => <Button {...props}>Upload Picture</Button>}
                         </FileButton>
                     </div>
 
                     <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
-                        <Button rightSection type="submit" variant="filled" color="green">{isEditing ? 'Update' : 'Create'}</Button>
+                        <Button rightSection type="submit" variant="filled"
+                                color="green">{isEditing ? 'Update' : 'Create'}</Button>
                     </div>
                 </Group>
             </form>
@@ -211,9 +219,9 @@ CreateModal.propTypes = {
         ]),
     }).isRequired,
     setFormData: PropTypes.func.isRequired, // เพิ่มการตรวจสอบสำหรับ setFormData
-    errors: PropTypes.shape({ // ตรวจสอบว่า errors มีโครงสร้างอย่างไร
+    errors: PropTypes.shape({
         member_name: PropTypes.arrayOf(PropTypes.string),
-        age: PropTypes.arrayOf(PropTypes.number),
+        age: PropTypes.arrayOf(PropTypes.string), // เปลี่ยนจาก number เป็น string
         gender: PropTypes.arrayOf(PropTypes.string),
         phone_number: PropTypes.arrayOf(PropTypes.string),
         email: PropTypes.arrayOf(PropTypes.string),
@@ -223,6 +231,6 @@ CreateModal.propTypes = {
         notes: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
     isEditing: PropTypes.bool,
-    handleUploadImg: PropTypes.func,
+    handleUpload: PropTypes.func,
 };
 export default CreateModal;

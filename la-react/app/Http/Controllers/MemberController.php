@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use Carbon\Carbon;
+use Faker\Core\File;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class MemberController extends Controller implements HasMiddleware
     {
         return [
             new \Illuminate\Routing\Controllers\Middleware(
-                'auth:sanctum', except: ['index', 'show', 'memberOverview',]
+                'auth:sanctum', except: ['index', 'show', 'memberOverview', 'uploadProfilePicture']
             )
         ];
     }
@@ -29,8 +30,57 @@ class MemberController extends Controller implements HasMiddleware
         return response()->json(Member::with('user')->latest()->get(), 200);
     }
 
+    public function uploadProfilePicture(Request $request): JsonResponse
+    {
+        // นี่คือโค๊ดที่ทำให้อัพโหลดสำเร็จและไม่ติดปัญหา หลังจากผ่านมา 5 วันกับเรื่องอัพโหลดภาพ และได้ลองพยายามมาตลอด
+        // ตรวจสอบว่าไฟล์ถูกส่งมาในคำขอ
+        if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
+            try {
+                // อัปโหลดไฟล์
+                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+                // ส่ง URL ของไฟล์ที่อัปโหลด
+                return response()->json([
+                    'file_url' => asset('storage/' . $path)
+                ], 200);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Failed to upload profile picture',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'No file uploaded or invalid file',
+            ], 422);
+        }
+
+          //  โค๊ดด้านล่างนี้ทำให้อัพโหลดรูปภาพไม่ได้ ไว้ศึกษาเพื่อเปรียบเทียบการทำงานดู
+
+//        $request->validate([
+//            'file' => 'required|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+//        ]);
+//
+//        try {
+//            $filePath = $request->file('profile_picture')
+//                ->store('profile_pictures', 'public'); // เก็บไฟล์ในโฟลเดอร์ 'profile_picures'
+//
+//            return response()->json([
+//                'success' => true,
+//                'file_url' => asset('storage/' . $filePath), // ส่วนนี้ส่ง URL ของไฟล์
+//            ]);
+//        } catch (\Exception $e) {
+//            return response()->json([
+//                'success' => false,
+//                'message' => 'Failed to upload profile picture',
+//                'error' => $e->getMessage()
+//            ], 500);
+//        }
+    }
+
     public function store(Request $request): JsonResponse
     {
+//        dd($request->all());
         $fields = $request->validate([
 //            'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
@@ -41,14 +91,13 @@ class MemberController extends Controller implements HasMiddleware
             'email' => 'required|email|unique:members,email,',
             'address' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
-            'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'expiration_date' => 'required|date',
         ]);
 
-        // กำหนด user_id จากผู้ใช้ที่ล็อกอิน
+        // กำหนด user_id จากผู้ใช้ที่ล็อกอินจะได้ไม่ต้องตรวจสอบซ้ำ
         $fields['user_id'] = auth()->user()->id;  // ดึง user_id จากการล็อกอิน
 
-        // เพิ่มข้อมูลสมาชิกที่เหลือ
+        // ส่วนนี้ไว้เพิ่มข้อมูลสมาชิกที่เหลือ
         $fields['member_name'] = $request->input('member_name');
         $fields['age'] = $request->input('age');
         $fields['gender'] = $request->input('gender');
@@ -59,13 +108,28 @@ class MemberController extends Controller implements HasMiddleware
         $fields['membership_type'] = $request->input('membership_type');
         $fields['expiration_date'] = $request->input('expiration_date');
 
+        // เอาไว้ดู log ได้ใน laravel.log
         Log::info('Creating Member', ['data' => $fields]);
 
         // ส่วนรับผิดชอบในการอัพโหลดไฟล์สำหรับ profile_picture
+        Log::info('Profile Picture Upload Check', ['hasFile' => $request->hasFile('profile_picture')]);
+
         if ($request->hasFile('profile_picture')) {
             // อัปโหลดไฟล์และเก็บ URL
-            $fields['profile_picture'] = $request->file('profile_picture')
-                ->store('profile_pictures', 'public');
+            try {
+                // อัพโหลดและเก็บ Url
+                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+                $fields['profile_picture'] = asset('storage/' . $path);
+                Log::info('Profile Picture Path', ['profile_picture' => $fields['profile_picture']]);
+
+                Log::info('Fields after profile picture upload', ['data' => $fields]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload profile picture',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         } else {
             // หากไม่มีการอัปโหลด ให้ตั้งค่าเป้น null
             $fields['profile_picture'] = null;
@@ -73,11 +137,12 @@ class MemberController extends Controller implements HasMiddleware
 
         // สำหรับ Create member
         $member = $request->user()->members()->create($fields);
+        Log::info('Member created', ['member' => $member]);
 
         return response()->json([
             'success' => true,
             'message' => 'Member created successfully',
-            'member' => $member,
+            'member' => $member->fresh(),
             'user' => $member->user
         ], 201);
     }

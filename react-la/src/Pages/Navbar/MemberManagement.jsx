@@ -109,23 +109,23 @@ export default function MemberManagement() {
             const formattedPhoneNumber = formatPhoneNumber(formData.phone_number);
 
             // สร้าง FormData
-            // const formDataToSend = new FormData();
-            //
-            // formDataToSend.append('user_id', user.id);
-            // formDataToSend.append('member_name', formData.member_name);
-            // formDataToSend.append('age', formData.age);
-            // formDataToSend.append('gender', formData.gender);
-            // formDataToSend.append('phone_number', formattedPhoneNumber);
-            // formDataToSend.append('email', formData.email);
-            // formDataToSend.append('address', formData.address);
-            // formDataToSend.append('notes', formData.notes);
-            // formDataToSend.append('membership_type', formData.membership_type);
-            // formDataToSend.append('expiration_date', formData.expiration_date);
+            const formDataToSend = new FormData();
+
+            formDataToSend.append('user_id', user.id);
+            formDataToSend.append('member_name', formData.member_name);
+            formDataToSend.append('age', formData.age);
+            formDataToSend.append('gender', formData.gender);
+            formDataToSend.append('phone_number', formattedPhoneNumber);
+            formDataToSend.append('email', formData.email);
+            formDataToSend.append('address', formData.address);
+            formDataToSend.append('notes', formData.notes);
+            formDataToSend.append('membership_type', formData.membership_type);
+            formDataToSend.append('expiration_date', formData.expiration_date);
 
             // ตรวจสอบว่ามีการอัปโหลดไฟล์หรือไม่
-            // if (formData.profile_picture) {
-            //     formDataToSend.append('profile_picture', formData.profile_picture);
-            // }
+            if (formData.profile_picture) {
+                formDataToSend.append('profile_picture', formData.profile_picture);
+            }
 
 
             const res = await fetch(`/api/members`, {

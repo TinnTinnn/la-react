@@ -87,7 +87,7 @@ class MemberController extends Controller implements HasMiddleware
             'member_name' => 'required|max:255|unique:members,member_name',
             'age' => 'required|integer|min:10|max:80',
             'gender' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:255|unique:members,phone_number',
+            'phone_number' => 'required|string|max:255|unique:members,phone_number',
             'email' => 'required|email|unique:members,email,',
             'address' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
@@ -96,17 +96,6 @@ class MemberController extends Controller implements HasMiddleware
 
         // กำหนด user_id จากผู้ใช้ที่ล็อกอินจะได้ไม่ต้องตรวจสอบซ้ำ
         $fields['user_id'] = auth()->user()->id;  // ดึง user_id จากการล็อกอิน
-
-        // ส่วนนี้ไว้เพิ่มข้อมูลสมาชิกที่เหลือ
-        $fields['member_name'] = $request->input('member_name');
-        $fields['age'] = $request->input('age');
-        $fields['gender'] = $request->input('gender');
-        $fields['phone_number'] = $request->input('phone_number');
-        $fields['email'] = $request->input('email');
-        $fields['address'] = $request->input('address');
-        $fields['notes'] = $request->input('notes');
-        $fields['membership_type'] = $request->input('membership_type');
-        $fields['expiration_date'] = $request->input('expiration_date');
 
         // เอาไว้ดู log ได้ใน laravel.log
         Log::info('Creating Member', ['data' => $fields]);

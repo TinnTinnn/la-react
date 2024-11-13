@@ -38,7 +38,11 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                         {currentMembers.map((member) =>
                             <Table.Tr key={member.id}>
                                 <Table.Td>{member.id}</Table.Td>
-                                <Table.Td>{member.profile_picture}</Table.Td>
+                                <Table.Td><img
+                                    src={member.profile_picture}
+                                    alt="Profile"
+                                    style={{width: "50px", height: "50px", borderRadius: "50%"}}
+                                /></Table.Td>
                                 <Table.Td>{member.member_name}</Table.Td>
                                 <Table.Td>{member.membership_type}</Table.Td>
                                 <Table.Td>{member.email}</Table.Td>

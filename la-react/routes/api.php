@@ -11,8 +11,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/members/stats', [MemberController::class, 'memberOverview']);
-Route::post('/upload-profile-picture', [MemberController::class, 'uploadProfilePicture']);
-
 
 Route::apiResource('members', MemberController::class );
 

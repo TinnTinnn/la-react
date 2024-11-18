@@ -63,166 +63,104 @@ export default function MemberManagement() {
     async function handleCreate(e) {
         e.preventDefault();
 
+        // console.log('User  :', user); // ตรวจสอบค่าของ user
+        console.log('formData Before sent :', formData); // ตรวจสอบค่า formData ก่อนส่ง
+
         try {
-
-            // console.log('User  :', user); // ตรวจสอบค่าของ user
-            console.log('formData Before sent :', formData); // ตรวจสอบค่า formData ก่อนส่ง
-
-            const newErrors = {};
-
-            if (formData.member_name.trim() === "") {
-                newErrors.member_name = ["Member name is required."];
+            // ส่วน Front-end validate
+            const validationErrors = validateFormData(formData);
+            if (Object.keys(validationErrors).length > 0) {
+                setErrors(validationErrors);
+                return;
             }
 
-            if (formData.age === null || formData.age <= 0) {
-                newErrors.age = ["Age is required and must be a positive number."];
-            }
-
-            if (formData.gender === "") {
-                newErrors.gender = ["Gender is required."];
-            }
-
-            if (formData.email === "") {
-                newErrors.email = ["Email is required."];
-            }
-
-            if (formData.phone_number === "") {
-                newErrors.phone_number = ["Phone number is required."];
-            } else if (!isValidPhoneNumber(formData.phone_number)) { // เมื่อผ่านการกรอกเบอร์แล้วแต่ format ไม่ถูกต้อง จะแจ้งเตือน
-                newErrors.phone_number = ["Phone number is not valid."];
-            }
-
-            if (formData.membership_type === "") {
-                newErrors.membership_type = ["Membership type is required."];
-            }
-
-            if (formData.expiration_date === "") {
-                newErrors.expiration_date = ["Expiration date is required."];
-            }
-
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
-                return; // หยุดการทำงานหากมีข้อผิดพลาด
-            }
-
-            // เรียกใช้ ฟังค์ชั่น formatPhoneNumber ส่วนนี้หลังจากได้รับหมายเลขโทรศัพท์มาแล้ว
-            const formattedPhoneNumber = formatPhoneNumber(formData.phone_number);
-
-            // สร้าง FormData
+            // รีฟอแมท์หมายเลขโทรศัพท์ก่อนเก็บ และ เตรียมพร้อมข้อมูลเพื่อส่ง
             const formDataToSend = new FormData();
-
             formDataToSend.append('user_id', user.id);
             formDataToSend.append('member_name', formData.member_name);
             formDataToSend.append('age', formData.age);
             formDataToSend.append('gender', formData.gender);
-            formDataToSend.append('phone_number', formattedPhoneNumber);
+            formDataToSend.append('phone_number', formatPhoneNumber(formData.phone_number));
             formDataToSend.append('email', formData.email);
             formDataToSend.append('address', formData.address);
             formDataToSend.append('notes', formData.notes);
             formDataToSend.append('membership_type', formData.membership_type);
             formDataToSend.append('expiration_date', formData.expiration_date);
 
-            // ตรวจสอบว่ามีการอัปโหลดไฟล์หรือไม่
             if (formData.profile_picture) {
                 formDataToSend.append('profile_picture', formData.profile_picture);
             }
 
 
+            // ส่งข้อมูลไปยัง Back-end
             const res = await fetch(`/api/members`, {
                 method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    // ให้เลือกไม่ตั้งค่า Content -type ตรงนี้ หากต้องการอัพโหลดไฟล์รูปภาพ จะส่งมาเป็น Json ไม่ได้
-                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
-                body:
-                // formDataToSend,
-                    JSON.stringify({
-                        ...formData,
-                        phone_number: formattedPhoneNumber,
-                        user_id: user.id,
-                        profile_picture: formData.profile_picture,
-                    }),
+                // ต้องระบุ Content-Type เป็น 'application/json' ถ้าไม่มีการแนบไฟล์
+                // 'Content-Type': 'application/json',
+                body: formDataToSend,// ใช้อันนี้เพื่อรองรับข้อมูลที่เป็น multipart
+                // body: JSON.stringify(memberData), // แปลงข้อมูลเป็น JSON string ถ้าไม่อัพโหลดไฟล์
             });
 
-            const data = await res.json()
-            console.log('Response data:', data);
-
-            if (!res.ok) {
-                if (data.errors) {
-                    console.log('Errors from API:', data.errors);
-                    setErrors(data.errors); // จัดการ errors จาก backend
-                    return;
-                }
-            } else {
-                setNewMemberModalOpened(false);
-                getMembers();
-                setMessage("New member has been created successfully.");
-                setOpened(true);
-            }
-
-            // รีเซ็ทฟอร์มหลังจากการสรา้งสมาชิกสำเร็จ
-            setFormData({
-                member_name: "",
-                age: null,
-                gender: "",
-                phone_number: "",
-                email: "",
-                address: "",
-                notes: "",
-                profile_picture: null, // เปลี่ยนเป็น null แทน "" เพื่อให้ตรงกับประเภทข้อมูลที่พึ่งกำหนดไป
-                membership_type: "",
-                expiration_date: "",
-            });
-            setErrors({});
-        } catch (error) {
-            if (error.response && error.response.data.errors) {
-                setErrors(error.response.data.errors);
-            } else {
-                console.error("An unexpected error occurred:", error);
-            }
-        }
-    }
-
-   async function handleUpload(file) {
-        if (!file) return;
-
-        // สร้าง formData สำหรับอัปโหลดไฟล์
-        const formData = new FormData();
-       console.log(file)
-        formData.append('profile_picture', file);
-
-        try {
-            const res = await fetch(`/api/upload-profile-picture`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                body: formData,
-            });
-
+            console.log('FormData:', formData);
             const data = await res.json();
+            console.log('Response data:', data); // เอาไว้ดูค่า response ที่ส่งกลับมาจาก Back
 
             if (!res.ok) {
-                console.error('Error uploading profile picture:', data.errors || data.message);
-                setErrors({ profile_picture: data.errors ? data.errors.profile_picture : 'Upload failed' });
+                // สำหรับ handle ฝั่ง Back-end validation Errors
+                if (data.errors) {
+                    setErrors(data.errors);
+                }
                 return;
             }
 
-            if (data.file_url) {
-                console.log('Upload successful:', data);
-                setFormData((prevData) => ({
-                    ...prevData,
-                    profile_picture: data.file_url, // อัปเดต URL ของรูปภาพที่อัปโหลดสำเร็จ
-                }));
-            } else {
-                console.warn('No file URL returned from server');
-            }
+            // ถ้า สร้างสำเร็จ ให้ทำอะไร
+            setNewMemberModalOpened(false);
+            getMembers(); // Refresh members list
+            setMessage("New member has been created successfully.");
+            setOpened(true);
+            resetFormData();
         } catch (error) {
-            console.error("An unexpected error occurred during upload:", error);
-            setErrors({ profile_picture: 'An unexpected error occurred during upload.' });
+            console.error("An unexpected error occurred:", error);
         }
-   }
+    }
+
+// Validation Function for Front-end แบบแยกต่างหาก
+    function validateFormData(formData) {
+        const errors = {};
+        if (!formData.member_name.trim()) errors.member_name = ["Member name is required."];
+        if (!formData.age || formData.age <= 0) errors.age = ["Age is required and must be positive."];
+        if (!formData.gender) errors.gender = ["Gender is required."];
+        if (!formData.email) errors.email = ["Email is required."];
+        if (!formData.phone_number) {
+            errors.phone_number = ["Phone number is required."];
+        } else if (!isValidPhoneNumber(formData.phone_number)) {
+            errors.phone_number = ["Phone number is not valid."];
+        }
+        if (!formData.membership_type) errors.membership_type = ["Membership type is required."];
+        if (!formData.expiration_date) errors.expiration_date = ["Expiration date is required."];
+        return errors;
+    }
+
+    // Reset formData and errors แบบแยกต่างหาก
+    function resetFormData() {
+        setFormData({
+            member_name: "",
+            age: null,
+            gender: "",
+            phone_number: "",
+            email: "",
+            address: "",
+            notes: "",
+            profile_picture: null,
+            membership_type: "",
+            expiration_date: "",
+        });
+        setErrors({});
+    }
+
 
     function handleEdit(id) {
         const member = members.find(member => member.id === id);
@@ -438,7 +376,6 @@ export default function MemberManagement() {
                 errors={errors}
                 membershipType={membershipType}
                 setMembershipType={setMembershipType}
-                handleUpload={handleUpload}
             />
 
             {/*สำหรับปุ่ม Action จาก component ActionModal*/}

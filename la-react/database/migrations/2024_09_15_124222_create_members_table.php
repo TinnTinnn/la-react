@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('membership_type');
+            $table->string('membership_type')->nullable();
             $table->string('member_name');
             $table->integer('age');
             $table->string('gender');

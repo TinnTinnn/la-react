@@ -9,10 +9,6 @@ export default defineConfig({
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        headers: {
-          Accept:'application/json',
-          "Content_type": 'application/json',
-        }
       }
     }
   }

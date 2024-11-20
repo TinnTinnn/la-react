@@ -22,6 +22,7 @@ export default function MemberManagement() {
     const [selectedMember, setSelectedMember] = useState(null);
     const [editModalOpened, setEditModalOpened] = useState(false);
     const [memberToEdit, setMemberToEdit] = useState(null);
+    const [selectedFileName, setSelectedFileName] = useState("Profile Picture here");
 
 
     // สำหรับ การตรวจสอบ user กรอก หมายเลขโทรศัพท์
@@ -74,7 +75,7 @@ export default function MemberManagement() {
                 return;
             }
 
-            // รีฟอแมท์หมายเลขโทรศัพท์ก่อนเก็บ และ เตรียมพร้อมข้อมูลเพื่อส่ง
+            // เตรียมพร้อมข้อมูลเพื่อส่ง
             const formDataToSend = new FormData();
             formDataToSend.append('user_id', user.id);
             formDataToSend.append('member_name', formData.member_name);
@@ -88,9 +89,17 @@ export default function MemberManagement() {
             formDataToSend.append('expiration_date', formData.expiration_date);
 
             if (formData.profile_picture) {
-                formDataToSend.append('profile_picture', formData.profile_picture);
-            }
+                try {
+                    // ทดลองอัพโหลดรูปภาพ
+                    formDataToSend.append('profile_picture', formData.profile_picture);
+                    console.log("Profile picture attached successfully:", formData.profile_picture.name);
+                } catch (error) {
+                    console.error("Error attaching profile picture:", error);
+                    setErrors({ profile_picture: ["Failed to attach profile picture."]});
+                    return;
 
+                }
+            }
 
             // ส่งข้อมูลไปยัง Back-end
             const res = await fetch(`/api/members`, {
@@ -105,7 +114,7 @@ export default function MemberManagement() {
             });
 
             console.log('FormData:', formData);
-            const data = await res.json();
+            const data = await res.text();
             console.log('Response data:', data); // เอาไว้ดูค่า response ที่ส่งกลับมาจาก Back
 
             if (!res.ok) {
@@ -130,17 +139,29 @@ export default function MemberManagement() {
 // Validation Function for Front-end แบบแยกต่างหาก
     function validateFormData(formData) {
         const errors = {};
-        if (!formData.member_name.trim()) errors.member_name = ["Member name is required."];
-        if (!formData.age || formData.age <= 0) errors.age = ["Age is required and must be positive."];
-        if (!formData.gender) errors.gender = ["Gender is required."];
-        if (!formData.email) errors.email = ["Email is required."];
-        if (!formData.phone_number) {
+        if (!formData.member_name || formData.member_name.trim() === ""){
+            errors.member_name = ["Member name is required."];
+        }
+        if (!formData.age || isNaN(formData.age)) {
+            errors.age = ["Age is required and must be a number."];
+        }
+        if (!formData.gender || formData.gender === "") {
+            errors.gender = ["Gender is required."];
+        }
+        if (!formData.phone_number || formData.phone_number.trim() === "") {
             errors.phone_number = ["Phone number is required."];
         } else if (!isValidPhoneNumber(formData.phone_number)) {
             errors.phone_number = ["Phone number is not valid."];
         }
-        if (!formData.membership_type) errors.membership_type = ["Membership type is required."];
-        if (!formData.expiration_date) errors.expiration_date = ["Expiration date is required."];
+        if (!formData.email || formData.email.trim() === "") {
+            errors.email = ["Email is required."];
+        }
+        if (!formData.membership_type || formData.membership_type === "") {
+            errors.membership_type = ["Membership type is required."];
+        }
+        if (!formData.expiration_date || formData.expiration_date === "") {
+            errors.expiration_date = ["Expiration date is required."];
+        }
         return errors;
     }
 
@@ -376,6 +397,8 @@ export default function MemberManagement() {
                 errors={errors}
                 membershipType={membershipType}
                 setMembershipType={setMembershipType}
+                setSelectedFileName={setSelectedFileName}
+                selectedFileName={selectedFileName}
             />
 
             {/*สำหรับปุ่ม Action จาก component ActionModal*/}

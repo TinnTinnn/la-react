@@ -128,17 +128,6 @@ class MemberController extends Controller implements HasMiddleware
         // กำหนด user_id จากผู้ใช้ที่ล็อกอิน
         $fields['user_id'] = auth()->user()->id;  // ดึง user_id จากการล็อกอิน
 
-        // เพิ่มข้อมูลสมาชิกที่เหลือ
-        $fields['member_name'] = $request->input('member_name');
-        $fields['age'] = $request->input('age');
-        $fields['gender'] = $request->input('gender');
-        $fields['phone_number'] = $request->input('phone_number');
-        $fields['email'] = $request->input('email');
-        $fields['address'] = $request->input('address');
-        $fields['notes'] = $request->input('notes');
-        $fields['membership_type'] = $request->input('membership_type');
-        $fields['expiration_date'] = $request->input('expiration_date');
-
         // ตรวจสอบว่ามีการอัพโหลดไฟล์ใหม่มั้ย
         if ($request->hasFile('profile_picture')) {
             // ลบรูปโปรไฟล์เดิม (ถ้ามี)
@@ -147,7 +136,14 @@ class MemberController extends Controller implements HasMiddleware
             }
 
             // อัพโหลดไฟล์ใหม่และเก็บ URL
-            $fields['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+            try {
+                $fields['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload profile picture',
+                ], 500);
+            }
         }
 
         // update ข้อมูลสมาชิก
@@ -158,7 +154,7 @@ class MemberController extends Controller implements HasMiddleware
             'message' => 'Member updated successfully',
             'member' => $member,
             'user' => $member->user
-        ], 201);
+        ], 200);
     }
 
     public function memberOverview(): JsonResponse

@@ -1,4 +1,14 @@
-import {Button, FileButton, Group, Modal, NativeSelect, NumberInput, Space, Textarea, TextInput,} from "@mantine/core";
+import {
+    Button,
+    FileInput,
+    Group,
+    Modal,
+    NativeSelect,
+    NumberInput,
+    Space,
+    Textarea,
+    TextInput,
+} from "@mantine/core";
 
 import {DatePickerInput} from "@mantine/dates";
 import PropTypes from "prop-types";
@@ -14,6 +24,8 @@ function CreateModal({
                          setFormData,
                          errors,
                          isEditing = false,
+                         setSelectedFileName,
+                         selectedFileName,
                      }) {
 
     return (
@@ -175,23 +187,23 @@ function CreateModal({
                     <Space h="sm"/>
                 </div>
 
-                <Group position="apart" grow>
-                    <div style={{display: 'flex', justifyContent: 'flex-start', marginBottom: '10px'}}>
-                        <FileButton
-                            onChange={(file) => {
-                                setFormData({...formData, profile_picture: file});
-                            }}
-                            accept="image/*"
-                        >
-                            {(props) => <Button {...props}>Upload Picture</Button>}
-                        </FileButton>
-                    </div>
+                <div style={{ marginBottom: '10px'}}>
+                    <FileInput
+                        label="Profile Picture"
+                        placeholder={selectedFileName}
+                        onChange={(file) => {
+                            setFormData({...formData, profile_picture: file});
+                            setSelectedFileName(file ? file.name : "Profile Picture here");
+                        }}
+                        accept="image/*"
+                    />
+                </div>
 
-                    <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
-                        <Button rightSection type="submit" variant="filled"
-                                color="green">{isEditing ? 'Update' : 'Create'}</Button>
-                    </div>
-                </Group>
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
+                    <Button rightSection type="submit" variant="filled"
+                            color="green">{isEditing ? 'Update' : 'Create'}</Button>
+                </div>
+
             </form>
         </Modal>
     )
@@ -230,5 +242,7 @@ CreateModal.propTypes = {
     }).isRequired,
     isEditing: PropTypes.bool,
     handleUpload: PropTypes.func,
+    setSelectedFileName: PropTypes.func,
+    selectedFileName: PropTypes.string,
 };
 export default CreateModal;

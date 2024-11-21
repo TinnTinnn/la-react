@@ -109,12 +109,12 @@ export default function MemberManagement() {
                 },
                 // ต้องระบุ Content-Type เป็น 'application/json' ถ้าไม่มีการแนบไฟล์
                 // 'Content-Type': 'application/json',
-                body: formDataToSend,// ใช้อันนี้เพื่อรองรับข้อมูลที่เป็น multipart
+                body: memberToEdit,// ใช้อันนี้เพื่อรองรับข้อมูลที่เป็น multipart
                 // body: JSON.stringify(memberData), // แปลงข้อมูลเป็น JSON string ถ้าไม่อัพโหลดไฟล์
             });
 
             console.log('FormData:', formData);
-            const data = await res.text();
+            const data = await res.json();
             console.log('Response data:', data); // เอาไว้ดูค่า response ที่ส่งกลับมาจาก Back
 
             if (!res.ok) {
@@ -238,25 +238,47 @@ export default function MemberManagement() {
             return; // หยุดการทำงานหากมีข้อผิดพลาด
         }
 
-        // จัดรูปแบบหมายเลขโทรศัพท์
-        const formattedPhoneNumber = formatPhoneNumber(memberToEdit.phone_number);
-        const updatedMemberData = {
-            ...memberToEdit,
-            phone_number: formattedPhoneNumber, // ใช้หมายเลขโทรศัพท์ที่จัดรูปแบบแล้ว
-        };
+        // สร้าง FormData เพื่อส่งข้อมูล
+        const formDataToSend = new FormData();
+        formDataToSend.append('member_name', memberToEdit.member_name);
+        formDataToSend.append('age', memberToEdit.age);
+        formDataToSend.append('gender', memberToEdit.gender);
+        formDataToSend.append('phone_number', formatPhoneNumber(memberToEdit.phone_number));
+        formDataToSend.append('email', memberToEdit.email);
+        formDataToSend.append('address', memberToEdit.address);
+        formDataToSend.append('notes', memberToEdit.notes);
+        formDataToSend.append('membership_type', memberToEdit.membership_type);
+        formDataToSend.append('expiration_date', memberToEdit.expiration_date);
+
+        // ตรวจสอบว่ามีการอัปโหลดไฟล์ใหม่หรือไม่
+        if (memberToEdit.profile_picture) {
+            formDataToSend.append('profile_picture', memberToEdit.profile_picture);
+        }
 
 
-        const res = await fetch(`/api/members/${memberToEdit.id}`, {
+        console.log(`Fetching URL: /api/members/${memberToEdit.id}`);
+        const res  = await fetch(`/api/members/${memberToEdit.id}`, {
             method: 'PUT',
             headers: {
                 Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatedMemberData),
+            body: formDataToSend
         });
 
-        const data = await res.json()
-        console.log('Response data:', data);
+        // ตรวจสอบการตอบสนองจากเซิร์ฟเวอร์
+        if (!res.ok) {
+            const errorText = await res.text(); // รับข้อความตอบกลับ
+            console.error("Error response:", errorText); // บันทึกข้อความตอบกลับ
+            try {
+                const errorData = await res.json(); // ลองแปลงเป็น JSON
+                console.error("Error data:", errorData); // บันทึกข้อมูลข้อผิดพลาด
+            } catch (jsonError) {
+                console.error("Failed to parse error response as JSON:", jsonError);
+            }
+            // แสดงข้อความแสดงข้อผิดพลาดให้ผู้ใช้
+            alert("Has error for update member: " + errorText);
+            return;
+        }
 
 
         if (res.ok) {

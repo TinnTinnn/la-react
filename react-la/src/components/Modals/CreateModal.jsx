@@ -39,7 +39,7 @@ function CreateModal({
                 <div>
                     <TextInput label="Member Name" placeholder="Name here"
                                value={formData.member_name || ""}
-                               required={false}
+                               required={true}
                                onChange={(e) =>
                                    setFormData({...formData, member_name: e.target.value})}/>
                     {errors.member_name && errors.member_name.map((error, index) => (
@@ -57,7 +57,7 @@ function CreateModal({
                                          setFormData({...formData, age: value})}
                                      min={10}
                                      max={60}
-                                     required={false}
+                                     required={true}
                         />
                         {errors.age && <p className="error">{errors.age[0]}</p>}
                     </div>
@@ -76,7 +76,7 @@ function CreateModal({
                                 {value: 'Other', label: 'Other'},
                             ]}
                             placeholder="Select gender"
-                            required={false}
+                            required={true}
                         />
                         {errors.gender && <p className="error">{errors.gender}</p>}
                     </div>
@@ -91,7 +91,7 @@ function CreateModal({
                             placeholder="Phone number here"
                             value={formData.phone_number}
                             onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-                            required={false}
+                            required={true}
                         />
                         {errors.phone_number && errors.phone_number.map((error, index) => (
                             <div key={index} style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
@@ -104,7 +104,7 @@ function CreateModal({
                             placeholder="Email here"
                             value={formData.email}
                             onChange={(e) => setFormData({...formData, email: e.target.value})}
-                            required={false}
+                            required={true}
                         />
                         {errors.email && errors.email.map((error, index) => (
                             <div key={index} style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>{error}</div>
@@ -129,7 +129,7 @@ function CreateModal({
                                 {value: 'Bronze', label: 'Bronze'},
                             ]}
                             placeholder="Select membership type"
-                            required={false}
+                            required={true}
                         />
                         {errors.membership_type && <p className="error">{errors.membership_type[0]}</p>}
                     </div>
@@ -139,7 +139,7 @@ function CreateModal({
                             label="Pick expiration date"
                             placeholder="expiration date"
                             value={formData.expiration_date ? new Date(formData.expiration_date + 'T00:00:00') : null} // เพิ่ม 'T00:00:00'
-                            required={false}
+                            required={true}
                             onChange={(date) => {
                                 if (date) {
                                     // ใช้ toLocaleDateString เพื่อจัดรูปแบบวันที่ตามเขตเวลาท้องถิ่น
@@ -187,17 +187,19 @@ function CreateModal({
                     <Space h="sm"/>
                 </div>
 
-                <div style={{ marginBottom: '10px'}}>
-                    <FileInput
-                        label="Profile Picture"
-                        placeholder={selectedFileName}
-                        onChange={(file) => {
-                            setFormData({...formData, profile_picture: file});
-                            setSelectedFileName(file ? file.name : "Profile Picture here");
-                        }}
-                        accept="image/*"
-                    />
-                </div>
+                {!isEditing && (
+                    <div style={{marginBottom: '10px'}}>
+                        <FileInput
+                            label="Profile Picture"
+                            placeholder={selectedFileName}
+                            onChange={(file) => {
+                                setFormData({...formData, profile_picture: file});
+                                setSelectedFileName(file ? file.name : "Profile Picture here");
+                            }}
+                            accept="image/*"
+                        />
+                    </div>
+                )}
 
                 <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
                     <Button rightSection type="submit" variant="filled"

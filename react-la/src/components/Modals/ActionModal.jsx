@@ -1,4 +1,4 @@
-import {Button, Modal,} from "@mantine/core";
+import {Button, Modal, Table} from "@mantine/core";
 import PropTypes from "prop-types";
 import CreateModal from "./CreateModal.jsx";
 
@@ -47,20 +47,63 @@ function ActionModal({
                    title="Member Information"
                    centered
             >
-                {selectedMember && (<div>
-                    <p><strong>ID:</strong> {selectedMember.id}</p>
-                    <p><strong>Member Name:</strong> {selectedMember.member_name}</p>
-                    <p><strong>Age:</strong> {selectedMember.age}</p>
-                    <p><strong>Gender:</strong> {selectedMember.gender}</p>
-                    <p><strong>Phone number:</strong> {selectedMember.phone_number}</p>
-                    <p><strong>Membership Type:</strong> {selectedMember.membership_type}</p>
-                    <p><strong>Email:</strong> {selectedMember.email}</p>
-                    <p><strong>Address:</strong> {selectedMember.address}</p>
-                    <p><strong>Notes:</strong> {selectedMember.notes}</p>
-                    <p><strong>Created By:</strong> {selectedMember.user.name}</p>
-                    <p><strong>Created At:</strong> {new Date(selectedMember.created_at).toLocaleString()}</p>
-                    <p><strong>Expiration Date:</strong> {selectedMember.expiration_date}</p>
-                </div>)}
+
+
+                {selectedMember && (
+                    <Table striped highlightOnHover withTableBorder>
+                        <Table.Tbody>
+                        <Table.Tr>
+                            <Table.Td><strong>ID:</strong></Table.Td>
+                            <Table.Td>{selectedMember.id}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Member Name:</strong></Table.Td>
+                            <Table.Td>{selectedMember.member_name}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Age:</strong></Table.Td>
+                            <Table.Td>{selectedMember.age}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Gender:</strong></Table.Td>
+                            <Table.Td>{selectedMember.gender}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Phone Number:</strong></Table.Td>
+                            <Table.Td>{selectedMember.phone_number}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Membership Type:</strong></Table.Td>
+                            <Table.Td>{selectedMember.membership_type}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Email:</strong></Table.Td>
+                            <Table.Td>{selectedMember.email}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Address:</strong></Table.Td>
+                            <Table.Td>{selectedMember.address}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Notes:</strong></Table.Td>
+                            <Table.Td>{selectedMember.notes}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Created By:</strong></Table.Td>
+                            <Table.Td>{selectedMember.user.name}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Created At:</strong></Table.Td>
+                            <Table.Td>{new Date(selectedMember.created_at).toLocaleString()}</Table.Td>
+                        </Table.Tr>
+                        <Table.Tr>
+                            <Table.Td><strong>Expiration Date:</strong></Table.Td>
+                            <Table.Td>{selectedMember.expiration_date}</Table.Td>
+                        </Table.Tr>
+                        </Table.Tbody>
+                    </Table>
+                )}
+
             </Modal>
 
             <CreateModal

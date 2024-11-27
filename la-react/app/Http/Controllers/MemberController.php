@@ -101,18 +101,10 @@ class MemberController extends Controller implements HasMiddleware
         ], 201);
     }
 
-    public function show(Member $member): JsonResponse
-    {
-        return response()->json(['member' => $member, 'user' => $member->user], 200);
-    }
-
-
     public function update(Request $request, Member $member): JsonResponse
     {
         // ตรวจสอบสิทธิ์การเข้าถึง
         Gate::authorize('modify', $member);
-        Log::info('Raw input:', ['raw' => file_get_contents('php://input')]);
-        Log::info('Update Member Request', ['request' => $request->all()]);
 
         // ตรวจสอบข้อมูลที่ได้รับจากฟอร์ม
         $validatedData = $request->validate([
@@ -124,66 +116,32 @@ class MemberController extends Controller implements HasMiddleware
             'email' => 'required|email|unique:members,email,' . $member->id,
             'address' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
-            'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'expiration_date' => 'required|date',
         ]);
 
-        // กำหนด user_id จากผู้ใช้ที่ล็อกอิน
+        // เพิ่ม user_id เพื่อให้มั่นใจว่าข้อมูลเป็นของผู้ใช้งานที่ล็อกอินอยู่
         $validatedData['user_id'] = auth()->user()->id;
 
-        // ตรวจสอบการอัปโหลดไฟล์โปรไฟล์
-        if ($request->hasFile('profile_picture')) {
-            $profilePicture = $request->file('profile_picture');
-
-            // ตรวจสอบว่าไฟล์ที่อัปโหลดไม่ว่าง
-            if ($request->hasFile('profile_picture')) {
-                $profilePicture = $request->file('profile_picture');
-                if ($profilePicture->isValid()) {
-                    if ($member->profile_picture) {
-                        Storage::disk('public')->delete($member->profile_picture);
-                    }
-
-                    $validatedData['profile_picture'] = $profilePicture->store('profile_pictures', 'public');
-                } else {
-                    return response()->json(['message' => 'Invalid profile picture'], 400);
-                }
-            }
-
-            try {
-                $member->update($validatedData);
-            } catch (\Exception $e) {
-                Log::error('Error updating member', ['error' => $e->getMessage()]);
-                return response()->json(['message' => 'Failed to update member'], 500);
-            }
+        try {
+            // อัปเดตข้อมูลสมาชิก
+            $member->update($validatedData);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Member updated successfully',
                 'member' => $member,
-                'user' => $member->user,
-            ]);
-        }
-
-        // ตรวจสอบข้อมูลที่ต้องการอัปเดต
-        Log::info('Fields for Update', ['fields' => $validatedData]);
-
-        // update ข้อมูลสมาชิก
-        try {
-            $member->update($validatedData);
-            Log::info('Member updated successfully', ['member' => $member]);
+                'user' => $member->user, // ส่งข้อมูลผู้ใช้ที่เกี่ยวข้องกลับไปด้วย
+            ], 200);
         } catch (\Exception $e) {
+            // จัดการข้อผิดพลาดระหว่างการอัปเดต
             Log::error('Error updating member', ['error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Failed to update member'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update member',
+            ], 500);
         }
-
-        // ส่งข้อมูลสมาชิกที่อัปเดต
-        return response()->json([
-            'success' => true,
-            'message' => 'Member updated successfully',
-            'member' => $member,
-            'user' => $member->user,  // ข้อมูลผู้ใช้ที่เกี่ยวข้อง
-        ], 200);
     }
+
 
 
     public function memberOverview(): JsonResponse

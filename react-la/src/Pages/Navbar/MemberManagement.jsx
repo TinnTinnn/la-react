@@ -44,7 +44,7 @@ export default function MemberManagement() {
         email: "",
         address: "",
         notes: "",
-        profile_picture: "",
+        profile_picture: null,
         membership_type: "",
         expiration_date: "",
     });
@@ -167,6 +167,7 @@ export default function MemberManagement() {
 
     // Reset formData and errors แบบแยกต่างหาก
     function resetFormData() {
+        console.log("Resetting formData...");
         setFormData({
             member_name: "",
             age: null,
@@ -179,7 +180,7 @@ export default function MemberManagement() {
             membership_type: "",
             expiration_date: "",
         });
-        setErrors({});
+        setSelectedFileName("Profile Picture here");
     }
 
 
@@ -208,36 +209,18 @@ export default function MemberManagement() {
             return; // หยุดการทำงานหากมีข้อผิดพลาด
         }
 
-        // Prepare FormData
-        const formDataToSend = new FormData();
-        Object.keys(memberToEdit).forEach((key) => {
-            if (memberToEdit[key] !== null && memberToEdit[key] !== "") {
-                formDataToSend.append(key, memberToEdit[key]);
-            }
-        });
-
-        // สร้าง FormData เพื่อส่งข้อมูล
-        // const formDataToSend = new FormData();
-        formDataToSend.append('member_name', memberToEdit.member_name);
-        formDataToSend.append('age', memberToEdit.age);
-        formDataToSend.append('gender', memberToEdit.gender);
-        formDataToSend.append('phone_number', formatPhoneNumber(memberToEdit.phone_number));
-        formDataToSend.append('email', memberToEdit.email);
-        formDataToSend.append('address', memberToEdit.address);
-        formDataToSend.append('notes', memberToEdit.notes);
-        formDataToSend.append('membership_type', memberToEdit.membership_type);
-        formDataToSend.append('expiration_date', memberToEdit.expiration_date);
-
-        // ตรวจสอบว่ามีการอัปโหลดไฟล์ใหม่หรือไม่
-        if (memberToEdit.profile_picture  instanceof File) {
-            formDataToSend.append('profile_picture', memberToEdit.profile_picture);
-        }
-
-        for (let pair of formDataToSend.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-
-
+        // สร้างข้อมูล JSON เพื่อส่งไปยัง Back-end
+        const payload = {
+            member_name: memberToEdit.member_name,
+            age: memberToEdit.age,
+            gender: memberToEdit.gender,
+            phone_number: formatPhoneNumber(memberToEdit.phone_number),
+            email: memberToEdit.email,
+            address: memberToEdit.address || null,
+            notes: memberToEdit.notes || null,
+            membership_type: memberToEdit.membership_type,
+            expiration_date: memberToEdit.expiration_date,
+        };
 
         try {
             // ส่งข้อมูลไปยัง back-end
@@ -245,9 +228,10 @@ export default function MemberManagement() {
             const res = await fetch(`/api/members/${memberToEdit.id}`, {
                 method: 'PUT',
                 headers: {
+                    "Content-Type": "application/json", // ใช้ JSON เฉพาะตอนที่อยากจัดการสิ่งที่ไม่เกี่ยวข้องกับอัพโหลดไฟล์
                     Authorization: `Bearer ${token}`,
                 },
-                body: formDataToSend,
+                body: JSON.stringify(payload),
             });
 
             // ตรวจสอบการตอบสนองจากเซิร์ฟเวอร์
@@ -264,6 +248,7 @@ export default function MemberManagement() {
             // ถ้าอัปเดตสำเร็จ
             const data = await res.json();
             console.log("Updated member data:", data);
+            setEditModalOpened(false);
             setMessage("Member updated successfully.");
             setOpened(true);
             resetFormData(); // รีเซ็ตฟอร์ม

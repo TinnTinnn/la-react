@@ -9,11 +9,14 @@ export default defineConfig({
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        // header:{
-        //   Accept: 'application/json',
-        //   "Content-Type": "application/json"
-        // }
-      }
+        headers: {
+          Accept:'application/json',
+        },
+      },
+      // '/storage/': {
+      //   target: 'http://127.0.0.1:8000', // รองรับไฟล์ทีเ่ก็บใน public storage
+      //   changeOrigin: true,
+      // }
     }
   }
 })

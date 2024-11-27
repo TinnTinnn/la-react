@@ -109,7 +109,7 @@ export default function MemberManagement() {
                 },
                 // ต้องระบุ Content-Type เป็น 'application/json' ถ้าไม่มีการแนบไฟล์
                 // 'Content-Type': 'application/json',
-                body: memberToEdit,// ใช้อันนี้เพื่อรองรับข้อมูลที่เป็น multipart
+                body: formDataToSend,// ใช้อันนี้เพื่อรองรับข้อมูลที่เป็น multipart
                 // body: JSON.stringify(memberData), // แปลงข้อมูลเป็น JSON string ถ้าไม่อัพโหลดไฟล์
             });
 
@@ -201,45 +201,23 @@ export default function MemberManagement() {
         // แจ้งใน Log ว่า Update member
         console.log("Updating member:", memberToEdit);
 
-        // การตรวจสอบเบอร์โทรศัพท์
-        let newErrors = {};
-        if (memberToEdit.member_name.trim() === "") {
-            newErrors.member_name = ["Member name is required."];
-        }
-
-        if (memberToEdit.age === null) {
-            newErrors.age = ["Age is required."];
-        }
-
-        if (memberToEdit.gender === "") {
-            newErrors.gender = ["Gender is required."];
-        }
-
-        if (memberToEdit.email === "") {
-            newErrors.email = ["Email is required."];
-        }
-
-        if (memberToEdit.phone_number === "") {
-            newErrors.phone_number = ["Phone number is required."];
-        } else if (!isValidPhoneNumber(memberToEdit.phone_number)) { // เมื่อผ่านการกรอกเบอร์แล้วแต่ format ไม่ถูกต้อง จะแจ้งเตือน
-            newErrors.phone_number = ["Phone number is not valid."];
-        }
-
-        if (memberToEdit.membership_type === "") {
-            newErrors.membership_type = ["Membership type is required."];
-        }
-
-        if (memberToEdit.expiration_date === "") {
-            newErrors.expiration_date = ["Expiration date is required."];
-        }
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+        // ส่วน front-end validate
+        const validationErrors = validateFormData(memberToEdit); // ใช้ validateFormData แบบเดียวกับ handleCreate
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
             return; // หยุดการทำงานหากมีข้อผิดพลาด
         }
 
-        // สร้าง FormData เพื่อส่งข้อมูล
+        // Prepare FormData
         const formDataToSend = new FormData();
+        Object.keys(memberToEdit).forEach((key) => {
+            if (memberToEdit[key] !== null && memberToEdit[key] !== "") {
+                formDataToSend.append(key, memberToEdit[key]);
+            }
+        });
+
+        // สร้าง FormData เพื่อส่งข้อมูล
+        // const formDataToSend = new FormData();
         formDataToSend.append('member_name', memberToEdit.member_name);
         formDataToSend.append('age', memberToEdit.age);
         formDataToSend.append('gender', memberToEdit.gender);
@@ -251,60 +229,51 @@ export default function MemberManagement() {
         formDataToSend.append('expiration_date', memberToEdit.expiration_date);
 
         // ตรวจสอบว่ามีการอัปโหลดไฟล์ใหม่หรือไม่
-        if (memberToEdit.profile_picture) {
+        if (memberToEdit.profile_picture  instanceof File) {
             formDataToSend.append('profile_picture', memberToEdit.profile_picture);
         }
 
-
-        console.log(`Fetching URL: /api/members/${memberToEdit.id}`);
-        const res  = await fetch(`/api/members/${memberToEdit.id}`, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            body: formDataToSend
-        });
-
-        // ตรวจสอบการตอบสนองจากเซิร์ฟเวอร์
-        if (!res.ok) {
-            const errorText = await res.text(); // รับข้อความตอบกลับ
-            console.error("Error response:", errorText); // บันทึกข้อความตอบกลับ
-            try {
-                const errorData = await res.json(); // ลองแปลงเป็น JSON
-                console.error("Error data:", errorData); // บันทึกข้อมูลข้อผิดพลาด
-            } catch (jsonError) {
-                console.error("Failed to parse error response as JSON:", jsonError);
-            }
-            // แสดงข้อความแสดงข้อผิดพลาดให้ผู้ใช้
-            alert("Has error for update member: " + errorText);
-            return;
+        for (let pair of formDataToSend.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
         }
 
 
-        if (res.ok) {
-            setEditModalOpened(false);  // ปิด Modal
-            getMembers();  // รีเฟรชรายการ members
-            setMessage("Your information has been updated.");
-            setOpened(true);// เปิด Modal แสดงข้อความ
-        } else {
+
+        try {
+            // ส่งข้อมูลไปยัง back-end
+            console.log(`Fetching URL: /api/members/${memberToEdit.id}`);
+            const res = await fetch(`/api/members/${memberToEdit.id}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formDataToSend,
+            });
+
+            // ตรวจสอบการตอบสนองจากเซิร์ฟเวอร์
+            if (!res.ok) {
+                const errorText = await res.text();
+                const errorData = JSON.parse(errorText);
+                if (errorData.errors) {
+                    setErrors(errorData.errors);
+                }
+                return;
+            }
+
+
+            // ถ้าอัปเดตสำเร็จ
             const data = await res.json();
-
-            if (data.errors && data.errors.member_name) {
-                newErrors.member_name = data.errors.member_name;
-            }
-
-            if (data.errors && data.errors.phone_number) {
-                newErrors.phone_number = data.errors.phone_number;
-            }
-
-            if (data.errors && data.errors.email) {
-                newErrors.email = data.errors.email;
-            } else {
-                console.log(data);  // handle error response
-            }
-            setErrors(newErrors);
+            console.log("Updated member data:", data);
+            setMessage("Member updated successfully.");
+            setOpened(true);
+            resetFormData(); // รีเซ็ตฟอร์ม
+            getMembers(); // รีเฟรชรายการสมาชิก
+        } catch (error) {
+            console.error("An unexpected error occurred:", error);
+            setErrors({ updateError: ["An unexpected error occurred."] });
         }
     }
+
 
     // async function handleUploadImg(file){
     //     try {

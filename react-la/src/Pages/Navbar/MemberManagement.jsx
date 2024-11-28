@@ -7,6 +7,7 @@ import ActionModal from "../../components/Modals/ActionModal.jsx";
 import MembersTable from "../../components/MembersTable.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserPlus} from "@fortawesome/free-solid-svg-icons";
+import {notifications} from "@mantine/notifications";
 // import  Axios from "axios";
 
 
@@ -259,6 +260,47 @@ export default function MemberManagement() {
         }
     }
 
+    const handleProfilePictureUpload = (file) => {
+        const formData = new FormData();
+        formData.append("profile_picture", file);
+        formData.append("member_id", selectedMember.id);
+
+        fetch(`/api/upload-profile-picture`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+
+            .then((data) => {
+                console.log("Upload successful:", data);
+                setSelectedMember((prev) => ({
+                    ...prev,
+                    profile_picture: data.profile_picture,
+                }));
+                notifications.show({
+                    title:"Success",
+                    message: "Profile picture updated successfully.",
+                    color: "green",
+                });
+            })
+            .catch((error) => {
+                console.error("Upload failed:", error);
+                notifications.show({
+                    title:"Error",
+                    message: "Failed to update profile picture. Please try again.",
+                    color: "red",
+                });
+            });
+    };
+
 
     // async function handleUploadImg(file){
     //     try {
@@ -394,6 +436,7 @@ export default function MemberManagement() {
                 setMemberToEdit={setMemberToEdit}
                 handleEditFormSubmit={handleEditFormSubmit}
                 errors={errors}
+                handleProfilePictureUpload={handleProfilePictureUpload}
             />
 
             {/*สำหรับโหลด Table จาก component MembersTable*/}

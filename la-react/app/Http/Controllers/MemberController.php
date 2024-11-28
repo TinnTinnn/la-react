@@ -20,7 +20,11 @@ class MemberController extends Controller implements HasMiddleware
     {
         return [
             new \Illuminate\Routing\Controllers\Middleware(
-                'auth:sanctum', except: ['index', 'show', 'memberOverview',]
+                'auth:sanctum', except: [
+                    'index',
+                    'show',
+                    'memberOverview',
+                    ]
             )
         ];
     }
@@ -168,6 +172,7 @@ class MemberController extends Controller implements HasMiddleware
             'expiredMembers' => $expiredMembers,
         ], 200);
     }
+
 
     public function destroy(Member $member): JsonResponse
     {

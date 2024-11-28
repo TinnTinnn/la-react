@@ -1,11 +1,11 @@
-import {Button, Menu, Table, Pagination} from "@mantine/core";
+import {Button, Menu, Table, Pagination, Avatar} from "@mantine/core";
 import PropTypes from "prop-types";
 import {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faCommentDots, faEllipsisVertical,  faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
 
 
-function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
+function MembersTable({members, handleReadMore, handleEdit, handleDelete,}) {
 
     // สำหรับการทำ Paginate
     const [activePage, setActivePage] = useState(1);
@@ -38,11 +38,15 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete}) {
                         {currentMembers.map((member) =>
                             <Table.Tr key={member.id}>
                                 <Table.Td>{member.id}</Table.Td>
-                                <Table.Td><img
-                                    src={member.profile_picture}
-                                    alt="Profile"
-                                    style={{width: "50px", height: "50px", borderRadius: "50%"}}
-                                /></Table.Td>
+                                <Table.Td>
+                                    <Avatar
+                                        src={member.profile_picture}
+                                        alt={`${member.profile_picture}'s Profile Picture`}
+                                        size={50}
+                                        radius="xl"
+                                        styles={{root: {margin: 'auto'}}}
+                                    />
+                                </Table.Td>
                                 <Table.Td>{member.member_name}</Table.Td>
                                 <Table.Td>{member.membership_type}</Table.Td>
                                 <Table.Td>{member.email}</Table.Td>

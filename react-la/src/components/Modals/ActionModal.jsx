@@ -54,7 +54,7 @@ function ActionModal({
                     <>
                         <EditableAvatar
                             selectedMember={selectedMember}
-                            onUpload={(uploadedFile) => handleProfilePictureUpload(uploadedFile)}
+                            onUpload={(file) => handleProfilePictureUpload(file, selectedMember.id)}
                         />
                         <Table striped highlightOnHover withTableBorder>
                             <Table.Tbody>

@@ -73,3 +73,15 @@ th {
     background-color: white !important;
     color: #3572EF !important;
 }
+
+.avatar-container {
+    display: inline-block !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease !important;
+    cursor: pointer;
+}
+
+.avatar-container:hover {
+    transform: scale(1.1) !important; /* ขยายขนาดเมื่อ hover */
+    /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important; !*  เพิ่มเงา*!*/
+    opacity: 0.8 !important;  /* เพิ่มความโปร่งแสงเมื่อ hover */
+}

@@ -96,7 +96,7 @@ export default function MemberManagement() {
                     console.log("Profile picture attached successfully:", formData.profile_picture.name);
                 } catch (error) {
                     console.error("Error attaching profile picture:", error);
-                    setErrors({ profile_picture: ["Failed to attach profile picture."]});
+                    setErrors({profile_picture: ["Failed to attach profile picture."]});
                     return;
 
                 }
@@ -140,7 +140,7 @@ export default function MemberManagement() {
 // Validation Function for Front-end แบบแยกต่างหาก
     function validateFormData(formData) {
         const errors = {};
-        if (!formData.member_name || formData.member_name.trim() === ""){
+        if (!formData.member_name || formData.member_name.trim() === "") {
             errors.member_name = ["Member name is required."];
         }
         if (!formData.age || isNaN(formData.age)) {
@@ -256,14 +256,14 @@ export default function MemberManagement() {
             getMembers(); // รีเฟรชรายการสมาชิก
         } catch (error) {
             console.error("An unexpected error occurred:", error);
-            setErrors({ updateError: ["An unexpected error occurred."] });
+            setErrors({updateError: ["An unexpected error occurred."]});
         }
     }
 
-    const handleProfilePictureUpload = (file) => {
+    const handleProfilePictureUpload = (file, memberId) => {
         const formData = new FormData();
         formData.append("profile_picture", file);
-        formData.append("member_id", selectedMember.id);
+        formData.append("member_id", memberId);
 
         fetch(`/api/upload-profile-picture`, {
             method: "POST",
@@ -281,12 +281,31 @@ export default function MemberManagement() {
 
             .then((data) => {
                 console.log("Upload successful:", data);
+
+
                 setSelectedMember((prev) => ({
                     ...prev,
                     profile_picture: data.profile_picture,
                 }));
+
+                // อัปเดตรูปใน state ของสมาชิกทั้งหมด
+                setMembers((prevMembers) =>
+                    prevMembers.map((member) =>
+                        member.id === memberId
+                            ? { ...member, profile_picture: data.profile_picture }
+                            : member
+                    )
+                );
+
+                // อัปเดท selectedMember
+                setSelectedMember((prev) => ({
+                    ...prev,
+                    profile_picture: data.profile_picture,
+                }));
+
+
                 notifications.show({
-                    title:"Success",
+                    title: "Success",
                     message: "Profile picture updated successfully.",
                     color: "green",
                 });
@@ -294,7 +313,7 @@ export default function MemberManagement() {
             .catch((error) => {
                 console.error("Upload failed:", error);
                 notifications.show({
-                    title:"Error",
+                    title: "Error",
                     message: "Failed to update profile picture. Please try again.",
                     color: "red",
                 });

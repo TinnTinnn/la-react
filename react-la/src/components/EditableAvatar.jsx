@@ -36,21 +36,20 @@ function EditableAvatar({selectedMember, onUpload}) {
         >
             <Popover.Target>
                 <div
-                    onClick={() => setOpened((prev) => !prev)}
-                     style={{
-                         cursor: "pointer",
-                         textAlign: 'center',
-                         marginBottom: '20px',
-                         marginTop: '20px'
-                     }}
+                    style={{
+                        textAlign: 'center',
+                        marginBottom: '20px',
+                        marginTop: '20px'
+                    }}
                 >
                     <div className="avatar-container">
                         <Avatar
+                            onClick={() => setOpened((prev) => !prev)}
                             src={preview || selectedMember.profile_picture} // แสดง preview
                             alt={`${selectedMember.member_name}'s Profile Picture`}
                             size={120}
                             radius="xl"
-                            styles={{root: {margin: 'auto'}}}
+                            styles={{root: {margin: 'auto', cursor: 'pointer'}}}
                         />
                     </div>
                 </div>
@@ -58,16 +57,19 @@ function EditableAvatar({selectedMember, onUpload}) {
             <Popover.Dropdown>
                 {!preview ? (
                     <>
-                         {/* ปุ่มดูรูปโปรไฟล์ */}
+                        {/* ปุ่มดูรูปโปรไฟล์ */}
                         <Button
                             fullWidth
                             variant="subtle"
                             color="gray"
                             size="xs"
-                            onClick={() => window.open(selectedMember.profile_picture, '_blank')}
+                            onClick={() =>
+                                window.open(selectedMember.profile_picture, '_blank',
+                                setOpened(false)
+                                )}
                             style={{
                                 marginBottom: '10px'
-                        }}
+                            }}
                         >
                             <FontAwesomeIcon
                                 style={{marginRight: '10px'}}
@@ -76,7 +78,7 @@ function EditableAvatar({selectedMember, onUpload}) {
                             View Profile Picture
                         </Button>
 
-                         {/*แสดงปุ่มให้เลือกไฟล์หากยังไม่มี preview*/}
+                        {/*แสดงปุ่มให้เลือกไฟล์หากยังไม่มี preview*/}
                         <FileButton onChange={handleFileChange} accept="image/*">
                             {(props) => (
                                 <Button
@@ -101,7 +103,11 @@ function EditableAvatar({selectedMember, onUpload}) {
                         <Button
                             color="indigo"
                             size="xs"
-                            onClick={handleConfirmUpload}
+                            onClick={() => {
+                                handleConfirmUpload();
+                                // setOpened(false);
+                            }
+                        }
                         >
                             Save
                         </Button>

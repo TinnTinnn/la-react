@@ -59,22 +59,24 @@ export default function MemberManagement() {
         const data = await res.json();
 
         if (res.ok) {
-            setMembers(data)
+            setMembers(data);
+            setFilteredMembers(data);
         }
     }
 
     const handleSearch = (query) => {
         const lowerQuery = query.toLowerCase();
-        if (query === '') {
+        if (query === "") {
             setFilteredMembers(members);
         } else {
-            const filteredMembers = members.filter(member =>
+            const filteredResults = members.filter(member =>
                 member.member_name.toLowerCase().includes(lowerQuery) ||
                 member.user.name.toLowerCase().includes(lowerQuery) ||
+                member.id.toString().includes(lowerQuery) ||
                 member.email.toLowerCase().includes(lowerQuery) ||
                 member.membership_type.toLowerCase().includes(lowerQuery)
             );
-            setFilteredMembers(filteredMembers);
+            setFilteredMembers(filteredResults);
         }
     }
 

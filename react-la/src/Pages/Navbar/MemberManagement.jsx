@@ -1,12 +1,12 @@
 import {useContext, useEffect, useState} from "react";
 // import {useNavigate,} from "react-router-dom";
-import {Button,} from '@mantine/core';
+import {Button, TextInput,} from '@mantine/core';
 import {AppContext} from "../../Context/AppContext.jsx";
 import CreateModal from "../../components/Modals/CreateModal.jsx";
 import ActionModal from "../../components/Modals/ActionModal.jsx";
 import MembersTable from "../../components/MembersTable.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faUserPlus} from "@fortawesome/free-solid-svg-icons";
+import {faMagnifyingGlass, faUserPlus} from "@fortawesome/free-solid-svg-icons";
 import {notifications} from "@mantine/notifications";
 // import  Axios from "axios";
 
@@ -24,6 +24,7 @@ export default function MemberManagement() {
     const [editModalOpened, setEditModalOpened] = useState(false);
     const [memberToEdit, setMemberToEdit] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("Profile Picture here");
+    const [filteredMembers, setFilteredMembers] = useState(members);
 
 
     // สำหรับ การตรวจสอบ user กรอก หมายเลขโทรศัพท์
@@ -59,6 +60,21 @@ export default function MemberManagement() {
 
         if (res.ok) {
             setMembers(data)
+        }
+    }
+
+    const handleSearch = (query) => {
+        const lowerQuery = query.toLowerCase();
+        if (query === '') {
+            setFilteredMembers(members);
+        } else {
+            const filteredMembers = members.filter(member =>
+                member.member_name.toLowerCase().includes(lowerQuery) ||
+                member.user.name.toLowerCase().includes(lowerQuery) ||
+                member.email.toLowerCase().includes(lowerQuery) ||
+                member.membership_type.toLowerCase().includes(lowerQuery)
+            );
+            setFilteredMembers(filteredMembers);
         }
     }
 
@@ -292,7 +308,7 @@ export default function MemberManagement() {
                 setMembers((prevMembers) =>
                     prevMembers.map((member) =>
                         member.id === memberId
-                            ? { ...member, profile_picture: data.profile_picture }
+                            ? {...member, profile_picture: data.profile_picture}
                             : member
                     )
                 );
@@ -411,7 +427,26 @@ export default function MemberManagement() {
         <>
             <h1 style={{marginTop: '50px'}}>Welcome to the Member Management</h1>
 
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '20px',}}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+            }}>
+                <TextInput
+                    placeholder="Search member..."
+                    rightSection={
+                        <FontAwesomeIcon
+                            icon={faMagnifyingGlass}
+                            style={{fontSize: '16px', color: '#868e96'}}
+                        />
+                    }
+                    size="sm"
+                    radius="md"
+                    style={{maxWidth: '600px'}}
+                    onChange={(event) => handleSearch(event.target.value)}
+                />
+
                 {user ? (
                     <Button
                         leftSection={<FontAwesomeIcon icon={faUserPlus}/>}
@@ -422,6 +457,7 @@ export default function MemberManagement() {
                 ) : (
                     "" // หากไม่ได้ Log in จะไม่เห็นปุ่ม New member
                 )}
+
             </div>
 
             {/*สำหรับปุ่ม New Member จาก Component CreateModal*/}
@@ -460,7 +496,7 @@ export default function MemberManagement() {
 
             {/*สำหรับโหลด Table จาก component MembersTable*/}
             <MembersTable
-                members={members}
+                members={filteredMembers}
                 handleReadMore={handleReadMore}
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}

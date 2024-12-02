@@ -1,16 +1,19 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {Avatar, Button, FileButton, Group, Popover} from "@mantine/core";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImagePortrait, faImages} from "@fortawesome/free-solid-svg-icons";
+import {AppContext} from "../Context/AppContext.jsx";
 
-function EditableAvatar({selectedMember, onUpload}) {
+function EditableAvatar({ selectedMember, onUpload}) {
+    const { user } = useContext(AppContext);
+    const checkPermission = (user, member) => user && member && user.id === member.user_id;
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [opened, setOpened] = useState(false);
 
     const handleFileChange = (uploadedFile) => {
         setFile(uploadedFile);
-        setPreview(URL.createObjectURL(uploadedFile)); // lร้าง URL สำหรับ preview
+        setPreview(URL.createObjectURL(uploadedFile)); // สร้าง URL สำหรับ preview
     };
 
     const handleConfirmUpload = () => {
@@ -78,24 +81,26 @@ function EditableAvatar({selectedMember, onUpload}) {
                             View Profile Picture
                         </Button>
 
-                        {/*แสดงปุ่มให้เลือกไฟล์หากยังไม่มี preview*/}
-                        <FileButton onChange={handleFileChange} accept="image/*">
-                            {(props) => (
-                                <Button
-                                    {...props}
-                                    fullWidth
-                                    variant="subtle"
-                                    color="gray"
-                                    size="xs"
-                                >
-                                    <FontAwesomeIcon
-                                        style={{marginRight: '10px'}}
-                                        icon={faImages}
-                                    />
-                                    Change Profile Picture
-                                </Button>
-                            )}
-                        </FileButton>
+                        {checkPermission(user, selectedMember) && (
+                            <FileButton onChange={handleFileChange} accept="image/*">
+                                {(props) => (
+                                    <Button
+                                        {...props}
+                                        fullWidth
+                                        variant="subtle"
+                                        color="gray"
+                                        size="xs"
+                                    >
+                                        <FontAwesomeIcon
+                                            style={{marginRight: '10px'}}
+                                            icon={faImages}
+                                        />
+                                        Change Profile Picture
+                                    </Button>
+                                )}
+                            </FileButton>
+                        )}
+
                     </>
                 ) : (
                     // ถ้ามี preview แสดงปุ่มยืนยันหรือยกเลิก

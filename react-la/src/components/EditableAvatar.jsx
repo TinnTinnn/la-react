@@ -6,7 +6,11 @@ import {AppContext} from "../Context/AppContext.jsx";
 
 function EditableAvatar({ selectedMember, onUpload}) {
     const { user } = useContext(AppContext);
-    const checkPermission = (user, member) => user && member && user.id === member.user_id;
+    const checkPermission = (user, member) => {
+        console.log(user, member); // เพิ่มผลตรวจค่า user และ member
+        return user && member && user.id === member.user_id;
+    }
+
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [opened, setOpened] = useState(false);
@@ -81,6 +85,7 @@ function EditableAvatar({ selectedMember, onUpload}) {
                             View Profile Picture
                         </Button>
 
+                         {/*สำหรับอัพโหลดหรือเปลี่ยนรูปโปรไฟล์*/}
                         {checkPermission(user, selectedMember) && (
                             <FileButton onChange={handleFileChange} accept="image/*">
                                 {(props) => (

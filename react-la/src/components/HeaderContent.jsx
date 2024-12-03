@@ -2,25 +2,32 @@ import {useContext, useState} from "react";
 import {AppContext} from "../Context/AppContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
-import {Anchor, Burger, Button, Menu, Modal,} from "@mantine/core";
+import {Anchor, Burger, Button, Menu, Modal, Table,} from "@mantine/core";
 import Login from "../Pages/Auth/Login.jsx";
 import Register from "../Pages/Auth/Register.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faRightFromBracket} from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
+import EditableAvatar from "./EditableAvatar.jsx";
+import {notifications} from "@mantine/notifications";
 
 
 const HeaderContent = ({opened, toggle}) => {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
 
+    // จัดการส่วน Modal แสดงข้อมล User ที่ล็อคอิน
+    const [accountModalOpened, setAccountModalOpened] = useState(false);
+
+    // เพิ่ม state ส่วนนี้เพื่อ Toggle ระหว่าง Login และ Register
+    const [isLogin, setIsLogin] = useState(true);
+
     // จัดการเกี่ยวกับ Modals สำหรับ Register, Login, และ Success
     const [openedRegister, {open: openRegister, close: closeRegister}] = useDisclosure(false);
     const [openedLogin, {open: openLogin, close: closeLogin}] = useDisclosure(false);
     const [openedSuccess, {open: openSuccess, close: closeSuccess}] = useDisclosure(false);
 
-    // เพิ่ม state ส่วนนี้เพื่อ Toggle ระหว่าง Login และ Register
-    const [isLogin, setIsLogin] = useState(true);
+
 
     // ฟังค์ชั่น toggle ระหว่าง Login และ Register
     const toggleForm = () => {
@@ -68,6 +75,44 @@ const HeaderContent = ({opened, toggle}) => {
         }
     }
 
+    const handleProfilePictureUpload = (file) => {
+        const formData = new FormData();
+        formData.append("profile_picture", file);
+        formData.append("user_id", user.id); // ใช้ 'user_id' จาก COntext หรือ state
+
+        fetch(`/api/upload-profile-picture`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            return response.json();
+        })
+        .then((data) => {
+            setUser((prevUser) => ({
+                ...prevUser,
+                profile_picture: data.profile_picture,
+            }));
+            notifications.show({
+                title: "Success",
+                message: "Profile picture updated successfully.",
+                color: "green",
+            });
+        })
+            .catch(() => {
+                notifications.show({
+                    title: "Error",
+                    message: "Failed to update profile picture. Please try again.",
+                    color: "red",
+                });
+            });
+    };
+
     return (
         <>
             <nav className="nav-container">
@@ -80,7 +125,7 @@ const HeaderContent = ({opened, toggle}) => {
 
                 {user ?
                     (<div className="nav-right" style={{display: "flex", justifyContent: "flex-end"}}>
-                        {/*ส่วนแสดงชื่อ User ที่พร้อมเข้า Menu ต่างๆ */}
+                        {/*ส่วนแสดงชื่อ User ที่ล็อคอิน พร้อม Menu ต่างๆ */}
                         <p>Welcome back&nbsp;&nbsp;&nbsp;
                             <Menu trigger="hover" openDelay={100} closeDelay={400} shadow="md">
                                 <Menu.Target>
@@ -95,7 +140,11 @@ const HeaderContent = ({opened, toggle}) => {
                                     </Anchor>
                                 </Menu.Target>
                                 <Menu.Dropdown>
-                                    <Menu.Item>My Account</Menu.Item>
+                                    <Menu.Item
+                                        onClick={() => setAccountModalOpened(true)}
+                                    >
+                                        My Account
+                                    </Menu.Item>
                                     <Menu.Item>My Member</Menu.Item>
                                     <Menu.Divider>
                                         <Menu.Item
@@ -139,6 +188,39 @@ const HeaderContent = ({opened, toggle}) => {
                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                     <Button onClick={closeSuccess}>Close</Button>
                 </div>
+            </Modal>
+
+            {/*Modal สำหรับ User ที่ Login*/}
+            <Modal
+                opened={accountModalOpened}
+                onClose={() => setAccountModalOpened(false)}
+                title="My Account"
+                centered
+            >
+                {user && (
+                    <>
+                        <EditableAvatar
+                            selectedMember={user}
+                            onUpload={handleProfilePictureUpload}
+                        />
+                        <Table striped highlightOnHover withTableBorder>
+                            <Table.Tbody>
+                                <Table.Tr>
+                                    <Table.Td><strong>Name:</strong></Table.Td>
+                                    <Table.Td>{user.name}</Table.Td>
+                                </Table.Tr>
+                                <Table.Tr>
+                                    <Table.Td><strong>Email:</strong></Table.Td>
+                                    <Table.Td>{user.email}</Table.Td>
+                                </Table.Tr>
+                                <Table.Tr>
+                                    <Table.Td><strong>Joined At:</strong></Table.Td>
+                                    <Table.Td>{user.created_at}</Table.Td>
+                                </Table.Tr>
+                            </Table.Tbody>
+                        </Table>
+                    </>
+                )}
             </Modal>
         </>)
 

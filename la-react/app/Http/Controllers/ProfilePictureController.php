@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -10,20 +11,26 @@ class ProfilePictureController extends Controller
 {
     public function upload(Request $request)
     {
+        $isUser = $request->has('user_id');
+//        $isMember = $request->has('member_id'); // ใช้ตรวจสอบค่า member_id แต่ในโค๊ดนี้ไม่ได้ใช้
+
+
         $request->validate([
             'profile_picture' => 'required|file|mimes:jpeg,png,jpg|max:2048',
-            'member_id' => 'required|exists:members,id',
+            $isUser ? 'user_id' : 'member_id' => 'required|exists:' . ($isUser ? 'user' : 'members') . ',id',
         ]);
 
-        $member = Member::find($request->member_id);
+        $entity = $isUser ? User::find($request->user_id) : Member::find($request->member_id);
 
-        if (!$member) {
-            return response()->json(['error' => 'Member not found'], 404);
+//        $member = Member::find($request->member_id);
+
+        if (!$entity) {
+            return response()->json(['error' => ($isUser ? 'User' : 'Member'). ' not found'], 404);
         }
 
         // ลบรูปภาพเก่าถ้ามี
-        if ($member->profile_picture) {
-            $oldPath = str_replace(asset('storage/'), '', $member->profile_picture);
+        if ($entity->profile_picture) {
+            $oldPath = str_replace(asset('storage/'), '', $entity->profile_picture);
             Storage::disk('public')->delete($oldPath);
         }
 
@@ -34,8 +41,8 @@ class ProfilePictureController extends Controller
         $fullUrl = asset('storage/' . $path);
 
         // ยันทึก URL ของรูปภาพลงในฐานข้อมูล
-        $member->profile_picture = $fullUrl;
-        $member->save();
+        $entity->profile_picture = $fullUrl;
+        $entity->save();
 
         return response()->json([
             'message' => 'Profile picture updated successfully',

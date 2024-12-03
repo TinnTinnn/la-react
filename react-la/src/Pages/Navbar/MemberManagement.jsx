@@ -301,10 +301,10 @@ export default function MemberManagement() {
                 console.log("Upload successful:", data);
 
 
-                setSelectedMember((prev) => ({
-                    ...prev,
-                    profile_picture: data.profile_picture,
-                }));
+                // setSelectedMember((prev) => ({
+                //     ...prev,
+                //     profile_picture: data.profile_picture,
+                // }));
 
                 // อัปเดตรูปใน state ของสมาชิกทั้งหมด
                 setMembers((prevMembers) =>
@@ -413,9 +413,16 @@ export default function MemberManagement() {
         setMemberToDelete(null);
     }
 
+    // ดึงข้อมูลสมาชิกเมื่อโหลดหน้า
     useEffect(() => {
-        getMembers(); // ดึงข้อมูลสมาชิก
+        getMembers();
     }, []);
+
+    // อัปเดท filteredMembers เมื่อ members เปลี่ยน
+    useEffect(() => {
+        setFilteredMembers(members); // เชื่อม filteredMembers กับ members
+    }, [members]);
+
 
     // สำหรับ รีเซ็ท errors เมื่อ Modal ปิดตัวลง
     useEffect(() => {

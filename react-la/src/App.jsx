@@ -88,7 +88,7 @@ export default function App() {
                     <AppShell.Main>
                         <Routes>
                             <Route path="/" element={<Layout/>}>
-                                <Route index element={<MemberManagement/>}/>
+                                <Route index element={<Overview/>}/>
                                 <Route path="/membermanagement" element={<MemberManagement/>}/>
                                 <Route path="/overview" element={<Overview/>}/>
                                 <Route path="/analytics" element={<Analytics/>}/>

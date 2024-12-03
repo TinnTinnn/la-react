@@ -1,10 +1,13 @@
-import {Button, Stack} from "@mantine/core";
+import {Avatar, Button, Group, Stack, Text} from "@mantine/core";
 import {useLocation, useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChartLine, faChartPie, faChartSimple, faUserGear} from "@fortawesome/free-solid-svg-icons";
+import {useContext} from "react";
+import {AppContext} from "../../Context/AppContext.jsx";
 
-function  DashboardButtons ({ toggle } ) {
+function  DashboardButtons ({  toggle } ) {
+    const { user } = useContext(AppContext)
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -21,79 +24,101 @@ function  DashboardButtons ({ toggle } ) {
     return (
         <Stack
             align="stretch"
-            justify="center"
+            justify="space-between"
             gap={0}
+            style={{ height: "100%"}}
         >
-            <Button
-                onClick={() => handleNavigate("/overview")}
-                variant="subtle"
-                radius="xs"
-                fullWidth
-                className={getButtonClassName("/overview")}
-                styles={{
-                    label: {
-                        width: '100%',
-                        textAlign: 'left',
-                        paddingLeft: '10px',
-                    },
+            <div>
+                <Button
+                    onClick={() => handleNavigate("/overview")}
+                    variant="subtle"
+                    radius="xs"
+                    fullWidth
+                    className={getButtonClassName("/overview")}
+                    styles={{
+                        label: {
+                            width: '100%',
+                            textAlign: 'left',
+                            paddingLeft: '10px',
+                        },
+                    }}
+                >
+                    <FontAwesomeIcon style={{ marginRight: '8px'}} icon={faChartLine} />
+                    Overview
+                </Button>
+                <Button
+                    onClick={() => handleNavigate("/membermanagement")}
+                    variant="subtle"
+                    radius="xs"
+                    fullWidth
+                    className={getButtonClassName("/membermanagement")}
+                    styles={{
+                        label: {
+                            width: '100%',
+                            textAlign: 'left',
+                            paddingLeft: '10px',
+                        },
+                    }}
+                >
+                    <FontAwesomeIcon style={{ marginRight: '8px'}} icon={faUserGear} />
+                    Member Management
+                </Button>
+                <Button
+                    onClick={() => handleNavigate("/analytics")}
+                    variant="subtle"
+                    radius="xs"
+                    fullWidth
+                    className={getButtonClassName("/analytics")}
+                    styles={{
+                        label: {
+                            width: '100%',
+                            textAlign: 'left',
+                            paddingLeft: '10px',
+                        },
+                    }}
+                >
+                    <FontAwesomeIcon  style={{ marginRight: '10px'}} icon={faChartSimple} />
+                    Analytics
+                </Button>
+                <Button
+                    onClick={() => handleNavigate("/saas")}
+                    variant="subtle"
+                    radius="xs"
+                    fullWidth
+                    className={getButtonClassName("/saas")}
+                    styles={{
+                        label: {
+                            width: '100%',
+                            textAlign: 'left',
+                            paddingLeft: '10px',
+                        },
+                    }}
+                >
+                    <FontAwesomeIcon style={{ marginRight: '10px'}} icon={faChartPie} />
+                    SaaS
+                </Button>
+            </div>
+
+            <Group
+                position="left"
+                spacing="sm"
+                style={{
+                    padding: "10px",
+                    borderTop: "1px solid #e0e0e0",
                 }}
             >
-                <FontAwesomeIcon style={{ marginRight: '8px'}} icon={faChartLine} />
-                Overview
-            </Button>
-            <Button
-                onClick={() => handleNavigate("/membermanagement")}
-                variant="subtle"
-                radius="xs"
-                fullWidth
-                className={getButtonClassName("/membermanagement")}
-                styles={{
-                    label: {
-                        width: '100%',
-                        textAlign: 'left',
-                        paddingLeft: '10px',
-                    },
-                }}
-            >
-                <FontAwesomeIcon style={{ marginRight: '8px'}} icon={faUserGear} />
-                Member Management
-            </Button>
-            <Button
-                onClick={() => handleNavigate("/analytics")}
-                variant="subtle"
-                radius="xs"
-                fullWidth
-                className={getButtonClassName("/analytics")}
-                styles={{
-                    label: {
-                        width: '100%',
-                        textAlign: 'left',
-                        paddingLeft: '10px',
-                    },
-                }}
-            >
-                <FontAwesomeIcon  style={{ marginRight: '10px'}} icon={faChartSimple} />
-                Analytics
-            </Button>
-            <Button
-                onClick={() => handleNavigate("/saas")}
-                variant="subtle"
-                radius="xs"
-                fullWidth
-                className={getButtonClassName("/saas")}
-                styles={{
-                    label: {
-                        width: '100%',
-                        textAlign: 'left',
-                        paddingLeft: '10px',
-                    },
-                }}
-            >
-                <FontAwesomeIcon style={{ marginRight: '10px'}} icon={faChartPie} />
-                SaaS
-            </Button>
+                <Avatar src={user?.profile_picture || null} alt={user?.name || "User"} radius="xl"/>
+                <div>
+                    <Text size="sm" weight={500}>
+                        {user?.name || "Guest User"}
+                    </Text>
+                    <Text size="xs" color="dimmed">
+                        {user?.email || "guest@exmaple.com"}
+                    </Text>
+                </div>
+            </Group>
         </Stack>
-    )
+    );
 }
 
 DashboardButtons.propTypes = {

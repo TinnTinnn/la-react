@@ -202,6 +202,7 @@ const HeaderContent = ({opened, toggle}) => {
                         <EditableAvatar
                             selectedMember={user}
                             onUpload={handleProfilePictureUpload}
+                            isUser={true}
                         />
                         <Table striped highlightOnHover withTableBorder>
                             <Table.Tbody>

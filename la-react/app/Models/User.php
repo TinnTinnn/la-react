@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_member',
+        'profile_picture'
     ];
 
     public function members()

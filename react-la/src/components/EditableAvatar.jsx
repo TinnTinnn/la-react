@@ -4,10 +4,14 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImagePortrait, faImages} from "@fortawesome/free-solid-svg-icons";
 import {AppContext} from "../Context/AppContext.jsx";
 
-function EditableAvatar({ selectedMember, onUpload}) {
+function EditableAvatar({ selectedMember, onUpload, isUser}) {
     const { user } = useContext(AppContext);
-    const checkPermission = (user, member) => {
-        console.log(user, member); // เพิ่มผลตรวจค่า user และ member
+    const checkPermission = (user, member, isUser) => {
+        // หากเป็น User อนุญาตให้ปุ่มแสดงเสมอ
+        if (isUser){
+            return true;
+        }
+        // หากต้องการแก้ไข Member ต้องตรวจสอบสิทธิ์
         return user && member && user.id === member.user_id;
     }
 
@@ -86,7 +90,7 @@ function EditableAvatar({ selectedMember, onUpload}) {
                         </Button>
 
                          {/*สำหรับอัพโหลดหรือเปลี่ยนรูปโปรไฟล์*/}
-                        {checkPermission(user, selectedMember) && (
+                        {checkPermission(user, selectedMember, isUser) && (
                             <FileButton onChange={handleFileChange} accept="image/*">
                                 {(props) => (
                                     <Button

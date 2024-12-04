@@ -15,10 +15,17 @@ class ProfilePictureController extends Controller
 //        $isMember = $request->has('member_id'); // ใช้ตรวจสอบค่า member_id แต่ในโค๊ดนี้ไม่ได้ใช้
 
 
-        $request->validate([
-            'profile_picture' => 'required|file|mimes:jpeg,png,jpg|max:2048',
-            $isUser ? 'user_id' : 'member_id' => 'required|exists:' . ($isUser ? 'user' : 'members') . ',id',
-        ]);
+        if ($isUser) {
+            $request->validate([
+                'profile_picture' => 'required|file|mimes:jpeg,png,jpg|max:2048',
+                'user_id' => 'required|exists:users,id',
+            ]);
+        } else {
+            $request->validate([
+                'profile_picture' => 'required|file|mimes:jpeg,png,jpg|max:2048',
+                'member_id' => 'required|exists:members,id',
+            ]);
+        }
 
         $entity = $isUser ? User::find($request->user_id) : Member::find($request->member_id);
 

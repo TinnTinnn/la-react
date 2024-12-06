@@ -8,6 +8,7 @@ import MembersTable from "../../components/MembersTable.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faMagnifyingGlass, faUserPlus} from "@fortawesome/free-solid-svg-icons";
 import {notifications} from "@mantine/notifications";
+
 // import  Axios from "axios";
 
 
@@ -63,6 +64,7 @@ export default function MemberManagement() {
             setFilteredMembers(data);
         }
     }
+
 
     const handleSearch = (query) => {
         const lowerQuery = query.toLowerCase();

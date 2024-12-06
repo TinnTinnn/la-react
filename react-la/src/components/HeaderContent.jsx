@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext,  useState} from "react";
 import {AppContext} from "../Context/AppContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
@@ -12,7 +12,8 @@ import EditableAvatar from "./EditableAvatar.jsx";
 import {notifications} from "@mantine/notifications";
 
 
-const HeaderContent = ({opened, toggle}) => {
+
+const HeaderContent = ({opened, toggle,}) => {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
 
@@ -26,7 +27,6 @@ const HeaderContent = ({opened, toggle}) => {
     const [openedRegister, {open: openRegister, close: closeRegister}] = useDisclosure(false);
     const [openedLogin, {open: openLogin, close: closeLogin}] = useDisclosure(false);
     const [openedSuccess, {open: openSuccess, close: closeSuccess}] = useDisclosure(false);
-
 
 
     // ฟังค์ชั่น toggle ระหว่าง Login และ Register
@@ -45,6 +45,8 @@ const HeaderContent = ({opened, toggle}) => {
         setIsLogin(true);   // เปิดฟอร์ม Login
         openLogin();        // เปิด Modal
     }
+
+
 
     async function handleLogout(e) {
         e.preventDefault();
@@ -75,6 +77,7 @@ const HeaderContent = ({opened, toggle}) => {
         }
     }
 
+    // upload รูปโปรไฟล์ของ User
     const handleProfilePictureUpload = (file) => {
         const formData = new FormData();
         formData.append("profile_picture", file);
@@ -87,23 +90,23 @@ const HeaderContent = ({opened, toggle}) => {
                 Authorization: `Bearer ${token}`,
             },
         })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            return response.json();
-        })
-        .then((data) => {
-            setUser((prevUser) => ({
-                ...prevUser,
-                profile_picture: data.profile_picture,
-            }));
-            notifications.show({
-                title: "Success",
-                message: "Profile picture updated successfully.",
-                color: "green",
-            });
-        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    profile_picture: data.profile_picture,
+                }));
+                notifications.show({
+                    title: "Success",
+                    message: "Profile picture updated successfully.",
+                    color: "green",
+                });
+            })
             .catch(() => {
                 notifications.show({
                     title: "Error",
@@ -112,6 +115,8 @@ const HeaderContent = ({opened, toggle}) => {
                 });
             });
     };
+
+
 
     return (
         <>
@@ -146,7 +151,6 @@ const HeaderContent = ({opened, toggle}) => {
                                         My Account
                                     </Menu.Item>
                                     <Menu.Item
-                                        // onClick={() => setAccountModalOpened(false)}
                                     >
                                         My Member
                                     </Menu.Item>
@@ -228,11 +232,11 @@ const HeaderContent = ({opened, toggle}) => {
                 )}
             </Modal>
         </>)
-
 }
 
+
 HeaderContent.propTypes = {
-    opened : PropTypes.bool.isRequired,
+    opened: PropTypes.bool.isRequired,
     toggle: PropTypes.func.isRequired,
 }
 export default HeaderContent;

@@ -1,7 +1,8 @@
-import {Button, Modal, Table} from "@mantine/core";
+import {Button, Modal, } from "@mantine/core";
 import PropTypes from "prop-types";
 import CreateModal from "./CreateModal.jsx";
 import EditableAvatar from "../EditableAvatar.jsx";
+import MemberInformation from "../MemberInformation.jsx";
 
 
 function ActionModal({
@@ -44,10 +45,12 @@ function ActionModal({
                     <Button onClick={() => setConfirmModalOpened(false)}>Cancel</Button>
                 </div>
             </Modal>
-            <Modal opened={readMoreModalOpened}
-                   onClose={() => setReadMoreModalOpened(false)}
-                   title="Member Information"
-                   centered
+
+            <Modal
+                opened={readMoreModalOpened}
+                onClose={() => setReadMoreModalOpened(false)}
+                title="Member Information"
+                centered
             >
                 {selectedMember && (
 
@@ -57,58 +60,7 @@ function ActionModal({
                             onUpload={(file) => handleProfilePictureUpload(file, selectedMember.id)}
                             isUser={false}
                         />
-                        <Table striped highlightOnHover withTableBorder>
-                            <Table.Tbody>
-                                <Table.Tr>
-                                    <Table.Td><strong>ID:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.id}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Member Name:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.member_name}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Age:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.age}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Gender:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.gender}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Phone Number:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.phone_number}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Membership Type:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.membership_type}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Email:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.email}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Address:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.address}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Notes:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.notes}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Created By:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.user.name}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Created At:</strong></Table.Td>
-                                    <Table.Td>{new Date(selectedMember.created_at).toLocaleString()}</Table.Td>
-                                </Table.Tr>
-                                <Table.Tr>
-                                    <Table.Td><strong>Expiration Date:</strong></Table.Td>
-                                    <Table.Td>{selectedMember.expiration_date}</Table.Td>
-                                </Table.Tr>
-                            </Table.Tbody>
-                        </Table>
+                        <MemberInformation selectedMember={selectedMember}/>
                     </>
                 )}
 

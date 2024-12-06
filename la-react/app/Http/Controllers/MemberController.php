@@ -165,11 +165,18 @@ class MemberController extends Controller implements HasMiddleware
         // จำนวนสมาชิกที่หมดอายุ
         $expiredMembers = Member::where('expiration_date', '<=', $today)->count();
 
+        // จำนวนสมาชิกตามประเภท
+        $membershipType = Member::select('membership_type', \DB::raw('count(*) as total'))
+            ->groupBy('membership_type')
+            ->pluck('total', 'membership_type')
+            ->toArray();
+
         return response()->json([
             'totalMembers' => $totalMembers,
             'newMembers' => $newMembers,
             'activeMembers' => $activeMembers,
             'expiredMembers' => $expiredMembers,
+            'membershipType' => $membershipType,
         ], 200);
     }
 

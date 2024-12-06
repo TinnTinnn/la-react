@@ -1,8 +1,9 @@
-import {Card, Text, Grid, Container, Group, Title, Paper, RingProgress} from '@mantine/core';
+import {Card, Text, Grid, Container, Group, Title, Paper,} from '@mantine/core';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import {useEffect, useState} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
+import {DonutChart} from "@mantine/charts";
 
 const fakedata = [
     { date: 'Jan', apples: 4000, oranges: 2400, tomatoes: 2400 },
@@ -18,6 +19,7 @@ export default function Overview() {
         newMembers: 0,
         activeMembers: 0,
         expiredMembers: 0,
+        membershipType: { Platinum: 0, Gold: 0, Silver: 0 },
     });
 
     useEffect(() => {
@@ -38,6 +40,7 @@ export default function Overview() {
                         newMembers: data.newMembers,
                         activeMembers: data.activeMembers,
                         expiredMembers: data.expiredMembers,
+                        membershipType: data.membershipType,
                     });
                 } else {
                     console.error("Failed to fetch member stats", data);
@@ -49,6 +52,13 @@ export default function Overview() {
 
         fetchStats();
     }, []);  // useEffect จะทำงานแค่ครั้งเดียวเมื่อ component ถูก mount
+
+    // จัดเตรียมข้อมูลสำหรับ DonutChart
+    const DonutChartData = [
+        { name: 'Platinum', value: stats.membershipType.Platinum, color: '#e5e4e2'},
+        { name: 'Gold', value: stats.membershipType.Gold, color: '#FFD700'},
+        { name: 'Silver', value: stats.membershipType.Silver, color: '#C0C0C0'},
+    ];
 
 
     return (
@@ -77,16 +87,16 @@ export default function Overview() {
                 <Grid.Col span={3}>
                     <Card shadow="md" padding="lg" radius="md" withBorder>
                         <Group position="apart">
-                            <Text weight={700} size="lg">Performance</Text>
+                            <Text weight={700} size="lg">Membership Type</Text>
                         </Group>
-                        <RingProgress
-                            size={80}
-                            thickness={8}
-                            roundCaps
-                            sections={[{ value: 80, color: 'teal' }]}
-                            label={<Text align="center" size="md">80%</Text>}
+                        <DonutChart
+                            size={75}
+                            data={DonutChartData}
+                            radius={0.8}
+                            strokeWidth={1}
+                            label={({ value }) =>  `${value}`}
                         />
-                        <Text color="dimmed" size="sm">Efficiency rate</Text>
+                        <Text color="dimmed" size="sm">Number of members by type</Text>
                     </Card>
                 </Grid.Col>
             </Grid>

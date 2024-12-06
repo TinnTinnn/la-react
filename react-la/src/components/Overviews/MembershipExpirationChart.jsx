@@ -1,5 +1,5 @@
 import PropTypes  from "prop-types";
-import {Card, Group, RingProgress, Stack, Text} from "@mantine/core";
+import {Card, Group, RingProgress, Stack, Table, Text} from "@mantine/core";
 import '@mantine/charts/styles.css';
 
 
@@ -32,6 +32,24 @@ const MembershipExpirationChart = ({activeMembers, expiredMembers, totalMembers}
                     />
                 </Stack>
             </Group>
+            <Table mt="md">
+                <Table.Thead>
+                <Table.Tr>
+                    <Table.Th>Membership Type</Table.Th>
+                    <Table.Th>Count</Table.Th>
+                </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                <Table.Tr>
+                    <Table.Td>Active Members</Table.Td>
+                    <Table.Td>{activeMembers}</Table.Td>
+                </Table.Tr>
+                <Table.Tr>
+                    <Table.Td>Expired Members</Table.Td>
+                    <Table.Td>{expiredMembers}</Table.Td>
+                </Table.Tr>
+                </Table.Tbody>
+            </Table>
         </Card>
     )
 }

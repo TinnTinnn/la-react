@@ -145,7 +145,11 @@ const HeaderContent = ({opened, toggle}) => {
                                     >
                                         My Account
                                     </Menu.Item>
-                                    <Menu.Item>My Member</Menu.Item>
+                                    <Menu.Item
+                                        // onClick={() => setAccountModalOpened(false)}
+                                    >
+                                        My Member
+                                    </Menu.Item>
                                     <Menu.Divider>
                                         <Menu.Item
                                             onClick={handleLogout}
@@ -190,7 +194,7 @@ const HeaderContent = ({opened, toggle}) => {
                 </div>
             </Modal>
 
-            {/*Modal สำหรับ User ที่ Login*/}
+            {/*Modal สำหรับ User ที่ Login เพื่อดูและจัดการ Account ตัวเอง*/}
             <Modal
                 opened={accountModalOpened}
                 onClose={() => setAccountModalOpened(false)}

@@ -10,10 +10,11 @@ export default function MemberAge({BarChartData}) {
                 <Text weight={700} size="lg">Member Age</Text>
             </Group>
             <BarChart
-                h={200}
+                h={300}
                 data={BarChartData}
                 dataKey="age"
                 withLegend
+                minBarSize={10}
                 series={[
                     { name: 'Male', color: 'blue.6' },
                     { name: 'Female', color: 'teal.6' },

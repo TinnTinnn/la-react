@@ -1,5 +1,5 @@
 import {Grid, Container, Title, Paper,} from '@mantine/core';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
 import {useEffect, useState} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
@@ -7,11 +7,18 @@ import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.js
 import MemberAge from "../../components/Overviews/MemberAge.jsx";
 
 const fakedata = [
-    { date: 'Jan', apples: 4000, oranges: 2400, tomatoes: 2400 },
-    { date: 'Feb', apples: 3000, oranges: 1398, tomatoes: 2210 },
-    { date: 'Mar', apples: 2000, oranges: 9800, tomatoes: 2290 },
-    { date: 'Apr', apples: 2780, oranges: 3908, tomatoes: 2000 },
-    { date: 'May', apples: 1890, oranges: 4800, tomatoes: 2181 },
+    {date: 'Jan', apples: 4000, oranges: 2400, tomatoes: 2400},
+    {date: 'Feb', apples: 3000, oranges: 1398, tomatoes: 2210},
+    {date: 'Mar', apples: 2000, oranges: 9800, tomatoes: 2290},
+    {date: 'Apr', apples: 2780, oranges: 3908, tomatoes: 2000},
+    {date: 'May', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Jun', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Jul', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Aug', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Sep', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Oct', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Nov', apples: 1890, oranges: 4800, tomatoes: 2181},
+    {date: 'Dec', apples: 1890, oranges: 4800, tomatoes: 2181},
 ];
 
 
@@ -21,8 +28,8 @@ export default function Overview() {
         newMembers: 0,
         activeMembers: 0,
         expiredMembers: 0,
-        membershipType: { Platinum: 0, Gold: 0, Silver: 0 , Bronze: 0 ,},
-        ageRanges: {"10-20": 0, "21-30": 0, "31-40": 0, "41-50": 0, "51-60":0}
+        membershipType: {Platinum: 0, Gold: 0, Silver: 0, Bronze: 0,},
+        ageRanges: {"10-20": 0, "21-30": 0, "31-40": 0, "41-50": 0, "51-60": 0}
     });
 
     useEffect(() => {
@@ -61,24 +68,49 @@ export default function Overview() {
 
 // จัดเตรียมข้อมูลสำหรับ DonutChart
     const DonutChartData = [
-        { name: 'Platinum', value: stats.membershipType.Platinum, color: '#e5e4e2'},
-        { name: 'Gold', value:  stats.membershipType.Gold, color: '#FFD700'},
-        { name: 'Silver', value:  stats.membershipType.Silver, color: '#C0C0C0'},
-        { name: 'Bronze', value:  stats.membershipType.Bronze, color: ' #CD7F32'},
+        {name: 'Platinum', value: stats.membershipType.Platinum, color: '#e5e4e2'},
+        {name: 'Gold', value: stats.membershipType.Gold, color: '#FFD700'},
+        {name: 'Silver', value: stats.membershipType.Silver, color: '#C0C0C0'},
+        {name: 'Bronze', value: stats.membershipType.Bronze, color: ' #CD7F32'},
     ];
 
     // จัดเตรียมข้อมูลสำหรับ Barchart
     const BarChartData = [
-        { age: '10-20', Male: 1200, Female: 900, Other: 200 },
-        { age: '21-30', Male: 1900, Female: 1200, Other: 400 },
-        { age: '31-40', Male: 400, Female: 1000, Other: 200 },
-        { age: '41-50', Male: 1000, Female: 200, Other: 800 },
-        { age: '51-60', Male: 800, Female: 1400, Other: 1200 },
+        {
+            age: '10-20 Years',
+            Male: stats.ageRanges["10-20"].Male,
+            Female: stats.ageRanges["10-20"].Female,
+            Other: stats.ageRanges["10-20"].Other
+        },
+        {
+            age: '21-30 Years',
+            Male: stats.ageRanges["21-30"].Male,
+            Female: stats.ageRanges["21-30"].Female,
+            Other: stats.ageRanges["21-30"].Other
+        },
+        {
+            age: '31-40 Years',
+            Male: stats.ageRanges["31-40"].Male,
+            Female: stats.ageRanges["31-40"].Female,
+            Other: stats.ageRanges["31-40"].Other
+        },
+        {
+            age: '41-50 Years',
+            Male: stats.ageRanges["41-50"].Male,
+            Female: stats.ageRanges["41-50"].Female,
+            Other: stats.ageRanges["41-50"].Other
+        },
+        {
+            age: '51-60 Years',
+            Male: stats.ageRanges["51-60"].Male,
+            Female: stats.ageRanges["51-60"].Female,
+            Other: stats.ageRanges["51-60"].Other
+        },
     ]
 
 
     return (
-        <Container size="xl" style={{ marginTop: '50px' }}>
+        <Container size="xl" style={{marginTop: '50px'}}>
             <Title order={2} align="center" mb="lg">
                 Dashboard Overview
             </Title>
@@ -93,11 +125,11 @@ export default function Overview() {
                 </Grid.Col>
 
                 <Grid.Col span={4}>
-                        <MembershipExpirationChart
-                            activeMembers={stats.activeMembers}
-                            expiredMembers={stats.expiredMembers}
-                            totalMembers={stats.totalMembers}
-                        />
+                    <MembershipExpirationChart
+                        activeMembers={stats.activeMembers}
+                        expiredMembers={stats.expiredMembers}
+                        totalMembers={stats.totalMembers}
+                    />
                 </Grid.Col>
 
                 <Grid.Col span={4}>
@@ -108,23 +140,23 @@ export default function Overview() {
 
                 <Grid.Col span={12}>
                     <MemberAge
-                         BarChartData={BarChartData}
+                        BarChartData={BarChartData}
                     />
                 </Grid.Col>
             </Grid>
 
             {/* ส่วนล่างสำหรับแสดงข้อมูลรายละเอียด */}
             <Paper shadow="md" p="lg" radius="md" mt="sm">
-                <Title order={3} mb="md">Sales Overview</Title>
-                <LineChart width={600} height={300} data={fakedata}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="apples" stroke="indigo" />
-                    <Line type="monotone" dataKey="oranges" stroke="blue" />
-                    <Line type="monotone" dataKey="tomatoes" stroke="teal" />
+                <Title order={3} mb="md">Member Register Overview</Title>
+                <LineChart width={1100} height={300} data={fakedata}>
+                    <CartesianGrid strokeDasharray="3 3"/>
+                    <XAxis dataKey="date"/>
+                    <YAxis/>
+                    <Tooltip/>
+                    <Legend/>
+                    <Line type="monotone" dataKey="apples" stroke="indigo"/>
+                    <Line type="monotone" dataKey="oranges" stroke="blue"/>
+                    <Line type="monotone" dataKey="tomatoes" stroke="teal"/>
                 </LineChart>
             </Paper>
         </Container>

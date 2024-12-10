@@ -172,11 +172,11 @@ class MemberController extends Controller implements HasMiddleware
 
         // จำนวนสมาชิกตามช่วงอายุ
         $ageRanges = [
-            '10-20' => Member::whereBetween('age', [10, 20])->count(),
-            '21-30' => Member::whereBetween('age', [21, 30])->count(),
-            '31-40' => Member::whereBetween('age', [31, 40])->count(),
-            '41-50' => Member::whereBetween('age', [41, 50])->count(),
-            '51-60' => Member::whereBetween('age', [51, 60])->count(),
+            '10-20' => $this->getGenderCountByAgeRange(10, 20),
+            '21-30' => $this->getGenderCountByAgeRange(21, 30),
+            '31-40' => $this->getGenderCountByAgeRange(31, 40),
+            '41-50' => $this->getGenderCountByAgeRange(41, 50),
+            '51-60' => $this->getGenderCountByAgeRange(51, 60),
         ];
 
         return response()->json([
@@ -187,6 +187,24 @@ class MemberController extends Controller implements HasMiddleware
             'membershipType' => $membershipType,
             'ageRanges' => $ageRanges,
         ], 200);
+    }
+
+    // ฟังชั่นสำหรับดึงจำนวนสมาชิกแบบแยกตามเพศในช่วงอายุ
+
+    public function getGenderCountByAgeRange($minAge, $maxAge)
+    {
+        $counts = Member::select('gender', \DB::raw('count(*) as total'))
+            ->whereBetween('age', [$minAge, $maxAge])
+            ->groupBy('gender')
+            ->pluck('total', 'gender')
+            ->toArray();
+
+        return [
+            'Male' => $counts['Male'] ?? 0,
+            'Female' => $counts['Female'] ?? 0,
+            'Other' => $counts['Other'] ?? 0,
+            'Total' => array_sum($counts),
+        ];
     }
 
 

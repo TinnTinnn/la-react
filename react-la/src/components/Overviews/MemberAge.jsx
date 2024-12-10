@@ -13,6 +13,7 @@ export default function MemberAge({BarChartData}) {
                 h={300}
                 data={BarChartData}
                 dataKey="age"
+                tooltipAnimationDuration={200}
                 withLegend
                 minBarSize={10}
                 series={[

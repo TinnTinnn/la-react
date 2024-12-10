@@ -20,9 +20,12 @@ class MemberFactory extends Factory
      */
     public function definition(): array
     {
-        $createdAt = now()->subMonths(rand(0,4));
+        // สุ่มวันที่ในช่วงตั้งแต่เดือนมกราคมของปีนี้จนถึงปัจจุบัน
+        $startOfYear = now()->startOfYear(); // วันที่ 1 ของ มกราคมปีนี้
+        $createdAt = $this->faker->dateTimeBetween($startOfYear, now());
 
-        $expirationDate = $createdAt->copy()->addMonth(rand(1,12));
+        // กำหนดวันหมดอายุโดยเพิ่ม 1 - 12 เดือนจากวันที่สมัคร
+        $expirationDate = (clone $createdAt)->add(new DateInterval('P'. rand(1, 12). 'M'));
         return [
             'user_id' =>User::factory(),
             'membership_type' => $this->faker->randomElement(['Platinum', 'Gold', 'Silver', 'Bronze']),

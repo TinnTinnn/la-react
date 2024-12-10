@@ -179,6 +179,12 @@ class MemberController extends Controller implements HasMiddleware
             '51-60' => $this->getGenderCountByAgeRange(51, 60),
         ];
 
+        // จำนวนสมาชิกที่ลงทะบเียนในแต่ละเดือน (เริ่มตั้งแต่เดือน มกราคม)
+        $registeredMember = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $registeredMember[Carbon::create()->month($month)->format('F')] = $this->getGenderCountByMonth($month);
+        }
+
         return response()->json([
             'totalMembers' => $totalMembers,
             'newMembers' => $newMembers,
@@ -186,7 +192,21 @@ class MemberController extends Controller implements HasMiddleware
             'expiredMembers' => $expiredMembers,
             'membershipType' => $membershipType,
             'ageRanges' => $ageRanges,
+            'registeredMembers' => $registeredMember,
         ], 200);
+    }
+
+
+
+    // ฟังค์ชั่นเพื่อดึงข้อมูลจำนวนสมาชิกที่ลงทะเบียนในเดือนที่กำหนด
+    public function getGenderCountByMonth($month)
+    {
+        return[
+            'Male' => Member::whereMonth('created_at', $month)->where('gender', 'Male')->count(),
+            'Female' => Member::whereMonth('created_at', $month)->where('gender', 'Female')->count(),
+            'Other' => Member::whereMonth('created_at', $month)->where('gender', 'Other')->count(),
+            'Total' => Member::whereMontH('created_at', $month)->count(),
+        ];
     }
 
     // ฟังชั่นสำหรับดึงจำนวนสมาชิกแบบแยกตามเพศในช่วงอายุ

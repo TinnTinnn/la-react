@@ -1,25 +1,10 @@
-import {Grid, Container, Title, Paper,} from '@mantine/core';
-import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
+import {Grid, Container, Title,} from '@mantine/core';
 import {useEffect, useState} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
 import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.jsx";
 import MemberAge from "../../components/Overviews/MemberAge.jsx";
-
-const fakedata = [
-    {date: 'Jan', apples: 4000, oranges: 2400, tomatoes: 2400},
-    {date: 'Feb', apples: 3000, oranges: 1398, tomatoes: 2210},
-    {date: 'Mar', apples: 2000, oranges: 9800, tomatoes: 2290},
-    {date: 'Apr', apples: 2780, oranges: 3908, tomatoes: 2000},
-    {date: 'May', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Jun', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Jul', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Aug', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Sep', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Oct', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Nov', apples: 1890, oranges: 4800, tomatoes: 2181},
-    {date: 'Dec', apples: 1890, oranges: 4800, tomatoes: 2181},
-];
+import MemberRegistered from "../../components/Overviews/MemberRegistered.jsx";
 
 
 export default function Overview() {
@@ -29,7 +14,22 @@ export default function Overview() {
         activeMembers: 0,
         expiredMembers: 0,
         membershipType: {Platinum: 0, Gold: 0, Silver: 0, Bronze: 0,},
-        ageRanges: {"10-20": 0, "21-30": 0, "31-40": 0, "41-50": 0, "51-60": 0}
+        ageRanges: {"10-20": 0, "21-30": 0, "31-40": 0, "41-50": 0, "51-60": 0,},
+        registeredMembers: {
+            "January": 0,
+            "February": 0,
+            "March": 0,
+            "April": 0,
+            "May": 0,
+            "June": 0,
+            "July": 0,
+            "August": 0,
+            "September": 0,
+            "October": 0,
+            "November": 0,
+            "December": 0
+        },
+
     });
 
     useEffect(() => {
@@ -53,6 +53,7 @@ export default function Overview() {
                         expiredMembers: data.expiredMembers,
                         membershipType: data.membershipType,
                         ageRanges: data.ageRanges,
+                        registeredMembers: data.registeredMembers,
                     });
                 } else {
                     console.error("Failed to fetch member stats", data);
@@ -66,7 +67,7 @@ export default function Overview() {
     }, []);  // useEffect จะทำงานแค่ครั้งเดียวเมื่อ component ถูก mount
 
 
-// จัดเตรียมข้อมูลสำหรับ DonutChart
+    // จัดเตรียมข้อมูลสำหรับ DonutChart
     const DonutChartData = [
         {name: 'Platinum', value: stats.membershipType.Platinum, color: '#e5e4e2'},
         {name: 'Gold', value: stats.membershipType.Gold, color: '#FFD700'},
@@ -108,6 +109,81 @@ export default function Overview() {
         },
     ]
 
+    const LineChartData = [
+        {
+            date: 'Jan',
+            Male: stats.registeredMembers.January.Male,
+            Female: stats.registeredMembers.January.Female,
+            Other: stats.registeredMembers.January.Other,
+        },
+        {
+            date: 'Feb',
+            Male: stats.registeredMembers.February.Male,
+            Female: stats.registeredMembers.February.Female,
+            Other: stats.registeredMembers.February.Other
+        },
+        {
+            date: 'Mar',
+            Male: stats.registeredMembers.March.Male,
+            Female: stats.registeredMembers.March.Female,
+            Other: stats.registeredMembers.March.Other
+        },
+        {
+            date: 'Apr',
+            Male: stats.registeredMembers.April.Male,
+            Female: stats.registeredMembers.April.Female,
+            Other: stats.registeredMembers.April.Other
+        },
+        {
+            date: 'May',
+            Male: stats.registeredMembers.May.Male,
+            Female: stats.registeredMembers.May.Female,
+            Other: stats.registeredMembers.May.Other
+        },
+        {
+            date: 'Jun',
+            Male: stats.registeredMembers.June.Male,
+            Female: stats.registeredMembers.June.Female,
+            Other: stats.registeredMembers.June.Other
+        },
+        {
+            date: 'Jul',
+            Male: stats.registeredMembers.July.Male,
+            Female: stats.registeredMembers.July.Female,
+            Other: stats.registeredMembers.July.Other
+        },
+        {
+            date: 'Aug',
+            Male: stats.registeredMembers.August.Male,
+            Female: stats.registeredMembers.August.Female,
+            Other: stats.registeredMembers.August.Other
+        },
+        {
+            date: 'Sep',
+            Male: stats.registeredMembers.September.Male,
+            Female: stats.registeredMembers.September.Female,
+            Other: stats.registeredMembers.September.Other
+        },
+        {
+            date: 'Oct',
+            Male: stats.registeredMembers.October.Male,
+            Female: stats.registeredMembers.October.Female,
+            Other: stats.registeredMembers.October.Other
+        },
+        {
+            date: 'Nov',
+            Male: stats.registeredMembers.November.Male,
+            Female: stats.registeredMembers.November.Female,
+            Other: stats.registeredMembers.November.Other
+        },
+        {
+            date: 'Dec',
+            Male: stats.registeredMembers.December.Male,
+            Female: stats.registeredMembers.December.Female,
+            Other: stats.registeredMembers.December.Other
+        },
+    ];
+
 
     return (
         <Container size="xl" style={{marginTop: '50px'}}>
@@ -139,26 +215,19 @@ export default function Overview() {
                 </Grid.Col>
 
                 <Grid.Col span={12}>
+
+                    <MemberRegistered
+                        LineChartData={LineChartData}
+                    />
+                </Grid.Col>
+
+                <Grid.Col span={12}>
                     <MemberAge
                         BarChartData={BarChartData}
                     />
                 </Grid.Col>
             </Grid>
 
-            {/* ส่วนล่างสำหรับแสดงข้อมูลรายละเอียด */}
-            <Paper shadow="md" p="lg" radius="md" mt="sm">
-                <Title order={3} mb="md">Member Register Overview</Title>
-                <LineChart width={1100} height={300} data={fakedata}>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis dataKey="date"/>
-                    <YAxis/>
-                    <Tooltip/>
-                    <Legend/>
-                    <Line type="monotone" dataKey="apples" stroke="indigo"/>
-                    <Line type="monotone" dataKey="oranges" stroke="blue"/>
-                    <Line type="monotone" dataKey="tomatoes" stroke="teal"/>
-                </LineChart>
-            </Paper>
         </Container>
     );
 }

@@ -11,6 +11,7 @@ export default function Overview() {
     const [stats, setStats] = useState({
         totalMembers: 0,
         newMembers: 0,
+        todayMembers: 0,
         activeMembers: 0,
         expiredMembers: 0,
         membershipType: {Platinum: 0, Gold: 0, Silver: 0, Bronze: 0,},
@@ -49,6 +50,7 @@ export default function Overview() {
                     setStats({
                         totalMembers: data.totalMembers,
                         newMembers: data.newMembers,
+                        todayMembers: data.todayMembers,
                         activeMembers: data.activeMembers,
                         expiredMembers: data.expiredMembers,
                         membershipType: data.membershipType,
@@ -197,6 +199,7 @@ export default function Overview() {
                     <MemberStatsCard
                         totalMembers={stats.totalMembers}
                         newMembers={stats.newMembers}
+                        todayMembers={stats.todayMembers}
                     />
                 </Grid.Col>
 

@@ -1,4 +1,4 @@
-import {Card, Group, Paper, Text, Title} from "@mantine/core";
+import {Card, Group,Text, } from "@mantine/core";
 import {LineChart} from "@mantine/charts";
 
 

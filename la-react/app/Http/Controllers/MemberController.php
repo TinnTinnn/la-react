@@ -157,6 +157,11 @@ class MemberController extends Controller implements HasMiddleware
             ->whereYear('created_at', now()->year)
             ->count();
 
+        // จำนวนสมาชิกที่สมัครวันนี้
+        $todayMembers = Member::whereDay('created_at', now()->day)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
         // กำหนดวันที่วันนี้
         $today = Carbon::today();
         // จำนวนสมาชิกที่ยังไม่หมดอายุ
@@ -188,6 +193,7 @@ class MemberController extends Controller implements HasMiddleware
         return response()->json([
             'totalMembers' => $totalMembers,
             'newMembers' => $newMembers,
+            'todayMembers' => $todayMembers,
             'activeMembers' => $activeMembers,
             'expiredMembers' => $expiredMembers,
             'membershipType' => $membershipType,

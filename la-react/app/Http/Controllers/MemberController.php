@@ -21,10 +21,10 @@ class MemberController extends Controller implements HasMiddleware
         return [
             new \Illuminate\Routing\Controllers\Middleware(
                 'auth:sanctum', except: [
-                    'index',
-                    'show',
-                    'memberOverview',
-                    ]
+                'index',
+                'show',
+                'memberOverview',
+            ]
             )
         ];
     }
@@ -147,7 +147,6 @@ class MemberController extends Controller implements HasMiddleware
     }
 
 
-
     public function memberOverview(): JsonResponse
     {
         // จำนวนสมาชิกทั้งหมด
@@ -171,12 +170,22 @@ class MemberController extends Controller implements HasMiddleware
             ->pluck('total', 'membership_type')
             ->toArray();
 
+        // จำนวนสมาชิกตามช่วงอายุ
+        $ageRanges = [
+            '10-20' => Member::whereBetween('age', [10, 20])->count(),
+            '21-30' => Member::whereBetween('age', [21, 30])->count(),
+            '31-40' => Member::whereBetween('age', [31, 40])->count(),
+            '41-50' => Member::whereBetween('age', [41, 50])->count(),
+            '51-60' => Member::whereBetween('age', [51, 60])->count(),
+        ];
+
         return response()->json([
             'totalMembers' => $totalMembers,
             'newMembers' => $newMembers,
             'activeMembers' => $activeMembers,
             'expiredMembers' => $expiredMembers,
             'membershipType' => $membershipType,
+            'ageRanges' => $ageRanges,
         ], 200);
     }
 

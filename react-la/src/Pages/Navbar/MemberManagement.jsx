@@ -25,8 +25,28 @@ export default function MemberManagement() {
     const [editModalOpened, setEditModalOpened] = useState(false);
     const [memberToEdit, setMemberToEdit] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("Profile Picture here");
-    const [filteredMembers, setFilteredMembers] = useState(members);
 
+
+
+
+    // สำหรับการทำ Paginate
+    const [filteredMembers, setFilteredMembers] = useState(members); // ผลลัพธ์การ search
+
+    const [activePage, setActivePage] = useState(1); // หน้า Paginate ที่กำหนด
+    const itemsPerPage = 6; // จำนวนสมาชิกต่อหน้า
+
+    // คำนวณความยาวหน้า
+    // const totalMembers = members.length;
+    // const totalPages = Math.ceil(totalMembers / itemsPerPage);
+
+    // คำนวณเริ่มต้นและสิ้นสุดของหน้า
+    const startIndex = (activePage - 1) * itemsPerPage;
+    const currentMembers = filteredMembers.slice(startIndex, startIndex + itemsPerPage);
+
+    // ฟังค์ชั่นสำหรับเปลี่ยนหน้า
+    const handlePageChange = (page) => {
+        setActivePage(page);
+    }
 
     // สำหรับ การตรวจสอบ user กรอก หมายเลขโทรศัพท์
     const isValidPhoneNumber = (phone) => {
@@ -66,10 +86,11 @@ export default function MemberManagement() {
     }
 
 
+
     const handleSearch = (query) => {
         const lowerQuery = query.toLowerCase();
         if (query === "") {
-            setFilteredMembers(members);
+            setFilteredMembers(members); // คืนค่าข้อมูลทั้งหมด
         } else {
             const filteredResults = members.filter(member =>
                 member.member_name.toLowerCase().includes(lowerQuery) ||
@@ -78,8 +99,10 @@ export default function MemberManagement() {
                 member.email.toLowerCase().includes(lowerQuery) ||
                 member.membership_type.toLowerCase().includes(lowerQuery)
             );
-            setFilteredMembers(filteredResults);
+            setFilteredMembers(filteredResults); // อัปเดทผลการค้นหา
         }
+        // สำหรับรีเซ็ทหน้าไปที่ 1 หลังการค้นหา เพราะเคยเกิดเหตุการณ์ อยู่หน้าอื่นแล้วแจ้งว่าไม่พบ ทั้งๆที่พบแล้วแต่มันอยู๋หน้าที่1
+        setActivePage(1);
     }
 
     async function handleCreate(e) {
@@ -507,7 +530,11 @@ export default function MemberManagement() {
 
             {/*สำหรับโหลด Table จาก component MembersTable*/}
             <MembersTable
-                members={filteredMembers}
+                members={currentMembers}
+                totalMembers={filteredMembers.length} // ส่งจำนวนสมาชิกทั้งหมด หลังกรองแล้ว
+                itemsPerPage={itemsPerPage}
+                activePage={activePage}
+                onPageChange={handlePageChange}
                 handleReadMore={handleReadMore}
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}

@@ -45,12 +45,13 @@ h1 {
     text-align: center;
 }
 
+
 .text-center {
-    text-align: center;
+    /*text-align: center;*/
 }
 
 th {
-    text-align: center !important;
+    /*text-align: center !important;*/
 }
 
 .error {

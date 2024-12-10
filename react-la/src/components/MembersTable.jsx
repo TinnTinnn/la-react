@@ -1,27 +1,15 @@
 import {Button, Menu, Table, Pagination, Avatar} from "@mantine/core";
 import PropTypes from "prop-types";
-import {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faCommentDots, faEllipsisVertical,  faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
 
 
-function MembersTable({members, handleReadMore, handleEdit, handleDelete,}) {
-
-    // สำหรับการทำ Paginate
-    const [activePage, setActivePage] = useState(1);
-    const itemsPerPage = 6; // จำนวนสมาชิกต่อหน้า
-
-    // คำนวณความยาวหน้า
-    const totalMembers = members.length;
-    const totalPages = Math.ceil(totalMembers / itemsPerPage);
-
-    // คำนวณเริ่มต้นและสิ้นสุดของหน้า
-    const startIndex = (activePage - 1) * itemsPerPage;
-    const currentMembers = members.slice(startIndex, startIndex + itemsPerPage);
+function MembersTable({members,totalMembers, itemsPerPage, activePage, onPageChange, handleReadMore, handleEdit, handleDelete,}) {
+    const totalPages = Math.ceil(totalMembers / itemsPerPage); // คำนวณจำนวนหน้า
 
     return (
         <>
-            {currentMembers.length > 0 ? (
+            {members.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
                     <Table.Thead>
                         <Table.Tr>
@@ -35,7 +23,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete,}) {
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
-                        {currentMembers.map((member) =>
+                        {members.map((member) =>
                             <Table.Tr key={member.id}>
                                 <Table.Td>{member.id}</Table.Td>
                                 <Table.Td>
@@ -44,7 +32,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete,}) {
                                         alt={`${member.profile_picture}'s Profile Picture`}
                                         size={50}
                                         radius="xl"
-                                        styles={{root: {margin: 'auto'}}}
+                                        // styles={{root: {margin: 'auto'}}}
                                     />
                                 </Table.Td>
                                 <Table.Td>{member.member_name}</Table.Td>
@@ -93,7 +81,7 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete,}) {
             <Pagination
                 total={totalPages}
                 page={activePage}
-                onChange={setActivePage}
+                onChange={onPageChange}
                 style={{marginTop: 20}}
             />
 
@@ -105,11 +93,20 @@ function MembersTable({members, handleReadMore, handleEdit, handleDelete,}) {
 MembersTable.propTypes = {
     members: PropTypes.arrayOf(
         PropTypes.shape({
+            id: PropTypes.number.isRequired,
             member_name: PropTypes.string.isRequired,
             membership_type: PropTypes.string.isRequired,
-            expiration_date: PropTypes.string.isRequired,
+            email: PropTypes.string.isRequired,
+            profile_picture: PropTypes.string,
+            user: PropTypes.shape({
+                name: PropTypes.string.isRequired,
+            }).isRequired,
         })
     ).isRequired,
+    totalMembers: PropTypes.number.isRequired, // จำนวนสมาชิกทั้งหมด
+    itemsPerPage: PropTypes.number.isRequired, // จำนวนสมาชิกต่อหน้า
+    activePage: PropTypes.number.isRequired, // หน้าปัจจุบัน
+    onPageChange: PropTypes.func.isRequired, // ฟังก์ชันสำหรับเปลี่ยนหน้า
     handleReadMore: PropTypes.func.isRequired,
     handleEdit: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,

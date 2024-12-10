@@ -8,10 +8,10 @@ const MembershipExpirationChart = ({activeMembers, expiredMembers, totalMembers}
     const expiredMemberPercentage = (expiredMembers / totalMembers) * 100;
 
     return (
-        <Card shadow="md" padding="lg" radius="md" withBorder>
-            <Group posion="apart">
+        <Card shadow="md" padding="md" radius="md" withBorder>
+            <Group posion="apart" justify="space-between">
                 <Stack align="center" spacing="xs">
-                    <Text weight={700} size="lg">Active Members</Text>
+                    <Text weight={700} size="md" >Active</Text>
                     <RingProgress
                         size={80}
                         thickness={8}
@@ -21,7 +21,7 @@ const MembershipExpirationChart = ({activeMembers, expiredMembers, totalMembers}
                     />
                 </Stack>
                 <Stack align="center" spacing="xs">
-                    <Text weight={700} size="lg">Expired Members</Text>
+                    <Text weight={700} size="md">Expired</Text>
 
                     <RingProgress
                         size={80}
@@ -32,7 +32,7 @@ const MembershipExpirationChart = ({activeMembers, expiredMembers, totalMembers}
                     />
                 </Stack>
             </Group>
-            <Table mt="md">
+            <Table mt="sm">
                 <Table.Thead>
                 <Table.Tr>
                     <Table.Th>Membership Type</Table.Th>

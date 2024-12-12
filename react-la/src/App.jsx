@@ -25,9 +25,27 @@ export default function App() {
     const {user} = useContext(AppContext);
     const [opened, {toggle}] = useDisclosure();
     const theme = createTheme({
+        breakpoints: {
+            xs: '30em',
+            sm: '48em',
+            md: '64em',
+            lg: '74em',
+            xl: '90em',
+        },
         fontFamily: 'Open Sans, sans-serif',
         colors: {
-            primary: ['#E0F7FA', '#B2EBF2', '#80DEEA', '#4DD0E1', '#26C6DA', '#00BCD4', '#00ACC1', '#0097A7', '#00838F', '#00695C'],
+            primary: [
+                '#E0F7FA',
+                '#B2EBF2',
+                '#80DEEA',
+                '#4DD0E1',
+                '#26C6DA',
+                '#00BCD4',
+                '#00ACC1',
+                '#0097A7',
+                '#00838F',
+                '#00695C'
+            ],
         },
     });
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);

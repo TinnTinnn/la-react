@@ -1,19 +1,14 @@
-import {Button, Text} from "@mantine/core";
+import {Title} from "@mantine/core";
+import {Container} from "@mantine/core";
 
 export default function Saas () {
     return(
         <>
-        <Text style={{ marginTop: '80px' }}>SaaS page</Text>
-            <Button
-                sx={{
-                    backgroundColor: 'red',
-                    '&:hover': {
-                        backgroundColor: 'darkred', // สีเมื่อ hover
-                    },
-                }}
-            >
-                Test Button
-            </Button>
+            <Container size="xl" style={{marginTop: '50px'}}>
+                <Title order={2} align="center" mb="lg">
+                    Prepare for some page in the future
+                </Title>
+            </Container>
         </>
     )
 }

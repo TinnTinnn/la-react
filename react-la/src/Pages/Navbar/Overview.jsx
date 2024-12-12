@@ -43,7 +43,7 @@ export default function Overview() {
                     },
                 });
                 const data = await res.json();
-                console.log("API Response Data:", data); // แสดงข้อมู,จาก API
+                // console.log("API Response Data:", data); // แสดงข้อมู,จาก API
 
                 // อัพเดท state ด้วยข้อมูลที่ได้รับจาก API
                 if (res.ok) {
@@ -195,7 +195,8 @@ export default function Overview() {
 
             {/* ส่วนบนสำหรับแสดงข้อมูลทั่วไป */}
             <Grid gutter="xl">
-                <Grid.Col span={4}>
+                <Grid.Col
+                    span={{ base: 12, md: 6, lg: 4 }}>
                     <MemberStatsCard
                         totalMembers={stats.totalMembers}
                         newMembers={stats.newMembers}
@@ -203,7 +204,7 @@ export default function Overview() {
                     />
                 </Grid.Col>
 
-                <Grid.Col span={4}>
+                <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
                     <MembershipExpirationChart
                         activeMembers={stats.activeMembers}
                         expiredMembers={stats.expiredMembers}
@@ -211,7 +212,7 @@ export default function Overview() {
                     />
                 </Grid.Col>
 
-                <Grid.Col span={4}>
+                <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
                     <MemberShipTypeCard
                         DonutChartData={DonutChartData}
                     />

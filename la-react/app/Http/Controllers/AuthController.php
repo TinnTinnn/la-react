@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -14,7 +16,7 @@ class AuthController extends Controller
         $fields = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed',
+            'password' => 'required|min:3|confirmed',
         ]);
 
         $user = User::create([
@@ -22,6 +24,9 @@ class AuthController extends Controller
             'email' => $fields['email'],
             'password' => Hash::make($fields['password']),
         ]);
+
+        // สำหรับ เพื่อเรียกใช้งาน Register event ของ Email verification
+        event(new Registered($user));
 
         $token = $user->createToken($request->name);
 
@@ -47,6 +52,8 @@ class AuthController extends Controller
                 ],
             ], 401);
         }
+
+
 
         $token = $user->createToken($user->name);
 

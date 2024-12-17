@@ -26,8 +26,7 @@ class AuthController extends Controller
             'password' => Hash::make($fields['password']),
         ]);
 
-        // สำหรับ เพื่อเรียกใช้งาน Register event ของ Email verification
-        event(new Registered($user));
+        
 
         $token = $user->createToken($request->name);
 
@@ -35,26 +34,6 @@ class AuthController extends Controller
             'user' => $user,
             'token' => $token->plainTextToken,
         ],201);
-    }
-
-    // Verify Email Notice handler
-//    public function verifyNotice ()
-//    {
-//        return redirect();
-//    }
-
-    // Email Verification handler
-    public function verifyEmail (EmailVerificationRequest $request)
-    {
-        $request->fulfill();
-
-        return redirect()->to('http://127.0.0.1:5173');
-    }
-
-    // Resending the Verification Email Handler
-    public  function verifyHandler (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return response()->json(['message' => 'Verification link sent!']);
     }
 
     public function login(Request $request): JsonResponse
@@ -81,7 +60,6 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'token' => $token->plainTextToken,
-            'isVerified' => $user->hasVerifiedEmail(),
         ], 200);
     }
 

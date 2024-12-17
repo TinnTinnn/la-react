@@ -33,20 +33,6 @@ Route::middleware(['auth:sanctum'])->get('/user/status', function (Request $requ
     ]);
 });
 
-
-// Route สำหรับยืนยันอีเมลล์ เมื่อ User Register
-//Route::get('/email/verify', [AuthController::class, 'verifyNotice'])->name
-//('verification.notice');
-
-// Route สำหรับ User ได้ Email แล้ว กด verify
-Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
-    ->middleware(['signed'])->name('verification.verify');
-
-// Route สำหรับส่งลิงค์ยืนยันอีเมลล์อีกครั้ง (Resend)
-Route::post('/email/verification-notification',[AuthController::class, 'verifyHandler'])
-    ->middleware(['auth:sanctum', 'throttle:6,1'])->name('verification.send');
-
-
 // Public Routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);

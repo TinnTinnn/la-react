@@ -193,9 +193,13 @@ export default function Overview() {
 
         <Container size="xl" style={{marginTop: '50px'}}>
 
-            {/* ตรวจสอบสถานะการยืนยันอีเมล โดยเป็นเงื่อนไข หากยังไม่ verified email จะไม่ render เนื้อหา */}
-            {user && !user.isVerified ? (
-                <div style={{color: "red", marginBottom: "20px", textAlign: "center"}}>
+            {/* ตรวจสอบสถานะการล็อกอินและการยืนยันอีเมล */}
+            {!user ? (
+                <div style={{ color: "red", marginBottom: "20px", textAlign: "center" }}>
+                    You are not logged in. Please log in to access the dashboard.
+                </div>
+            ) : !user.isVerified ? (
+                <div style={{ color: "red", marginBottom: "20px", textAlign: "center" }}>
                     Your email is not verified. Please check your inbox.
                 </div>
             ) : (

@@ -20,7 +20,11 @@ class MemberController extends Controller implements HasMiddleware
     {
         return [
             new \Illuminate\Routing\Controllers\Middleware(
-                'auth:sanctum', except: [
+                [
+                    'auth:sanctum',
+//                    'verified'
+                ]
+                , except: [
                 'index',
                 'show',
                 'memberOverview',
@@ -203,11 +207,10 @@ class MemberController extends Controller implements HasMiddleware
     }
 
 
-
     // ฟังค์ชั่นเพื่อดึงข้อมูลจำนวนสมาชิกที่ลงทะเบียนในเดือนที่กำหนด
     public function getGenderCountByMonth($month)
     {
-        return[
+        return [
             'Male' => Member::whereMonth('created_at', $month)->where('gender', 'Male')->count(),
             'Female' => Member::whereMonth('created_at', $month)->where('gender', 'Female')->count(),
             'Other' => Member::whereMonth('created_at', $month)->where('gender', 'Other')->count(),

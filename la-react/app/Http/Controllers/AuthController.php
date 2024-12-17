@@ -38,17 +38,17 @@ class AuthController extends Controller
     }
 
     // Verify Email Notice handler
-    public function verifyNotice ()
-    {
-        return redirect('http://127.0.0.1:8000/api/');
-    }
+//    public function verifyNotice ()
+//    {
+//        return redirect();
+//    }
 
     // Email Verification handler
     public function verifyEmail (EmailVerificationRequest $request)
     {
         $request->fulfill();
 
-        return redirect('http://127.0.0.1:8000/api/');
+        return redirect()->to('http://127.0.0.1:5173');
     }
 
     // Resending the Verification Email Handler
@@ -81,6 +81,7 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'token' => $token->plainTextToken,
+            'isVerified' => $user->hasVerifiedEmail(),
         ], 200);
     }
 

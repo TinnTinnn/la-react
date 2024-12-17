@@ -35,8 +35,8 @@ Route::middleware(['auth:sanctum'])->get('/user/status', function (Request $requ
 
 
 // Route สำหรับยืนยันอีเมลล์ เมื่อ User Register
-Route::get('/email/verify', [AuthController::class, 'verifyNotice'])->name
-('verification.notice');
+//Route::get('/email/verify', [AuthController::class, 'verifyNotice'])->name
+//('verification.notice');
 
 // Route สำหรับ User ได้ Email แล้ว กด verify
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])

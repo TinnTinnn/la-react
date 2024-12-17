@@ -1,8 +1,8 @@
-import {useContext,  useState} from "react";
+import {useContext, useState} from "react";
 import {AppContext} from "../Context/AppContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
-import {Anchor, Burger, Button, Menu, Modal, Table,} from "@mantine/core";
+import {Anchor, Burger, Button, Indicator, Menu, Modal, Table,} from "@mantine/core";
 import Login from "../Pages/Auth/Login.jsx";
 import Register from "../Pages/Auth/Register.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -10,7 +10,7 @@ import {faRightFromBracket} from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
 import EditableAvatar from "./EditableAvatar.jsx";
 import {notifications} from "@mantine/notifications";
-
+import {faBell} from "@fortawesome/free-regular-svg-icons/faBell";
 
 
 const HeaderContent = ({opened, toggle,}) => {
@@ -45,7 +45,6 @@ const HeaderContent = ({opened, toggle,}) => {
         setIsLogin(true);   // เปิดฟอร์ม Login
         openLogin();        // เปิด Modal
     }
-
 
 
     async function handleLogout(e) {
@@ -117,7 +116,6 @@ const HeaderContent = ({opened, toggle,}) => {
     };
 
 
-
     return (
         <>
             <nav className="nav-container">
@@ -164,7 +162,41 @@ const HeaderContent = ({opened, toggle,}) => {
                                     </Menu.Divider>
                                 </Menu.Dropdown>
                             </Menu>
+                            {/*&nbsp;&nbsp;*/}
+
+
+                            {/*  For Notification   */}
+                            <Menu trigger="click" openDelay={100} closeDelay={400} shadow="md">
+                                <Menu.Target>
+                                    <Anchor
+                                        variant="gradient"
+                                        style={{cursor: "pointer"}}
+                                    >
+                                        <Indicator inline processing color="red" size={6} offset={3} position="top-end">
+                                            <FontAwesomeIcon style={{marginLeft: '12px'}} icon={faBell}/>
+                                        </Indicator>
+
+                                    </Anchor>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Item
+
+                                    >
+                                        For Email Notification
+                                    </Menu.Item>
+                                    <Menu.Item
+                                    >
+                                        Prepare for other notification
+                                    </Menu.Item>
+                                    <Menu.Divider>
+                                        <Menu.Item>
+                                            Show all notification
+                                        </Menu.Item>
+                                    </Menu.Divider>
+                                </Menu.Dropdown>
+                            </Menu>
                         </p>
+
                     </div>) : (<div className="nav-right">
                         {/*ส่วนสำหรับปุ่ม Register และ Login ตอนที่ยังไม่ได้ Login หรือ Register*/}
                         <Button variant="filled" color="teal" onClick={openRegisterModal}>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,26 @@ class AuthController extends Controller
             'user' => $user,
             'token' => $token->plainTextToken,
         ],201);
+    }
+
+    // Verify Email Notice handler
+    public function verifyNotice ()
+    {
+        return redirect('http://127.0.0.1:8000/api/');
+    }
+
+    // Email Verification handler
+    public function verifyEmail (EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+
+        return redirect('http://127.0.0.1:8000/api/');
+    }
+
+    // Resending the Verification Email Handler
+    public  function verifyHandler (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return response()->json(['message' => 'Verification link sent!']);
     }
 
     public function login(Request $request): JsonResponse

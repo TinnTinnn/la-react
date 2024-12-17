@@ -1,13 +1,15 @@
 import {Grid, Container, Title,} from '@mantine/core';
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
 import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.jsx";
 import MemberAge from "../../components/Overviews/MemberAge.jsx";
 import MemberRegistered from "../../components/Overviews/MemberRegistered.jsx";
+import {AppContext} from "../../Context/AppContext.jsx";
 
 
 export default function Overview() {
+    const {user} = useContext(AppContext);
     const [stats, setStats] = useState({
         totalMembers: 0,
         newMembers: 0,
@@ -188,50 +190,64 @@ export default function Overview() {
 
 
     return (
+
         <Container size="xl" style={{marginTop: '50px'}}>
-            <Title order={2} align="center" mb="lg">
-                Dashboard Overview
-            </Title>
 
-            {/* ส่วนบนสำหรับแสดงข้อมูลทั่วไป */}
-            <Grid gutter="xl">
-                <Grid.Col
-                    span={{ base: 12, md: 6, lg: 4 }}>
-                    <MemberStatsCard
-                        totalMembers={stats.totalMembers}
-                        newMembers={stats.newMembers}
-                        todayMembers={stats.todayMembers}
-                    />
-                </Grid.Col>
+            {/* ตรวจสอบสถานะการยืนยันอีเมล โดยเป็นเงื่อนไข หากยังไม่ verified email จะไม่ render เนื้อหา */}
+            {user && !user.isVerified ? (
+                <div style={{color: "red", marginBottom: "20px", textAlign: "center"}}>
+                    Your email is not verified. Please check your inbox.
+                </div>
+            ) : (
 
-                <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-                    <MembershipExpirationChart
-                        activeMembers={stats.activeMembers}
-                        expiredMembers={stats.expiredMembers}
-                        totalMembers={stats.totalMembers}
-                    />
-                </Grid.Col>
+                <>
+                    <Title order={2} align="center" mb="lg">
+                        Dashboard Overview
+                    </Title>
 
-                <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-                    <MemberShipTypeCard
-                        DonutChartData={DonutChartData}
-                    />
-                </Grid.Col>
+                    {/* ส่วนบนสำหรับแสดงข้อมูลทั่วไป */}
+                    <Grid gutter="xl">
+                        <Grid.Col
+                            span={{base: 12, md: 6, lg: 4}}>
+                            <MemberStatsCard
+                                totalMembers={stats.totalMembers}
+                                newMembers={stats.newMembers}
+                                todayMembers={stats.todayMembers}
+                            />
+                        </Grid.Col>
 
-                <Grid.Col span={12}>
+                        <Grid.Col span={{base: 12, md: 6, lg: 4}}>
+                            <MembershipExpirationChart
+                                activeMembers={stats.activeMembers}
+                                expiredMembers={stats.expiredMembers}
+                                totalMembers={stats.totalMembers}
+                            />
+                        </Grid.Col>
 
-                    <MemberRegistered
-                        LineChartData={LineChartData}
-                    />
-                </Grid.Col>
+                        <Grid.Col span={{base: 12, md: 6, lg: 4}}>
+                            <MemberShipTypeCard
+                                DonutChartData={DonutChartData}
+                            />
+                        </Grid.Col>
 
-                <Grid.Col span={12}>
-                    <MemberAge
-                        BarChartData={BarChartData}
-                    />
-                </Grid.Col>
-            </Grid>
+                        <Grid.Col span={12}>
 
+                            <MemberRegistered
+                                LineChartData={LineChartData}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={12}>
+                            <MemberAge
+                                BarChartData={BarChartData}
+                            />
+                        </Grid.Col>
+                    </Grid>
+                </>
+            )}
         </Container>
     );
+
 }
+
+

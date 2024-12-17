@@ -1,15 +1,14 @@
 import {Grid, Container, Title,} from '@mantine/core';
-import {useContext, useEffect, useState} from "react";
+import { useEffect, useState} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
 import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.jsx";
 import MemberAge from "../../components/Overviews/MemberAge.jsx";
 import MemberRegistered from "../../components/Overviews/MemberRegistered.jsx";
-import {AppContext} from "../../Context/AppContext.jsx";
+
 
 
 export default function Overview() {
-    const {user} = useContext(AppContext);
     const [stats, setStats] = useState({
         totalMembers: 0,
         newMembers: 0,
@@ -192,19 +191,6 @@ export default function Overview() {
     return (
 
         <Container size="xl" style={{marginTop: '50px'}}>
-
-            {/* ตรวจสอบสถานะการล็อกอินและการยืนยันอีเมล */}
-            {!user ? (
-                <div style={{ color: "red", marginBottom: "20px", textAlign: "center" }}>
-                    You are not logged in. Please log in to access the dashboard.
-                </div>
-            ) : !user.isVerified ? (
-                <div style={{ color: "red", marginBottom: "20px", textAlign: "center" }}>
-                    Your email is not verified. Please check your inbox.
-                </div>
-            ) : (
-
-                <>
                     <Title order={2} align="center" mb="lg">
                         Dashboard Overview
                     </Title>
@@ -247,8 +233,6 @@ export default function Overview() {
                             />
                         </Grid.Col>
                     </Grid>
-                </>
-            )}
         </Container>
     );
 

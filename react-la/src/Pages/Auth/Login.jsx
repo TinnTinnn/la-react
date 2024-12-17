@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 export default function Login( { closeModal, toggleForm } ) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
-    const { setUser } = useContext(AppContext);
 
     const [formData, setFormData] = useState({
         email: '',
@@ -32,12 +31,6 @@ export default function Login( { closeModal, toggleForm } ) {
         } else {
             localStorage.setItem("token", data.token);
             setToken(data.token);
-
-            setUser({
-                ...data.user,
-                isVerified: data.isVerified,
-            });
-
             closeModal();
             navigate('/');
         }

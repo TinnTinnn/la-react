@@ -172,7 +172,7 @@ const HeaderContent = ({opened, toggle,}) => {
                                         variant="gradient"
                                         style={{cursor: "pointer"}}
                                     >
-                                        <Indicator inline processing color="red" size={6} offset={3} position="top-end">
+                                        <Indicator inline processing color="red" size={9} offset={0} position="top-end">
                                             <FontAwesomeIcon style={{marginLeft: '12px'}} icon={faBell}/>
                                         </Indicator>
 

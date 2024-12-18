@@ -11,11 +11,18 @@ import PropTypes from "prop-types";
 import EditableAvatar from "./EditableAvatar.jsx";
 import {notifications} from "@mantine/notifications";
 import {faBell} from "@fortawesome/free-regular-svg-icons/faBell";
+import RequestResetForm from "../Pages/Auth/RequestResetForm.jsx";
+import ResetPasswordForm from "../Pages/Auth/ResetPasswordForm.jsx";
 
 
 const HeaderContent = ({opened, toggle,}) => {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
+
+    // จัดการส่วน Modal เกี่ยวกับ Reset password
+    const [openedReset, { open: openReset, close: closeReset }] = useDisclosure(false);
+    const [openedRequestReset, { open: openRequestReset, close: closeRequestReset }] = useDisclosure(false);
+
 
     // จัดการส่วน Modal แสดงข้อมล User ที่ล็อคอิน
     const [accountModalOpened, setAccountModalOpened] = useState(false);
@@ -222,6 +229,18 @@ const HeaderContent = ({opened, toggle,}) => {
                 )}
             </Modal>
 
+            {/* Modal สำหรับ RequestResetForm และ ResetPasswordForm  */}
+            <Modal opened={openedRequestReset} onclose={closeRequestReset} title="Request Password Reset" centered>
+                <RequestResetForm closeModal={closeRequestReset} openResetForm={() =>{
+                    closeRequestReset();
+                    openReset();
+                }}/>
+            </Modal>
+
+            <Modal opened={openedReset} onClose={closeReset} title="Reset Password" centered>
+                <ResetPasswordForm closeModal={closeReset} />
+            </Modal>
+
             {/*Modal สำหรับ Success*/}
             <Modal opened={openedSuccess} onClose={closeSuccess} title="Registration Successful" centered>
                 <p>Your registration was successful!</p>
@@ -263,8 +282,15 @@ const HeaderContent = ({opened, toggle,}) => {
                     </>
                 )}
             </Modal>
+
+            <Login
+                closeModal={closeLogin}
+                toggleForm={toggleForm}
+                openRequestResetModal={openRequestReset}
+            />
         </>)
 }
+
 
 
 HeaderContent.propTypes = {

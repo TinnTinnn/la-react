@@ -3,7 +3,9 @@ import {useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
 import {TextInput, Space, Button, Anchor, PasswordInput} from "@mantine/core";
 import PropTypes from 'prop-types';
-export default function Login( { closeModal, toggleForm } ) {
+
+
+export default function Login({closeModal, toggleForm, openRequestResetModal}) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
 
@@ -55,25 +57,31 @@ export default function Login( { closeModal, toggleForm } ) {
 
                 <div>
                     <PasswordInput label="Password" type="password" placeholder="Password"
-                               value={formData.password}
-                               onChange={(e) => setFormData({
-                                   ...formData, password: e.target.value
-                               })}/>
+                                   value={formData.password}
+                                   onChange={(e) => setFormData({
+                                       ...formData, password: e.target.value
+                                   })}/>
                     {errors.password && <p className="error">{errors.password[0]}</p>}
                     <Space h="md"/>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Anchor onClick={toggleForm} style={{ cursor: 'pointer' }}>
+                    <Anchor onClick={toggleForm} style={{cursor: 'pointer'}}>
                         Do not have an account? Register
                     </Anchor>
+                    <Anchor onClick={openRequestResetModal} style={{cursor: 'pointer'}}>
+                        Forget password?
+                    </Anchor>
+                </div>
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '12px'}}>
                     <Button type="submit">Login</Button>
                 </div>
             </form>
         </>
-);
+    );
 }
 
 Login.propTypes = {
     closeModal: PropTypes.func,
     toggleForm: PropTypes.func,
+    openRequestResetModal: PropTypes.func,
 };

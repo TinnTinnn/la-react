@@ -19,6 +19,7 @@ import Analytics from "./Pages/Navbar/Analytics.jsx";
 import Saas from "./Pages/Navbar/Saas.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSignature} from "@fortawesome/free-solid-svg-icons";
+import ResetPasswordForm from "./Pages/Auth/ResetPasswordForm.jsx";
 
 
 export default function App() {
@@ -116,6 +117,7 @@ export default function App() {
                                 <Route path="/create" element={user ? <Create/> : <Login/>}/>
                                 <Route path="/members/:id" element={<Show/>}/>
                                 <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
+                                <Route path="/reset-password" element={<ResetPasswordForm />} />
                             </Route>
                         </Routes>
                     </AppShell.Main>

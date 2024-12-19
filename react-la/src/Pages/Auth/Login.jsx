@@ -5,7 +5,7 @@ import {TextInput, Space, Button, Anchor, PasswordInput} from "@mantine/core";
 import PropTypes from 'prop-types';
 
 
-export default function Login({closeModal, toggleForm, openRequestResetModal}) {
+export default function Login({closeModal, toggleForm, openResetModal}) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ export default function Login({closeModal, toggleForm, openRequestResetModal}) {
                     <Anchor onClick={toggleForm} style={{cursor: 'pointer'}}>
                         Do not have an account? Register
                     </Anchor>
-                    <Anchor onClick={openRequestResetModal} style={{cursor: 'pointer'}}>
+                    <Anchor onClick={openResetModal} style={{cursor: 'pointer'}}>
                         Forget password?
                     </Anchor>
                 </div>
@@ -83,5 +83,5 @@ export default function Login({closeModal, toggleForm, openRequestResetModal}) {
 Login.propTypes = {
     closeModal: PropTypes.func,
     toggleForm: PropTypes.func,
-    openRequestResetModal: PropTypes.func,
+    openResetModal: PropTypes.func,
 };

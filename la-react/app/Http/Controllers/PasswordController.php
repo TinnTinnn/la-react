@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class PasswordController extends Controller
 {
-    public function requestReset(Request $request)
+    public function requestReset(Request $request) : JsonResponse
     {
         $request->validate(['email' => 'required|email']);
 
@@ -21,24 +23,27 @@ class PasswordController extends Controller
             : response()->json(['error' => 'Unable to send reset link.'], 400);
     }
 
-    public function verifyToken(Request $request)
+    public function verifyToken(Request $request): JsonResponse
     {
         $request->validate([
-            'token' => 'required',
             'email' => 'required|email',
+            'token' => 'required',
         ]);
 
-        $exists = DB::table('password_resets')
+        // ค้นหา record จาก email
+        $record = DB::table('password_reset_tokens')
             ->where('email', $request->email)
-            ->where('token', $request->token)
-            ->exists();
+            ->first();
 
-        return $exists
-            ? response()->json(['message' => 'Token is valid.'], 200)
-            : response()->json(['error' => 'Invalid token or email.'], 400);
+        // ตรวจสอบว่าพบ record และ token ตรงกันหรือไม่
+        if (!$record || !Hash::check($request->token, $record->token)) {
+            return response()->json(['message' => 'Invalid token or email.'], 400);
+        }
+
+        return response()->json(['message' => 'Token is valid.']);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(Request $request) : JsonResponse
     {
         $request->validate([
             'token' => 'required',

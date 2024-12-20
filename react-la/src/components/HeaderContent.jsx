@@ -14,6 +14,7 @@ import {faBell} from "@fortawesome/free-regular-svg-icons/faBell";
 import RequestResetForm from "../Pages/Auth/RequestResetForm.jsx";
 
 
+
 const HeaderContent = ({opened, toggle,}) => {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
@@ -242,6 +243,7 @@ const HeaderContent = ({opened, toggle,}) => {
             >
                 <RequestResetForm closeModal={closeReset}/>
             </Modal>
+
 
 
             {/*Modal สำหรับ Success*/}

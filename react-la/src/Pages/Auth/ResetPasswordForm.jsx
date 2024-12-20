@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import axios from "axios";
-import {Space, TextInput} from "@mantine/core";
+import {Button, Modal, Space, TextInput} from "@mantine/core";
+import PropTypes from "prop-types";
 
 
 function ResetPasswordForm() {
@@ -10,6 +11,9 @@ function ResetPasswordForm() {
     const [searchParams] = useSearchParams();
     const [isTokenValid, setIsTokenValid] = useState(false);
     const [error, setError] = useState("");
+    const [opened, setOpened] = useState(true);
+    const navigate = useNavigate();
+
 
     const token = searchParams.get('token');
     const email = searchParams.get('email');
@@ -38,50 +42,63 @@ function ResetPasswordForm() {
                 password,
                 password_confirmation: passwordConfirm,
             });
-            alert('Password reset successfully.');
+
+            alert('Password reset successfully. Please login with your new password.');
+            setOpened(false);
+            navigate('/overview')
+
+
         } catch (err) {
             console.error(err.response.data);
-            setError('Failed to reset password. Please try again.')
+            setError('Failed to reset password. Please try again.');
         }
     };
 
-    if (error) {
-        return <div>{error}</div>;
-    }
-
-    if (!isTokenValid) {
-        return <div>Validating token...</div>
-    }
-
     return (
-        <>   <h1 style={{marginTop: '50px'}}>Welcome to the Member Management</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <TextInput
-                        label="Password"
-                        type="password"
-                        placeholder="New password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <Space h="md"/>
-                </div>
-                <div>
-                    <TextInput
-                        label="Confirm Password"
-                        type="password"
-                        placeholder="Confrim new password"
-                        value={passwordConfirm}
-                        onChange={(e) => setPasswordConfirm(e.target.value)}
-                        required
-                    />
-                    <Space h="md"/>
-                </div>
-                <button type="submit">Reset Password</button>
-            </form>
+        <>
+            <Modal
+                opened={opened}
+                onClose={() => setOpened(false)}
+                title="Reset Your Password"
+                centered
+            >
+                {error ? (
+                    <div>{error}</div>
+                ) : !isTokenValid ? (
+                    <div>Validating token...</div>
+                ) : (
+                    <form onSubmit={handleSubmit}>
+                        <div>
+                            <TextInput
+                                label="Password"
+                                type="password"
+                                placeholder="New password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <Space h="md"/>
+                        </div>
+                        <div>
+                            <TextInput
+                                label="Confirm Password"
+                                type="password"
+                                placeholder="Confrim new password"
+                                value={passwordConfirm}
+                                onChange={(e) => setPasswordConfirm(e.target.value)}
+                                required
+                            />
+                            <Space h="md"/>
+                        </div>
+                        <Button type="submit" fullWidth>Reset Password</Button>
+                    </form>
+                )}
+            </Modal>
         </>
     )
 }
 
+ResetPasswordForm.propTypes = {
+    openLoginModal: PropTypes.func,
+};
 export default ResetPasswordForm;

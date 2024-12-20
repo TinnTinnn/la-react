@@ -9,19 +9,53 @@ function RequestResetForm({closeModal,}) {
     const [isLoading, setIsLoading] = useState(false);
     const [notification, setNotification]
         = useState({ visible: false, message: '', color: ''});
+    const [isRequestSent, setIsRequestSent] = useState(false); // สถานะสำหรับการส่งคำขอ
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // ตรวจสอบตรงจุดนี้ว่ามีการส่งคำขอไปแล้วหรือไม่
+        if (isRequestSent) {
+            setNotification({
+                visible: true,
+                message: 'Please check your inbox. You have already requested a reset link.',
+                color: 'orange'
+            });
+            return;
+        }
+
+        setIsLoading(true);
+        setIsRequestSent(true);
+
         setIsLoading(true); // ตั้งค่า isLoading เป็น true เมื่อเริ่มทำงาน
         try {
             await axios.post('/api/password/request-reset', {email});
-            setNotification({ visible: true, message:'Password reset link sent to your email.', color: 'green'});
+            setNotification({
+                visible: true,
+                message:'Password reset link sent to your email.',
+                color: 'green'
+            });
+
+            setIsRequestSent(true); //ตั้งค่าสถานะว่าได้ส่งคำขอไปแล้ว
+
             setTimeout(() => {
                 closeModal();
             }, 5000);
         } catch (err) {
             console.error(err.response.data);
-            setNotification({ visible: true, message: 'We can not find a user with that email address.', color: 'red' });
+
+            if (err.response.status === 404) {
+                setNotification({ visible: true, message: 'No user found with that email address.', color: 'red' });
+            } else if (err.response.status === 429) {
+                setNotification({ visible: true, message: 'You are submitting requests too frequently.', color: 'red' });
+            } else if (err.response.status === 422) {
+                setNotification({ visible: true, message: 'The email field must be a valid email address.', color: 'red' });
+            } else {
+                setNotification({ visible: true, message: 'There was an error sending the request.', color: 'red' });
+            }
+
+            setIsRequestSent(false); // รีเซ็ทสถานะเพื่อให้สามารถส่งคำขอใหม่ได้
+
         } finally {
             setIsLoading(false); // ตั้งค่า isLoading เป็น false เมื่อเสร็จการเรียก API
             setTimeout(() => {

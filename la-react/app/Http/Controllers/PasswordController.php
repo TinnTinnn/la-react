@@ -18,9 +18,13 @@ class PasswordController extends Controller
             $request->only('email')
         );
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['message' => 'Password reset link sent to your email.'], 200)
-            : response()->json(['error' => 'Unable to send reset link.'], 400);
+        if ($status === Password::RESET_LINK_SENT) {
+            return response()->json(['message' => 'Password reset link sent to your email.'], 200);
+        } elseif ($status === Password::INVALID_USER) {
+            return response()->json(['error' => 'No user found with that email address.'], 404);
+        } else {
+            return response()->json(['error' => 'You are submitting requests too frequently.'], 400);
+        }
     }
 
     public function verifyToken(Request $request): JsonResponse
@@ -48,7 +52,7 @@ class PasswordController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|confirmed',
         ]);
 
         $status = Password::reset(

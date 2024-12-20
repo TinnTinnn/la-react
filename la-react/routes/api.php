@@ -30,7 +30,8 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 // Route for reset password
 
 // Request reset link
-Route::post('/password/request-reset', [PasswordConTroller::class, 'requestReset']);
+Route::post('/password/request-reset', [PasswordConTroller::class, 'requestReset'])
+->middleware('throttle:3,1');
 
 // Verify token (optional, เลือกได้ว่าอยากให้ตรวจสอบก่อนมั้ย๗
 Route::post('/password/verify-token', [PasswordController::class, 'verifyToken']);

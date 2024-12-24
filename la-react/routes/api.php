@@ -39,6 +39,6 @@ Route::post('/password/verify-token', [PasswordController::class, 'verifyToken']
 // Reset password
 Route::post('/password/reset', [PasswordController::class, 'resetPassword']);
 
-
-
+// API เส้นสำหรับส่วนการแจ้งเตือน
+Route::middleware('auth:sanctum')->get('/notifications', [MemberController::class, 'getNotifications']);
 

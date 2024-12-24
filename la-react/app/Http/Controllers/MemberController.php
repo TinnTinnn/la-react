@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Faker\Core\File;
 use GuzzleHttp\Middleware;
@@ -96,6 +97,12 @@ class MemberController extends Controller implements HasMiddleware
             ], 500);
         }
 
+        // ส่งการแจ้งเตือนให้ User
+        Notification::create([
+            'user_id' => auth()->id(),
+            'message'=> 'User ' . auth()->user()->name . ' Just created a new member: ' .$member->member_name,
+        ]);
+
         // ส่ง response กลับหากสำเร็จ
         return response()->json([
             'success' => true,
@@ -129,6 +136,12 @@ class MemberController extends Controller implements HasMiddleware
         try {
             // อัปเดตข้อมูลสมาชิก
             $member->update($validatedData);
+
+            // แจ้งเตือน
+            Notification::create([
+                'user_id' => auth()->id(),
+                'message' => 'User ' . auth()->user()->name . ' Just edited member name: ' . $member->member_name,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -240,6 +253,22 @@ class MemberController extends Controller implements HasMiddleware
 
         $member->delete();
 
+        // แจ้งเตือน
+        Notification::create([
+            'user_id' => auth()->id(),
+            'message' => 'User ' . auth()->user()->name . ' Just deleted member: '. $member->member_name,
+        ]);
+
         return response()->json(['message' => 'Member deleted'], 204);
     }
+
+
+    // ตั้งแต่ด้านล่างนี้คือส่วนที่เกี่ยวข้องกับ Notification
+    // API สำหรับดึงการแจ้งเตือนทั้งหมดของ User
+    public function getNotifications()
+    {
+        $notifications = Notification::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
+        return response()->json($notifications, 200);
+    }
+
 }

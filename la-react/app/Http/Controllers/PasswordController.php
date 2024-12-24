@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,8 +53,19 @@ class PasswordController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|confirmed',
+            'password' => [
+                'required',
+                'confirmed',
+                'min:8', // ความยาวของรหัสอย่างน้อยกี่ตัว
+                'regex:/[A-Z]/',  // ต้องมีตัวอักษาพิมพ์ใหญ่
+                'regex:/[0-9]/', // ต้องมีตัวเลข
+            ],
         ]);
+
+        $user = User::where('email', $request->email)->first();
+        if ($user && Hash::check($request->password, $user->password)) {
+            return response()->json(['error' => 'New password must not be the same as the old password.'], 400);
+        }
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -67,4 +79,5 @@ class PasswordController extends Controller
             ? response()->json(['message' => 'Password reset successfully.'],200)
             : response()->json(['error' => 'Failed to reset password.'], 400);
     }
+
 }

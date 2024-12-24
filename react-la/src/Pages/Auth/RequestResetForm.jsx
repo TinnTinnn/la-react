@@ -40,7 +40,7 @@ function RequestResetForm({closeModal,}) {
 
             setTimeout(() => {
                 closeModal();
-            }, 5000);
+            }, 3000);
         } catch (err) {
             console.error(err.response.data);
 

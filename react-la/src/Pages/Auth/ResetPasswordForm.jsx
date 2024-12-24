@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import axios from "axios";
-import {Button, Modal, Space, TextInput} from "@mantine/core";
+import {Button, Loader, Modal, Notification, PasswordInput, Space,} from "@mantine/core";
 import PropTypes from "prop-types";
+
 
 
 function ResetPasswordForm() {
@@ -13,7 +14,10 @@ function ResetPasswordForm() {
     const [error, setError] = useState("");
     const [opened, setOpened] = useState(true);
     const navigate = useNavigate();
-
+    const [isLoading, setIsLoading] = useState(false);
+    const passwordStrengthRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const [notification, setNotification]
+        = useState({ visible: false, message: '', color: ''});
 
     const token = searchParams.get('token');
     const email = searchParams.get('email');
@@ -23,7 +27,9 @@ function ResetPasswordForm() {
             try {
                 const response = await axios.post('api/password/verify-token', {token, email});
                 if (response.status === 200) {
-                    setIsTokenValid(true); // Token ใช้งานได้
+                    setTimeout(() =>{
+                        setIsTokenValid(true); // Token ใช้งานได้
+                    }, 3000); // ยืดเวลาการแสดงข้อความ 3 วินาที ไม่งั้น มองไม่่ทัน
                 }
             } catch (err) {
                 setError(err.response.data, 'Invalid or expired token. Please request a new reset password link.');
@@ -35,24 +41,65 @@ function ResetPasswordForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // ตรวจสอบ Password หากไม่ตรงกันทั้ง 2 ช่อง จะแจ้ง User ทันที
+        if (password !== passwordConfirm) {
+            setNotification({
+                visible: true,
+                message: "Passwords don't match, please try again.",
+                color: "red",
+            });
+            return;
+        }
+
+        // ตรวจสอบความแข็งแรงของ password
+        if (!passwordStrengthRegex.test(password)) {
+            setNotification({
+                visible: true,
+                message: "Password must be at least 8 characters, include an uppercase letter and a number.",
+                color: "red",
+            });
+            return; // return ที่มีแบบนี้ ในหลายๆจุดที่เขียนไว้ หมายถึง หยุดการทำงาน ไม่เรียก API ต่อจากนั้น
+        }
+
+        setIsLoading(true);
+
         try {
-            await axios.post('/api/password/reset', {
+            // ตรงนี้ปรับแต่งให้ส่งคำขอรีเซ็ทรหัสผ่านทันที หากตรงเงื่อนไขทั้งหมด
+            const response = await axios.post('/api/password/reset', {
                 email,
                 token,
                 password,
                 password_confirmation: passwordConfirm,
             });
 
-            alert('Password reset successfully. Please login with your new password.');
-            setOpened(false);
-            navigate('/overview')
+           if (response.status === 200) {
+               setNotification({
+                   visible: true,
+                   message: "Password reset successfully. Please login again with new password.",
+                   color: "green",
+               });
+
+               // หน่วงเวลา 3 วินาที ก่อนจะปิด Modal
+               setTimeout(() => {
+                   setOpened(false);
+                   navigate('/overview') // พาไปหน้า dashboard
+               }, 3000);
+           }
 
 
         } catch (err) {
             console.error(err.response.data);
-            setError('Failed to reset password. Please try again.');
+            setNotification({
+                visible: true,
+                message: err.response?.data?.error || "Failed to reset password. Please try again",
+                color: "red",
+            });
+        } finally {
+            setIsLoading(false);
         }
     };
+
 
     return (
         <>
@@ -63,13 +110,24 @@ function ResetPasswordForm() {
                 centered
             >
                 {error ? (
-                    <div>{error}</div>
+                    <div>Invalid or expired token. Please request a new reset password link.</div>
                 ) : !isTokenValid ? (
-                    <div>Validating token...</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <span>Validating token...</span> &nbsp;&nbsp;
+                        <Loader  size={20}/>
+                    </div>
+
                 ) : (
+                    <>
+                        {notification.visible && (
+                            <Notification title="Notification" color={notification.color}>
+                                {notification.message}
+                            </Notification>
+                        )}
+
                     <form onSubmit={handleSubmit}>
                         <div>
-                            <TextInput
+                            <PasswordInput
                                 label="Password"
                                 type="password"
                                 placeholder="New password"
@@ -80,18 +138,19 @@ function ResetPasswordForm() {
                             <Space h="md"/>
                         </div>
                         <div>
-                            <TextInput
+                            <PasswordInput
                                 label="Confirm Password"
                                 type="password"
-                                placeholder="Confrim new password"
+                                placeholder="Confirm new password"
                                 value={passwordConfirm}
                                 onChange={(e) => setPasswordConfirm(e.target.value)}
                                 required
                             />
                             <Space h="md"/>
                         </div>
-                        <Button type="submit" fullWidth>Reset Password</Button>
+                        <Button type="submit" loading={isLoading} fullWidth>Reset Password</Button>
                     </form>
+                    </>
                 )}
             </Modal>
         </>

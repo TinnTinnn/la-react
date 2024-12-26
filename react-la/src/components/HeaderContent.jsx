@@ -22,6 +22,7 @@ const HeaderContent = ({opened, toggle,}) => {
     // จัดการส่วน Notifications
     const [forNotifications, setForNotifications] = useState({});
 
+
     // ตัวแปรสำหรับจัดการ indicator เพื่อเปลี่ยนสถานะ อ่านหรือยัง
     const markAsRead = (notificationId) => {
         // เรียก API หรือทำการเปลี่ยนข้อมูลใน database คอลัมน์ read_status เป็น 1
@@ -103,18 +104,36 @@ const HeaderContent = ({opened, toggle,}) => {
     }
 
 
+    // UseEffect สำหรับ จัดการ User ที่ Session หมดอายุ แล้ว เปลี่ยเป็นโดน Log out ทันที โดยไม่ต้อง Refresh
+    useEffect (() => {
+        if (!token) {
+            setUser(null); // เพื่อความแน่ใจว่า User state โดน รีเซ็ท หาก Token เป็นค่า Null
+        }
+    }, [token])
+
+
     // ฟังค์ชั่น สำหรับ Fetch API ของ Notifications
-
     useEffect(() => {
-        if (!token) return;
-
+        if (!token) {
+            console.log("User is logged out, cannot fetch notifications.");
+            return;
+        }
         const fetchNotifications = async () => {
             try {
                 const response = await fetch('/api/notifications', {
                     headers: {Authorization: `Bearer ${token}`},
                 });
                 const data = await response.json();
-                setForNotifications(data);
+
+
+                if (Array.isArray(data)) {
+                    setForNotifications(prevNotifications => [
+                        ...(Array.isArray(prevNotifications) ? prevNotifications : []),
+                        ...data
+                    ]);
+                } else {
+                    console.error("Invalid data format", data);
+                }
             } catch (error) {
                 console.error("Error fetching notifications:", error);
             }

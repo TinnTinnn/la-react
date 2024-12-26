@@ -133,15 +133,30 @@ class MemberController extends Controller implements HasMiddleware
         // เพิ่ม user_id เพื่อให้มั่นใจว่าข้อมูลเป็นของผู้ใช้งานที่ล็อกอินอยู่
         $validatedData['user_id'] = auth()->user()->id;
 
+        // สำหรับเก็บค่า Member นั้นๆ ก่อนการเปรียบเทียบเพื่อส่งข้อมูลไป Notification
+        $originalData = $member->toArray();
+
         try {
             // อัปเดตข้อมูลสมาชิก
             $member->update($validatedData);
 
+            // ตรวจสอบความเปลี่ยนแปลงของ Member นั้น
+            $changes = [];
+            foreach ($validatedData as $key => $value) {
+                if (array_key_exists($key, $originalData) && $originalData[$key] !== $value) {
+                    $changes[] = ucfirst($key) . ' changed from "' . $originalData[$key] . '" to "' . $value . '"';
+                }
+            }
+
             // แจ้งเตือน
-            Notification::create([
-                'user_id' => auth()->id(),
-                'message' => 'User ' . auth()->user()->name . ' Just edited member name: ' . $member->member_name,
-            ]);
+            if (!empty($changes)) {
+                $message = 'User ' . auth()->user()->name . ' edited member "' .
+                    $originalData['member_name'] . '". Changes: '. implode(', ', $changes);
+                Notification::create([
+                    'user_id' => auth()->id(),
+                    'message' => $message,
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -269,6 +284,15 @@ class MemberController extends Controller implements HasMiddleware
     {
         $notifications = Notification::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
         return response()->json($notifications, 200);
+    }
+
+    public function updateNotification(Request $request, Notification $notification)
+    {
+        $notification->update([
+            'read_status' => 1,
+        ]);
+
+        return response()->json(['success' => true], 200);
     }
 
 }

@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../Context/AppContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {useDisclosure} from "@mantine/hooks";
@@ -9,15 +9,62 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faRightFromBracket} from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
 import EditableAvatar from "./EditableAvatar.jsx";
-import {notifications} from "@mantine/notifications";
 import {faBell} from "@fortawesome/free-regular-svg-icons/faBell";
 import RequestResetForm from "../Pages/Auth/RequestResetForm.jsx";
-
+import {notifications} from "@mantine/notifications";
+import axios from "axios";
 
 
 const HeaderContent = ({opened, toggle,}) => {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
+
+    // จัดการส่วน Notifications
+    const [forNotifications, setForNotifications] = useState({});
+
+    // ตัวแปรสำหรับจัดการ indicator เพื่อเปลี่ยนสถานะ อ่านหรือยัง
+    const markAsRead = (notificationId) => {
+        // เรียก API หรือทำการเปลี่ยนข้อมูลใน database คอลัมน์ read_status เป็น 1
+        axios.put(`/api/notifications/${notificationId}`, {read_status: 1},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            .then(response => {
+                console.log('Notification marked as read:', response.data);
+
+                // เพื่อให้อัพเดท state ทันทีที่ API สำเร็จ
+                setForNotifications(prevNotifications =>
+                    prevNotifications.map(notif =>
+                    notif.id === notificationId ? {...notif, read_status: 1} : notif
+                    )
+                );
+
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
+    };
+
+    const showNotification = (title, message) => {
+        const userName = user?.name || 'User';
+        notifications.show({
+            title: `User, ${userName}`,
+            message,
+            autoClose: 5000,
+            position: 'top-right',
+            radius: "lg",
+            styles: () => ({
+                root: {
+                    top: '40px', // ปรับตำแหน่งขึ้นจากขอบบน
+                    // right: '20px',
+                    // zIndex: 9999, //
+                },
+            }),
+        });
+    };
 
     // จัดการส่วน Modal แสดงข้อมล User ที่ล็อคอิน
     const [accountModalOpened, setAccountModalOpened] = useState(false);
@@ -26,7 +73,7 @@ const HeaderContent = ({opened, toggle,}) => {
     const [openedRegister, {open: openRegister, close: closeRegister}] = useDisclosure(false);
     const [openedLogin, {open: openLogin, close: closeLogin}] = useDisclosure(false);
     const [openedSuccess, {open: openSuccess, close: closeSuccess}] = useDisclosure(false);
-    const [openedReset, { open: openReset, close: closeReset }] = useDisclosure(false);
+    const [openedReset, {open: openReset, close: closeReset}] = useDisclosure(false);
 
     // เพิ่ม state ส่วนนี้เพื่อ Toggle ระหว่าง Login และ Register
     const [isLogin, setIsLogin] = useState(true);
@@ -54,6 +101,27 @@ const HeaderContent = ({opened, toggle,}) => {
         setIsLogin(true);   // เปิดฟอร์ม Login
         openLogin();        // เปิด Modal
     }
+
+
+    // ฟังค์ชั่น สำหรับ Fetch API ของ Notifications
+
+    useEffect(() => {
+        if (!token) return;
+
+        const fetchNotifications = async () => {
+            try {
+                const response = await fetch('/api/notifications', {
+                    headers: {Authorization: `Bearer ${token}`},
+                });
+                const data = await response.json();
+                setForNotifications(data);
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+            }
+        };
+
+        fetchNotifications();
+    }, [token]);
 
 
     async function handleLogout(e) {
@@ -138,7 +206,7 @@ const HeaderContent = ({opened, toggle,}) => {
                 {user ?
                     (<div className="nav-right" style={{display: "flex", justifyContent: "flex-end"}}>
                         {/*ส่วนแสดงชื่อ User ที่ล็อคอิน พร้อม Menu ต่างๆ */}
-                        <p>Welcome back&nbsp;&nbsp;&nbsp;
+                        <div>Welcome back&nbsp;&nbsp;&nbsp;
                             <Menu trigger="hover" openDelay={100} closeDelay={400} shadow="md">
                                 <Menu.Target>
                                     <Anchor
@@ -175,36 +243,31 @@ const HeaderContent = ({opened, toggle,}) => {
 
 
                             {/*  For Notification   */}
-                            <Menu trigger="click" openDelay={100} closeDelay={400} shadow="md">
-                                <Menu.Target>
-                                    <Anchor
-                                        variant="gradient"
-                                        style={{cursor: "pointer"}}
-                                    >
-                                        <Indicator inline processing color="red" size={9} offset={0} position="top-end">
-                                            <FontAwesomeIcon style={{marginLeft: '12px'}} icon={faBell}/>
-                                        </Indicator>
-
-                                    </Anchor>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                    <Menu.Item
-
-                                    >
-                                        For Email Notification
-                                    </Menu.Item>
-                                    <Menu.Item
-                                    >
-                                        Prepare for other notification
-                                    </Menu.Item>
-                                    <Menu.Divider>
-                                        <Menu.Item>
-                                            Show all notification
-                                        </Menu.Item>
-                                    </Menu.Divider>
-                                </Menu.Dropdown>
-                            </Menu>
-                        </p>
+                            <Anchor
+                                variant="gradient"
+                                style={{cursor: "pointer"}}
+                                onClick={() => {
+                                    // แสดง Notification เมื่อคลิกที่ไอคอน Bell
+                                    forNotifications.slice(0, 3).forEach((notif) => {
+                                        // เมื่อคลิกจะส่งการแจ้งเตือนและอัพเดท read_status ใน database
+                                        showNotification(notif.title, notif.message);
+                                        markAsRead(notif.id); //
+                                    });
+                                }}
+                            >
+                                <Indicator
+                                    inline
+                                    processing={forNotifications.some(notif => notif.read_status === 0)}
+                                    disabled={forNotifications.every(notif => notif.read_status === 1)}
+                                    color="red"
+                                    size={9}
+                                    offset={0}
+                                    position="top-end"
+                                >
+                                    <FontAwesomeIcon style={{marginLeft: '12px'}} icon={faBell}/>
+                                </Indicator>
+                            </Anchor>
+                        </div>
 
                     </div>) : (<div className="nav-right">
                         {/*ส่วนสำหรับปุ่ม Register และ Login ตอนที่ยังไม่ได้ Login หรือ Register*/}
@@ -243,7 +306,6 @@ const HeaderContent = ({opened, toggle,}) => {
             >
                 <RequestResetForm closeModal={closeReset}/>
             </Modal>
-
 
 
             {/*Modal สำหรับ Success*/}

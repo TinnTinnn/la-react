@@ -20,6 +20,9 @@ import Saas from "./Pages/Navbar/Saas.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSignature} from "@fortawesome/free-solid-svg-icons";
 import ResetPasswordForm from "./Pages/Auth/ResetPasswordForm.jsx";
+import AllNotifications from "./components/AllNotifications.jsx";
+import {Notifications} from "@mantine/notifications";
+import '@mantine/notifications/styles.css';
 
 
 export default function App() {
@@ -60,7 +63,9 @@ export default function App() {
 
     return (
         <MantineProvider theme={theme}>
+            <Notifications />
             <BrowserRouter>
+
                 <AppShell
                     // header={{height:70}}
                     navbar={{
@@ -118,6 +123,7 @@ export default function App() {
                                 <Route path="/members/:id" element={<Show/>}/>
                                 <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
                                 <Route path="/reset-password" element={<ResetPasswordForm />} />
+                                <Route path="/all-notificatons" element={<AllNotifications />} />
                             </Route>
                         </Routes>
                     </AppShell.Main>

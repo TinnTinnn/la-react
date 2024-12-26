@@ -41,4 +41,6 @@ Route::post('/password/reset', [PasswordController::class, 'resetPassword']);
 
 // API เส้นสำหรับส่วนการแจ้งเตือน
 Route::middleware('auth:sanctum')->get('/notifications', [MemberController::class, 'getNotifications']);
+Route::middleware('auth:sanctum')->put('/notifications/{notification}', [MemberController::class, 'updateNotification']);
+
 

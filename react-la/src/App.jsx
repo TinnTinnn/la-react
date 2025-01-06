@@ -25,6 +25,7 @@ import {Notifications} from "@mantine/notifications";
 import '@mantine/notifications/styles.css';
 
 
+
 export default function App() {
     const {user} = useContext(AppContext);
     const [opened, {toggle}] = useDisclosure();
@@ -60,6 +61,7 @@ export default function App() {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
+    
 
     return (
         <MantineProvider theme={theme}>

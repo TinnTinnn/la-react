@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TestNotification;
 use App\Models\Member;
 use App\Models\Notification;
 use Carbon\Carbon;
@@ -98,10 +99,15 @@ class MemberController extends Controller implements HasMiddleware
         }
 
         // ส่งการแจ้งเตือนให้ User
-        Notification::create([
+        $notification = Notification::create([
             'user_id' => auth()->id(),
             'message'=> 'User ' . auth()->user()->name . ' Just created a new member: ' .$member->member_name,
         ]);
+
+
+
+        // ส่ง Event พร้อมข้อมูล Notification
+        broadcast(new TestNotification($notification))->toOthers();
 
         // ส่ง response กลับหากสำเร็จ
         return response()->json([

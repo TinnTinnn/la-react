@@ -23,11 +23,11 @@ class TestNotification implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      *
-     * @param array $data
+     * @param Notification $notification
      */
-    public function __construct($data)
+    public function __construct(Notification $notification)
     {
-        $this->data = $data;
+        $this->notification = $notification;
     }
 
     /**
@@ -57,6 +57,11 @@ class TestNotification implements ShouldBroadcastNow
      */
     public function broadcastWith(): array
     {
-        return $this->data;
+        return [
+            'id' => $this->notification->id,
+            'user_id' => $this->notification->user_id,
+            'message' => $this->notification->message,
+            'created_at' => $this->notification->created_at->toDateTimeString(),
+        ];
     }
 }

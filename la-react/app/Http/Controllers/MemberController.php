@@ -158,10 +158,14 @@ class MemberController extends Controller implements HasMiddleware
             if (!empty($changes)) {
                 $message = 'User ' . auth()->user()->name . ' edited member "' .
                     $originalData['member_name'] . '". Changes: '. implode(', ', $changes);
-                Notification::create([
+
+                $notification = Notification::create([
                     'user_id' => auth()->id(),
                     'message' => $message,
                 ]);
+
+                // ส่ง Event พร้อมข้อมูล Notification
+                broadcast(new TestNotification($notification))->toOthers();
             }
 
             return response()->json([
@@ -275,10 +279,13 @@ class MemberController extends Controller implements HasMiddleware
         $member->delete();
 
         // แจ้งเตือน
-        Notification::create([
+        $notification = Notification::create([
             'user_id' => auth()->id(),
             'message' => 'User ' . auth()->user()->name . ' Just deleted member: '. $member->member_name,
         ]);
+
+        // ส่ง Event พร้อมข้อมูล Notification
+        broadcast(new TestNotification($notification))->toOthers();
 
         return response()->json(['message' => 'Member deleted'], 204);
     }

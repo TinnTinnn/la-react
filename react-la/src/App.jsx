@@ -23,7 +23,8 @@ import ResetPasswordForm from "./Pages/Auth/ResetPasswordForm.jsx";
 import AllNotifications from "./components/AllNotifications.jsx";
 import {Notifications} from "@mantine/notifications";
 import '@mantine/notifications/styles.css';
-
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
 
 export default function App() {
@@ -53,7 +54,18 @@ export default function App() {
             ],
         },
     });
+
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+    // Laravel Echo ที่มี Listen จาก Pusher อีกทีนีง
+    // window.Pusher = Pusher;
+    //
+    // window.Echo = new Echo({
+    //     broadcaster: 'pusher',
+    //     key: import.meta.env.VITE_PUSHER_APP_KEY,
+    //     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    //     forceTLS: true
+    // });
 
     useEffect(() => {
         const handleResize = () => setScreenWidth(window.innerWidth);
@@ -61,11 +73,11 @@ export default function App() {
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-    
+
 
     return (
         <MantineProvider theme={theme}>
-            <Notifications />
+            <Notifications/>
             <BrowserRouter>
 
                 <AppShell
@@ -124,8 +136,8 @@ export default function App() {
                                 <Route path="/create" element={user ? <Create/> : <Login/>}/>
                                 <Route path="/members/:id" element={<Show/>}/>
                                 <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
-                                <Route path="/reset-password" element={<ResetPasswordForm />} />
-                                <Route path="/all-notificatons" element={<AllNotifications />} />
+                                <Route path="/reset-password" element={<ResetPasswordForm/>}/>
+                                <Route path="/all-notificatons" element={<AllNotifications/>}/>
                             </Route>
                         </Routes>
                     </AppShell.Main>

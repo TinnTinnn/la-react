@@ -1,17 +1,56 @@
 version: "3.9"
+
 services:
-  mysql:
-    image: mariadb:10.8.3
-    # Uncomment below when on Mac M1
-    # platform: linux/arm64/v8
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - 3306:3306
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+    # MySQL Database Service
+    mysql:
+        image: mariadb:10.8.3
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: la-react # ชื่อฐานข้อมูลที่ต้องการ
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root
+        ports:
+            - "3306:3306" # เปิดพอร์ตให้เข้าถึง MySQL จากภายนอก
+        networks:
+            - app-network
+
+    # Adminer (สำหรับจัดการฐานข้อมูล MySQL ผ่าน UI)
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - "8080:8080" # เปิดพอร์ตสำหรับเข้าใช้งาน Adminer
+        networks:
+            - app-network
+
+    # Laravel Backend Service
+    laravel:
+        build:
+            context: ./ # โฟลเดอร์ของ backend (Laravel)
+        working_dir: /var/www
+        ports:
+            - "9000:9000" # เปิดพอร์ตให้ Laravel ทำงาน
+        volumes:
+            - ./la-react:/var/www # เชื่อมโฟลเดอร์ Laravel กับ Container
+        depends_on:
+            - mysql # รอให้ MySQL container พร้อมก่อน
+        networks:
+            - app-network
+
+    # React Frontend Service
+    react:
+        build:
+            context: ./react-la # โฟลเดอร์ของ frontend (React + Vite)
+        ports:
+            - "5173:80" # เปิดพอร์ตให้ React ทำงาน
+        volumes:
+            - ./react-la:/app # เชื่อมโฟลเดอร์ React กับ Container
+        networks:
+            - app-network
+        depends_on:
+            - laravel # รอให้ Laravel container พร้อมก่อน
+
+networks:
+    app-network:
+        driver: bridge

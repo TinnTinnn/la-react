@@ -9,6 +9,14 @@ services:
             - "8000:80"
         volumes:
             - .:/var/www/html
+        environment:
+            - APACHE_RUN_USER=www-data
+            - APACHE_RUN_GROUP=www-data
+            - APACHE_LOG_DIR=/var/log/apache2
+        depends_on:
+            - db
+        networks:
+            - laravel-network
 
     db:
         image: mysql:5.7

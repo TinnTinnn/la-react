@@ -20,9 +20,10 @@ class MemberFactory extends Factory
      */
     public function definition(): array
     {
-        // สุ่มวันที่ในช่วงตั้งแต่เดือนมกราคมของปีนี้จนถึงปัจจุบัน
-        $startOfYear = now()->startOfYear(); // วันที่ 1 ของ มกราคมปีนี้
-        $createdAt = $this->faker->dateTimeBetween($startOfYear, now());
+        // กำหนดวันที่เริ่มต้นให้ย้อนหลังไป 12 เดือนจากเดือนปัจจุบัน
+        $startOfPeriod = now()->subYear()->startOfMonth(); // วันที่ 1 ของเดือนเมื่อ 12 เดือนที่แล้ว
+        $endOfPeriod = now()->endOfMonth(); // วันที่สุดท้ายของเดือนปัจจุบัน
+        $createdAt = $this->faker->dateTimeBetween($startOfPeriod, $endOfPeriod);
 
         // กำหนดวันหมดอายุโดยเพิ่ม 1 - 12 เดือนจากวันที่สมัคร
         $expirationDate = (clone $createdAt)->add(new DateInterval('P'. rand(1, 12). 'M'));

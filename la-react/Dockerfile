@@ -31,10 +31,10 @@ COPY --from=composer:2.6.5 /usr/bin/composer /usr/local/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
 # copy file Nginx config
-COPY ./nginx.conf /etc/nginx/sites-available/default
+COPY la-react/nginx.conf /etc/nginx/sites-available/default
 
 # สคริปต์สำหรับเริ่มบริการ
-COPY ./start.sh /usr/local/bin/start.sh
+COPY la-react/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # เปิด port 80 สำหรับ Nginx

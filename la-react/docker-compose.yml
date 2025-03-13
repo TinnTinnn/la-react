@@ -1,17 +1,23 @@
 version: "3.9"
 services:
-  mysql:
-    image: mariadb:10.8.3
-    # Uncomment below when on Mac M1
-    # platform: linux/arm64/v8
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - 3306:3306
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+    app:
+        build: .
+        ports:
+            - "8000:80"
+        environment:
+            - DB_CONNECTION=pgsql
+            - DB_HOST=postgres
+            - DB_PORT=5432
+            - DB_DATABASE=la-react
+            - DB_USERNAME=postgres
+            - DB_PASSWORD=secret
+        depends_on:
+            - postgres
+    postgres:
+        image: postgres:15
+        environment:
+            POSTGRES_DB: la-react
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: secret
+        ports:
+            - "5432:5432"

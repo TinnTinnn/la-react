@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # รอให้ Postgres พร้อม
-until pg_isready -h postgres -p 5432 -U postgres; do
+until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME"; do
   echo "Waiting for Postgres to be ready..."
   sleep 1
 done

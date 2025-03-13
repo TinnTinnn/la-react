@@ -5,8 +5,10 @@ export default function AppProvider({children}) {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [user, setUser] = useState(null);
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     async function getUser() {
-        const res = await fetch('/api/user', {
+        const res = await fetch(`${API_URL}/api/user`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

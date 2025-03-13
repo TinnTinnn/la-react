@@ -11,6 +11,8 @@ function RequestResetForm({closeModal,}) {
         = useState({ visible: false, message: '', color: ''});
     const [isRequestSent, setIsRequestSent] = useState(false); // สถานะสำหรับการส่งคำขอ
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -29,7 +31,7 @@ function RequestResetForm({closeModal,}) {
 
         setIsLoading(true); // ตั้งค่า isLoading เป็น true เมื่อเริ่มทำงาน
         try {
-            await axios.post('/api/password/request-reset', {email});
+            await axios.post(`${API_URL}/api/password/request-reset`, {email});
             setNotification({
                 visible: true,
                 message:'Password reset link sent to your email.',

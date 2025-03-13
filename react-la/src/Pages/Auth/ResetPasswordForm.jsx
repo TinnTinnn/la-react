@@ -22,10 +22,12 @@ function ResetPasswordForm() {
     const token = searchParams.get('token');
     const email = searchParams.get('email');
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     useEffect(() => {
         const verifyToken = async () => {
             try {
-                const response = await axios.post('api/password/verify-token', {token, email});
+                const response = await axios.post(`${API_URL}/api/password/verify-token`, {token, email});
                 if (response.status === 200) {
                     setTimeout(() =>{
                         setIsTokenValid(true); // Token ใช้งานได้
@@ -66,7 +68,7 @@ function ResetPasswordForm() {
 
         try {
             // ตรงนี้ปรับแต่งให้ส่งคำขอรีเซ็ทรหัสผ่านทันที หากตรงเงื่อนไขทั้งหมด
-            const response = await axios.post('/api/password/reset', {
+            const response = await axios.post(`${API_URL}/api/password/reset`, {
                 email,
                 token,
                 password,

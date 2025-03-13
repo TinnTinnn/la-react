@@ -13,8 +13,9 @@ const AllNotifications = () => {
         if (!token) return; // หยุดการทำงานถ้าไม่มี token
 
         const fetchNotifications = async () => {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
             try {
-                const response = await fetch('/api/notifications/', {
+                const response = await fetch(`${API_URL}/api/notifications/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.status === 401) {

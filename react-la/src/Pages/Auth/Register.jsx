@@ -17,10 +17,11 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
     });
 
     const [errors, setErrors] = useState({});
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     async function handleRegister(e) {
         e.preventDefault();
-        const res = await fetch('/api/register', {
+        const res = await fetch(`${API_URL}/api/register`, {
             method: "post",
             headers: {
                 'Content-Type': 'application/json',

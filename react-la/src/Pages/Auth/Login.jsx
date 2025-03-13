@@ -15,10 +15,11 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
     });
 
     const [errors, setErrors] = useState({});
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     async function handleLogin(e) {
         e.preventDefault();
-        const res = await fetch('/api/login', {
+        const res = await fetch(`${API_URL}/api/login`, {
             method: "post",
             headers: {
                 "Content-Type": "application/json",

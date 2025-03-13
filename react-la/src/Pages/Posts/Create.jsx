@@ -22,7 +22,8 @@ export default function Create() {
 
     async function handleCreate(e) {
         e.preventDefault();
-        const res = await fetch('/api/members', {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+        const res = await fetch(`${API_URL}/api/members`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,

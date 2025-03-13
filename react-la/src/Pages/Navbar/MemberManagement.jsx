@@ -74,9 +74,11 @@ export default function MemberManagement() {
     const [membershipType, setMembershipType] = useState('')
     const [errors, setErrors] = useState({});
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     // const navigate = useNavigate();
     async function getMembers() {
-        const res = await fetch('/api/members')
+        const res = await fetch(`${API_URL}/api/members`)
         const data = await res.json();
 
         if (res.ok) {
@@ -146,7 +148,7 @@ export default function MemberManagement() {
             }
 
             // ส่งข้อมูลไปยัง Back-end
-            const res = await fetch(`/api/members`, {
+            const res = await fetch(`${API_URL}/api/members`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -268,8 +270,8 @@ export default function MemberManagement() {
 
         try {
             // ส่งข้อมูลไปยัง back-end
-            console.log(`Fetching URL: /api/members/${memberToEdit.id}`);
-            const res = await fetch(`/api/members/${memberToEdit.id}`, {
+            console.log(`Fetching URL: ${API_URL}/api/members/${memberToEdit.id}`);
+            const res = await fetch(`${API_URL}/api/members/${memberToEdit.id}`, {
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json", // ใช้ JSON เฉพาะตอนที่อยากจัดการสิ่งที่ไม่เกี่ยวข้องกับอัพโหลดไฟล์
@@ -308,7 +310,7 @@ export default function MemberManagement() {
         formData.append("profile_picture", file);
         formData.append("member_id", memberId);
 
-        fetch(`/api/upload-profile-picture`, {
+        fetch(`${API_URL}/api/upload-profile-picture`, {
             method: "POST",
             body: formData,
             headers: {
@@ -412,7 +414,7 @@ export default function MemberManagement() {
 
     async function confirmDelete() {
         if (!memberToDelete) return
-        const res = await fetch(`/api/members/${memberToDelete}`, {
+        const res = await fetch(`${API_URL}/api/members/${memberToDelete}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,  // ใช้ Token สำหรับการ Auth

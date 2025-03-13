@@ -8,9 +8,10 @@ export default function Show() {
     const {user, token} = useContext(AppContext)
 
     const [member, setMember] = useState(null);
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     async function getMembers() {
-        const res = await fetch(`/api/members/${id}`);
+        const res = await fetch(`${API_URL}/api/members/${id}`);
         const data = await res.json();
 
         if (res.ok) {
@@ -22,7 +23,7 @@ export default function Show() {
         e.preventDefault();
 
         if (user && user.id === member.user_id) {
-            const res = await fetch (`/api/members/${id}`, {
+            const res = await fetch (`${API_URL}/api/members/${id}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${token}`,

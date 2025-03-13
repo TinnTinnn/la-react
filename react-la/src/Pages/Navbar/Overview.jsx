@@ -36,8 +36,9 @@ export default function Overview() {
 
     useEffect(() => {
         async function fetchStats() {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
             try {
-                const res = await fetch('/api/members/stats', {
+                const res = await fetch(`${API_URL}/api/members/stats`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

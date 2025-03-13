@@ -19,14 +19,17 @@ const HeaderContent = ({opened, toggle,}) => {
     const {user, token, setUser, setToken} = useContext(AppContext);
     const navigate = useNavigate()
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     // จัดการส่วน Notifications
     const [forNotifications, setForNotifications] = useState({});
+
 
 
     // ตัวแปรสำหรับจัดการ indicator เพื่อเปลี่ยนสถานะ อ่านหรือยัง
     const markAsRead = (notificationId) => {
         // เรียก API หรือทำการเปลี่ยนข้อมูลใน database คอลัมน์ read_status เป็น 1
-        axios.put(`/api/notifications/${notificationId}`, {read_status: 1},
+        axios.put(`${API_URL}/api/notifications/${notificationId}`, {read_status: 1},
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -81,6 +84,7 @@ const HeaderContent = ({opened, toggle,}) => {
     const [isLogin, setIsLogin] = useState(true);
 
 
+
     // ฟังค์ชั่น toggle ระหว่าง Login และ Register
     const toggleForm = () => {
         setIsLogin((prev) => !prev)
@@ -121,7 +125,7 @@ const HeaderContent = ({opened, toggle,}) => {
         }
         const fetchNotifications = async () => {
             try {
-                const response = await fetch('/api/notifications', {
+                const response = await fetch(`${API_URL}/api/notifications`, {
                     headers: {Authorization: `Bearer ${token}`},
                 });
                 const data = await response.json();
@@ -147,7 +151,7 @@ const HeaderContent = ({opened, toggle,}) => {
     async function handleLogout(e) {
         e.preventDefault();
 
-        const res = await fetch("/api/logout", {
+        const res = await fetch(`${API_URL}/api/logout`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -179,7 +183,7 @@ const HeaderContent = ({opened, toggle,}) => {
         formData.append("profile_picture", file);
         formData.append("user_id", user.id); // ใช้ 'user_id' จาก COntext หรือ state
 
-        fetch(`/api/upload-profile-picture`, {
+        fetch(`${API_URL}/api/upload-profile-picture`, {
             method: "POST",
             body: formData,
             headers: {

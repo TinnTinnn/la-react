@@ -17,8 +17,10 @@ export default function Update() {
 
     const [errors, setErrors] = useState({});
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     async function getMembers() {
-        const res = await fetch(`/api/members/${id}`);
+        const res = await fetch(`${API_URL}/api/members/${id}`);
         const data = await res.json();
 
         if (res.ok) {
@@ -35,7 +37,7 @@ export default function Update() {
     async function handleUpdate(e) {
         e.preventDefault();
 
-        const res = await fetch(`/api/members/${id}`, {
+        const res = await fetch(`${API_URL}/api/members/${id}`, {
             method: 'PUT',
             headers: {
                 Authorization: `Bearer ${token}`,

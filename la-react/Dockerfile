@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/app
 
 # Copy all project file
-COPY . /var/www/app
+COPY la-react/ /var/www/app/
 
 RUN chown -R www-data:www-data /var/www/app \
     && chmod -R 775 /var/www/app/storage

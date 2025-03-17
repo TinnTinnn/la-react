@@ -39,17 +39,21 @@ class ProfilePictureController extends Controller
         }
 
         // ลบรูปภาพเก่าถ้ามี
-        if ($entity->profile_picture) {
-            $oldPath = parse_url($entity->profile_picture, PHP_URL_PATH); // ดึง path จาก URL
-            $oldPath = ltrim($oldPath, '/'); // ลบ / นำหน้า
-            if (Storage::disk('s3')->exists($oldPath)) {
-                Storage::disk('s3')->delete($oldPath);
-            }
-        }
-
-        // อััพโหลดรูปภาพใหม่
         try {
+            // ลบรูปภาพเก่าถ้ามี
+            if ($entity->profile_picture) {
+                $oldPath = parse_url($entity->profile_picture, PHP_URL_PATH);
+                $oldPath = ltrim($oldPath, '/');
+                if ($oldPath && Storage::disk('s3')->exists($oldPath)) {
+                    Storage::disk('s3')->delete($oldPath);
+                }
+            }
+
+            // อัปโหลดรูปภาพใหม่
             $path = $request->file('profile_picture')->storePublicly('profile_pictures', 's3');
+            if (!$path) {
+                throw new \Exception('Failed to generate S3 path');
+            }
             $fullUrl = Storage::disk('s3')->url($path);
             $entity->profile_picture = $fullUrl;
             $entity->save();
@@ -59,6 +63,7 @@ class ProfilePictureController extends Controller
                 'profile_picture' => $fullUrl,
             ]);
         } catch (\Exception $e) {
+            Log::error('Profile picture upload failed', ['error' => $e->getMessage()]);
             return response()->json([
                 'error' => 'Failed to upload profile picture',
                 'message' => $e->getMessage()

@@ -68,6 +68,9 @@ class MemberController extends Controller implements HasMiddleware
             try {
                 // อัปโหลดไฟล์
                 $path = $request->file('profile_picture')->storePublicly('profile_pictures', 's3');
+                if (!$path) {
+                    throw new \Exception('Failed to generate S3 path');
+                }
                 $fields['profile_picture'] = Storage::disk('s3')->url($path);
                 Log::info('Profile Picture Path', ['profile_picture' => $fields['profile_picture']]);
             } catch (\Exception $e) {

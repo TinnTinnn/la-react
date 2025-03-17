@@ -49,7 +49,7 @@ class ProfilePictureController extends Controller
 
         // อััพโหลดรูปภาพใหม่
         try {
-            $path = $request->file('profile_picture')->store('profile_pictures', 's3');
+            $path = $request->file('profile_picture')->storePublicly('profile_pictures', 's3');
             $fullUrl = Storage::disk('s3')->url($path);
             $entity->profile_picture = $fullUrl;
             $entity->save();

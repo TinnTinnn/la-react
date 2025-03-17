@@ -47,7 +47,7 @@ class MemberController extends Controller implements HasMiddleware
             'age' => 'required|integer|min:10|max:80',
             'gender' => 'required|string|max:255',
             'phone_number' => 'required|string|max:255|unique:members,phone_number',
-            'email' => 'required|email|unique:members,email,',
+            'email' => 'required|email|unique:members,email',
             'address' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:255',
             'profile_picture' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',

@@ -59,6 +59,8 @@ export default function MemberManagement() {
         return phone.replace(/[-\s]/g, '');
     }
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
     const [formData, setFormData] = useState({
         member_name: "",
         age: 0,
@@ -74,7 +76,7 @@ export default function MemberManagement() {
     const [membershipType, setMembershipType] = useState('')
     const [errors, setErrors] = useState({});
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 
     // const navigate = useNavigate();
     async function getMembers() {

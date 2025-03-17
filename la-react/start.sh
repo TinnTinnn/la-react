@@ -7,9 +7,9 @@ until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME"; do
 done
 
 # รันคำสั่ง Laravel
-php artisan config:cache
-php artisan route:cache
-php artisan migrate --force
+php artisan config:clear     #ล้าง config cache เพื่อใช้ APP_URL ใหม่
+php artisan route:cache    # Cache route
+php artisan migrate --force   # run migration
 
 # เริ่ม PHP-FPM และ Nginx
 php-fpm -D

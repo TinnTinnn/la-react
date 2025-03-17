@@ -38,8 +38,15 @@ class ProfilePictureController extends Controller
             return response()->json(['error' => ($isUser ? 'User' : 'Member'). ' not found'], 404);
         }
 
-        // ลบรูปภาพเก่าถ้ามี
         try {
+            // Debug file
+            $file = $request->file('profile_picture');
+            Log::info('File details', [
+                'name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime' => $file->getMimeType()
+            ]);
+
             // ลบรูปภาพเก่าถ้ามี
             if ($entity->profile_picture) {
                 $oldPath = parse_url($entity->profile_picture, PHP_URL_PATH);
@@ -51,6 +58,7 @@ class ProfilePictureController extends Controller
 
             // อัปโหลดรูปภาพใหม่
             $path = $request->file('profile_picture')->storePublicly('profile_pictures', 's3');
+            Log::info('S3 Path', ['path' => $path]);
             if (!$path) {
                 throw new \Exception('Failed to generate S3 path');
             }

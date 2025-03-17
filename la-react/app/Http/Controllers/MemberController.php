@@ -67,8 +67,8 @@ class MemberController extends Controller implements HasMiddleware
         if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
             try {
                 // อัปโหลดไฟล์
-                $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-                $fields['profile_picture'] = secure_asset('storage/' . $path);
+                $path = $request->file('profile_picture')->store('profile_pictures', 's3');
+                $fields['profile_picture'] = Storage::disk('s3')->url($path);
                 Log::info('Profile Picture Path', ['profile_picture' => $fields['profile_picture']]);
             } catch (\Exception $e) {
                 // Log และส่ง error หากอัปโหลดไม่สำเร็จ

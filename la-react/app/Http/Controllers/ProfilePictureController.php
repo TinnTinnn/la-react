@@ -40,23 +40,29 @@ class ProfilePictureController extends Controller
 
         // ลบรูปภาพเก่าถ้ามี
         if ($entity->profile_picture) {
-            $oldPath = str_replace(asset('storage/'), '', $entity->profile_picture);
-            Storage::disk('public')->delete($oldPath);
+            $oldPath = parse_url($entity->profile_picture, PHP_URL_PATH); // ดึง path จาก URL
+            $oldPath = ltrim($oldPath, '/'); // ลบ / นำหน้า
+            if (Storage::disk('s3')->exists($oldPath)) {
+                Storage::disk('s3')->delete($oldPath);
+            }
         }
 
         // อััพโหลดรูปภาพใหม่
-        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+        try {
+            $path = $request->file('profile_picture')->store('profile_pictures', 's3');
+            $fullUrl = Storage::disk('s3')->url($path);
+            $entity->profile_picture = $fullUrl;
+            $entity->save();
 
-        // สร้าง URL แบบเต็ม
-        $fullUrl = asset('storage/' . $path);
-
-        // ยันทึก URL ของรูปภาพลงในฐานข้อมูล
-        $entity->profile_picture = $fullUrl;
-        $entity->save();
-
-        return response()->json([
-            'message' => 'Profile picture updated successfully',
-            'profile_picture' => $fullUrl,
-        ]);
+            return response()->json([
+                'message' => 'Profile picture updated successfully',
+                'profile_picture' => $fullUrl,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to upload profile picture',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

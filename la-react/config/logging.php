@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', 'stderr'),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,6 +51,11 @@ return [
     */
 
     'channels' => [
+        'stderr' => [
+            'driver' => 'stream',
+            'path' => 'php://stderr',
+            'level' => 'debug',
+        ],
 
         'stack' => [
             'driver' => 'stack',

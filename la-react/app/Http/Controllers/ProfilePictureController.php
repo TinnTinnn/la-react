@@ -52,12 +52,12 @@ class ProfilePictureController extends Controller
             $s3Config = config('filesystems.disks.s3');
             Log::info('S3 Config', [
                 'key' => $s3Config['key'],
-                'secret' => $s3Config['secret'],
+                'secret' => $s3Config['secret'] ? '****' : null,
                 'region' => $s3Config['region'],
                 'bucket' => $s3Config['bucket'],
                 'env_vars' => [
                     'AWS_ACCESS_KEY_ID' => env('AWS_ACCESS_KEY_ID'),
-                    'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY'),
+                    'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY') ? '****' : null,
                     'AWS_DEFAULT_REGION' => env('AWS_DEFAULT_REGION'),
                     'AWS_BUCKET' => env('AWS_BUCKET')
                 ]
@@ -65,24 +65,36 @@ class ProfilePictureController extends Controller
 
             // Test S3 connection
             $disk = Storage::disk('s3');
-            Log::info('S3 Disk Available', ['exists' => $disk->exists('test.txt')]);
+            try {
+                $testPath = 'test-' . time() . '.txt';
+                $disk->put($testPath, 'test content');
+                $exists = $disk->exists($testPath);
+                $disk->delete($testPath);
+                Log::info('S3 Connection Test', ['can_write' => $exists]);
+            } catch (\Exception $e) {
+                Log::error('S3 Connection Failed', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw new \Exception('S3 connection failed: ' . $e->getMessage());
+            }
 
             // ลบรูปภาพเก่าถ้ามี
             if ($entity->profile_picture) {
                 $oldPath = parse_url($entity->profile_picture, PHP_URL_PATH);
                 $oldPath = ltrim($oldPath, '/');
-                if ($oldPath && Storage::disk('s3')->exists($oldPath)) {
-                    Storage::disk('s3')->delete($oldPath);
+                if ($oldPath && $disk->exists($oldPath)) {
+                    $disk->delete($oldPath);
                 }
             }
 
             // อัปโหลดรูปภาพใหม่
-            $path = $request->file('profile_picture')->storePublicly('profile_pictures', 's3');
+            $path = $file->storePublicly('profile_pictures', 's3');
             Log::info('S3 Path', ['path' => $path]);
             if (!$path) {
                 throw new \Exception('Failed to generate S3 path');
             }
-            $fullUrl = Storage::disk('s3')->url($path);
+            $fullUrl = $disk->url($path);
             $entity->profile_picture = $fullUrl;
             $entity->save();
 

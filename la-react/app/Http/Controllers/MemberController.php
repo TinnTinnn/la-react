@@ -72,17 +72,39 @@ class MemberController extends Controller implements HasMiddleware
                     'size' => $file->getSize(),
                     'mime' => $file->getMimeType()
                 ]);
+
+                // Debug S3 config
+                $s3Config = config('filesystems.disks.s3');
+                Log::info('S3 Config', [
+                    'key' => $s3Config['key'],
+                    'secret' => $s3Config['secret'],
+                    'region' => $s3Config['region'],
+                    'bucket' => $s3Config['bucket'],
+                    'env_vars' => [
+                        'AWS_ACCESS_KEY_ID' => env('AWS_ACCESS_KEY_ID'),
+                        'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY'),
+                        'AWS_DEFAULT_REGION' => env('AWS_DEFAULT_REGION'),
+                        'AWS_BUCKET' => env('AWS_BUCKET')
+                    ]
+                ]);
+
+                // Test S3 connection
+                $disk = Storage::disk('s3');
+                Log::info('S3 Disk Available', ['exists' => $disk->exists('test.txt')]);
+
                 // อัปโหลดไฟล์
-                $path = $request->file('profile_picture')->storePublicly('profile_pictures', 's3');
+                $path = $file->storePublicly('profile_pictures', 's3');
                 Log::info('S3 Path', ['path' => $path]);
                 if (!$path) {
                     throw new \Exception('Failed to generate S3 path');
                 }
-                $fields['profile_picture'] = Storage::disk('s3')->url($path);
+                $fields['profile_picture'] = $disk->url($path);
                 Log::info('Profile Picture Path', ['profile_picture' => $fields['profile_picture']]);
             } catch (\Exception $e) {
-                // Log และส่ง error หากอัปโหลดไม่สำเร็จ
-                Log::error('Failed to upload profile picture', ['error' => $e->getMessage()]);
+                Log::error('Failed to upload profile picture', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to upload profile picture',

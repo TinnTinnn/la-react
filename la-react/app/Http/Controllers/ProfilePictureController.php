@@ -48,6 +48,25 @@ class ProfilePictureController extends Controller
                 'mime' => $file->getMimeType()
             ]);
 
+            // Debug S3 config
+            $s3Config = config('filesystems.disks.s3');
+            Log::info('S3 Config', [
+                'key' => $s3Config['key'],
+                'secret' => $s3Config['secret'],
+                'region' => $s3Config['region'],
+                'bucket' => $s3Config['bucket'],
+                'env_vars' => [
+                    'AWS_ACCESS_KEY_ID' => env('AWS_ACCESS_KEY_ID'),
+                    'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY'),
+                    'AWS_DEFAULT_REGION' => env('AWS_DEFAULT_REGION'),
+                    'AWS_BUCKET' => env('AWS_BUCKET')
+                ]
+            ]);
+
+            // Test S3 connection
+            $disk = Storage::disk('s3');
+            Log::info('S3 Disk Available', ['exists' => $disk->exists('test.txt')]);
+
             // ลบรูปภาพเก่าถ้ามี
             if ($entity->profile_picture) {
                 $oldPath = parse_url($entity->profile_picture, PHP_URL_PATH);
@@ -72,7 +91,10 @@ class ProfilePictureController extends Controller
                 'profile_picture' => $fullUrl,
             ]);
         } catch (\Exception $e) {
-            Log::error('Profile picture upload failed', ['error' => $e->getMessage()]);
+            Log::error('Profile picture upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'error' => 'Failed to upload profile picture',
                 'message' => $e->getMessage()

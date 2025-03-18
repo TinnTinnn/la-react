@@ -8,3 +8,5 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+        #fix refresh 404

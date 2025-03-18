@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: 'dist', // output เป็น dist
+  },
+  publicDir: 'public',
   server: {
     proxy: {
       '/api': {

@@ -38,7 +38,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
             navigate('/');
         }
 
-        console.log(data);
+        // console.log(data);
     }
 
     return (

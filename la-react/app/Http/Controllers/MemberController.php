@@ -65,6 +65,7 @@ class MemberController extends Controller implements HasMiddleware
 
             $uploaded = $disk->put($fileName, file_get_contents($file));
             if (!$uploaded) {
+                Log::error('S3 upload failed', ['file' => $fileName]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to upload profile picture',

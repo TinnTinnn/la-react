@@ -74,7 +74,6 @@ class MemberController extends Controller implements HasMiddleware
                     'is_valid' => $file->isValid()
                 ]);
 
-                // Debug S3 config
                 $s3Config = config('filesystems.disks.s3');
                 Log::info('S3 Config', [
                     'key' => $s3Config['key'],
@@ -89,7 +88,6 @@ class MemberController extends Controller implements HasMiddleware
                     ]
                 ]);
 
-                // Test S3 connection
                 $disk = Storage::disk('s3');
                 try {
                     $testPath = 'test-' . time() . '.txt';
@@ -98,19 +96,17 @@ class MemberController extends Controller implements HasMiddleware
                     $disk->delete($testPath);
                     Log::info('S3 Connection Test', ['can_write' => $exists]);
                 } catch (\Exception $e) {
-                    Log::error('S3 Connection Failed', [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString()
-                    ]);
+                    Log::error('S3 Connection Failed', ['error' => $e->getMessage()]);
                     throw new \Exception('S3 connection failed: ' . $e->getMessage());
                 }
 
-                $path = $file->storePublicly('profile_pictures', 's3');
-                Log::info('S3 Path', ['path' => $path]);
-                if (!$path) {
-                    throw new \Exception('Failed to generate S3 path');
+                $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
+                $uploaded = $disk->put($fileName, file_get_contents($file), 'public');
+                Log::info('S3 Upload Result', ['uploaded' => $uploaded, 'file_name' => $fileName]);
+                if (!$uploaded) {
+                    throw new \Exception('Failed to upload to S3');
                 }
-                $fields['profile_picture'] = $disk->url($path);
+                $fields['profile_picture'] = $disk->url($fileName);
                 Log::info('Profile Picture Path', ['profile_picture' => $fields['profile_picture']]);
             } catch (\Exception $e) {
                 Log::error('Failed to upload profile picture', [

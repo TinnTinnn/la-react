@@ -89,12 +89,13 @@ class ProfilePictureController extends Controller
             }
 
             // อัปโหลดรูปภาพใหม่
-            $path = $file->storePublicly('profile_pictures', 's3');
-            Log::info('S3 Path', ['path' => $path]);
-            if (!$path) {
-                throw new \Exception('Failed to generate S3 path');
+            $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
+            $uploaded = $disk->put($fileName, file_get_contents($file), 'public');
+            Log::info('S3 Upload Result', ['uploaded' => $uploaded, 'file_name' => $fileName]);
+            if (!$uploaded) {
+                throw new \Exception('Failed to upload to S3');
             }
-            $fullUrl = $disk->url($path);
+            $fullUrl = $disk->url($fileName);
             $entity->profile_picture = $fullUrl;
             $entity->save();
 

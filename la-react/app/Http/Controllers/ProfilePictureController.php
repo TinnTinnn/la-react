@@ -90,7 +90,7 @@ class ProfilePictureController extends Controller
 
             // อัปโหลดรูปภาพใหม่
             $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
-            $uploaded = $disk->put($fileName, file_get_contents($file), 'public');
+            $uploaded = $disk->put($fileName, file_get_contents($file));
             Log::info('S3 Upload Result', ['uploaded' => $uploaded, 'file_name' => $fileName]);
             if (!$uploaded) {
                 throw new \Exception('Failed to upload to S3');

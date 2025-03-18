@@ -38,8 +38,7 @@ class MemberController extends Controller implements HasMiddleware
 
     public function store(Request $request): JsonResponse
     {
-//        dd($request->all());
-        Log::info('Request data', $request->all());
+        // Validate request
         $fields = $request->validate([
 //            'user_id' => 'required|exists:users,id',
             'membership_type' => 'required|max:255',
@@ -57,93 +56,34 @@ class MemberController extends Controller implements HasMiddleware
         // กำหนด user_id จากผู้ใช้ที่ล็อกอินจะได้ไม่ต้องตรวจสอบซ้ำ
         $fields['user_id'] = auth()->user()->id;  // ดึง user_id จากการล็อกอิน
 
-        // เอาไว้ดู log ได้ใน laravel.log
-        Log::info('Creating Member', ['data' => $fields]);
-
-        // ส่วนรับผิดชอบในการอัพโหลดไฟล์สำหรับ profile_picture
-        Log::info('Profile Picture Upload Check', ['hasFile' => $request->hasFile('profile_picture')]);
-
         // ตรวจสอบและอัปโหลดรูปภาพ หากมีไฟล์ที่ถูกส่งมา
+        // Upload profile picture if provided
         if ($request->hasFile('profile_picture') && $request->file('profile_picture')->isValid()) {
-            try {
-                $file = $request->file('profile_picture');
-                Log::info('File details', [
-                    'name' => $file->getClientOriginalName(),
-                    'size' => $file->getSize(),
-                    'mime' => $file->getMimeType(),
-                    'is_valid' => $file->isValid()
-                ]);
+            $file = $request->file('profile_picture');
+            $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
+            $disk = Storage::disk('s3');
 
-                $s3Config = config('filesystems.disks.s3');
-                Log::info('S3 Config', [
-                    'key' => $s3Config['key'],
-                    'secret' => $s3Config['secret'] ? '****' : null,
-                    'region' => $s3Config['region'],
-                    'bucket' => $s3Config['bucket'],
-                    'env_vars' => [
-                        'AWS_ACCESS_KEY_ID' => env('AWS_ACCESS_KEY_ID'),
-                        'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY') ? '****' : null,
-                        'AWS_DEFAULT_REGION' => env('AWS_DEFAULT_REGION'),
-                        'AWS_BUCKET' => env('AWS_BUCKET')
-                    ]
-                ]);
-
-                $disk = Storage::disk('s3');
-                try {
-                    $testPath = 'test-' . time() . '.txt';
-                    $disk->put($testPath, 'test content');
-                    $exists = $disk->exists($testPath);
-                    $disk->delete($testPath);
-                    Log::info('S3 Connection Test', ['can_write' => $exists]);
-                } catch (\Exception $e) {
-                    Log::error('S3 Connection Failed', ['error' => $e->getMessage()]);
-                    throw new \Exception('S3 connection failed: ' . $e->getMessage());
-                }
-
-                $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
-                $uploaded = $disk->put($fileName, file_get_contents($file));
-                Log::info('S3 Upload Result', ['uploaded' => $uploaded, 'file_name' => $fileName]);
-                if (!$uploaded) {
-                    throw new \Exception('Failed to upload to S3');
-                }
-                $fields['profile_picture'] = $disk->url($fileName);
-                Log::info('Profile Picture Path', ['profile_picture' => $fields['profile_picture']]);
-            } catch (\Exception $e) {
-                Log::error('Failed to upload profile picture', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
+            $uploaded = $disk->put($fileName, file_get_contents($file));
+            if (!$uploaded) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to upload profile picture',
-                    'error' => $e->getMessage()
+                    'error' => 'Could not upload to S3'
                 ], 500);
             }
+            $fields['profile_picture'] = $disk->url($fileName);
         } else {
             $fields['profile_picture'] = null;
         }
 
         // สร้าง Member ใหม่
-        try {
-            $member = $request->user()->members()->create($fields);
-            Log::info('Member created', ['member' => $member]);
-        } catch (\Exception $e) {
-            // Log และส่ง error หากการสร้าง Member ล้มเหลว
-            Log::error('Failed to create member', ['error' => $e->getMessage()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create member',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $member = $request->user()->members()->create($fields);
 
         // ส่งการแจ้งเตือนให้ User
         $notification = Notification::create([
             'user_id' => auth()->id(),
-            'message'=> 'User ' . auth()->user()->name . ' Just created a new member: ' .$member->member_name,
+            'message' => 'User ' . auth()->user()->name . ' Just created a new member: ' . $member->member_name,
         ]);
-
-
 
         // ส่ง Event พร้อมข้อมูล Notification
         broadcast(new TestNotification($notification))->toOthers();
@@ -155,6 +95,29 @@ class MemberController extends Controller implements HasMiddleware
             'member' => $member->fresh(), // โหลดข้อมูลใหม่ของ member หลังสร้าง
             'user' => $member->user
         ], 201);
+    }
+
+    /**
+     * Upload file to S3 and delete old picture if exists
+     */
+    private function uploadProfilePicture($disk, $file, $oldPictureUrl = null)
+    {
+        // Delete old picture if exists
+        if ($oldPictureUrl) {
+            $oldPath = ltrim(parse_url($oldPictureUrl, PHP_URL_PATH), '/');
+            if ($disk->exists($oldPath)) {
+                $disk->delete($oldPath);
+            }
+        }
+
+        // Upload new picture
+        $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
+        $uploaded = $disk->put($fileName, file_get_contents($file));
+        if (!$uploaded) {
+            throw new \Exception('Could not upload to S3');
+        }
+
+        return $disk->url($fileName);
     }
 
     public function update(Request $request, Member $member): JsonResponse
@@ -196,7 +159,7 @@ class MemberController extends Controller implements HasMiddleware
             // แจ้งเตือน
             if (!empty($changes)) {
                 $message = 'User ' . auth()->user()->name . ' edited member "' .
-                    $originalData['member_name'] . '". Changes: '. implode(', ', $changes);
+                    $originalData['member_name'] . '". Changes: ' . implode(', ', $changes);
 
                 $notification = Notification::create([
                     'user_id' => auth()->id(),
@@ -280,11 +243,10 @@ class MemberController extends Controller implements HasMiddleware
     }
 
 
-
     // ฟังค์ชั่นเพื่อดึงข้อมูลจำนวนสมาชิกที่ลงทะเบียนในเดือนที่กำหนด
     public function getGenderCountByMonth($month)
     {
-        return[
+        return [
             'Male' => Member::whereMonth('created_at', $month)->where('gender', 'Male')->count(),
             'Female' => Member::whereMonth('created_at', $month)->where('gender', 'Female')->count(),
             'Other' => Member::whereMonth('created_at', $month)->where('gender', 'Other')->count(),
@@ -320,7 +282,7 @@ class MemberController extends Controller implements HasMiddleware
         // แจ้งเตือน
         $notification = Notification::create([
             'user_id' => auth()->id(),
-            'message' => 'User ' . auth()->user()->name . ' Just deleted member: '. $member->member_name,
+            'message' => 'User ' . auth()->user()->name . ' Just deleted member: ' . $member->member_name,
         ]);
 
         // ส่ง Event พร้อมข้อมูล Notification

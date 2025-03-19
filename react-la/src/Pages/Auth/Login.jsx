@@ -69,28 +69,27 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
 
             const data = await res.json();
 
-            if (data.errors) {
-                setErrors(data.errors);
-                // Handle specific error messages
-                if (data.errors.email) {
-                    setNotification({
-                        visible: true,
-                        message: "Email not found in our system",
-                        color: "red"
-                    });
-                } else if (data.errors.password) {
+            if (!res.ok) {
+                // Handle specific error messages based on status code
+                if (res.status === 401) {
                     setNotification({
                         visible: true,
                         message: "Incorrect password",
                         color: "red"
                     });
+                } else if (res.status === 404) {
+                    setNotification({
+                        visible: true,
+                        message: "Email not found in our system",
+                        color: "red"
+                    });
+                } else {
+                    setNotification({
+                        visible: true,
+                        message: data.message || "An error occurred during login",
+                        color: "red"
+                    });
                 }
-            } else if (data.error) {
-                setNotification({
-                    visible: true,
-                    message: data.error,
-                    color: "red"
-                });
             } else {
                 setNotification({
                     visible: true,
@@ -104,7 +103,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 setTimeout(() => {
                     closeModal();
                     navigate('/');
-                }, 3000);
+                }, 2000);
             }
         } catch (error) {
             console.error("Login error:", error);

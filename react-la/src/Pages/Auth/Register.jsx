@@ -83,37 +83,46 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
 
             const data = await res.json();
 
-            if (data.errors) {
-                setErrors(data.errors);
-                // จัดการ error messages ตามประเภท
-                if (data.errors.email?.[0]?.includes('taken')) {
-                    setNotification({
-                        visible: true,
-                        message: "This email is already in use. Please use another email.",
-                        color: "red"
-                    });
+            if (!res.ok) {
+                setErrors(data.errors || {});
+                
+                // Check for specific error cases
+                if (res.status === 422) {
+                    if (data.errors?.email?.[0]?.includes('taken')) {
+                        setNotification({
+                            visible: true,
+                            message: "This email is already registered",
+                            color: "red"
+                        });
+                    } else {
+                        setNotification({
+                            visible: true,
+                            message: "Please check your information and try again",
+                            color: "red"
+                        });
+                    }
                 } else {
                     setNotification({
                         visible: true,
-                        message: "Please check the information is correct.",
+                        message: data.message || "An error occurred during registration",
                         color: "red"
                     });
                 }
             } else {
                 setNotification({
                     visible: true,
-                    message: "Registration completed. You are now redirected to the home page...",
+                    message: "Registration successful. Redirecting to home page...",
                     color: "green"
                 });
                 localStorage.setItem("token", data.token);
                 setToken(data.token);
                 
-                // หน่วงเวลาเล็กน้อยเพื่อให้ผู้ใช้เห็น success message
+                // Delay redirect to show success message
                 setTimeout(() => {
                     closeModal();
                     openSuccessModal();
                     navigate('/');
-                }, 3000);
+                }, 2000);
             }
         } catch (error) {
             console.error("Registration error:", error);

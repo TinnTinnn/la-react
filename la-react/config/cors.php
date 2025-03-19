@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'paths'                => ['api/*', 'sanctum/csrf-cookie'],
+    'paths'                => ['*'],
     'allowed_methods'      => ['*'],
     'allowed_origins'      => [
         'https://react-la.onrender.com', // URL ของ frontend

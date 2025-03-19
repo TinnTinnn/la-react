@@ -9,7 +9,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [notification, setNotification] = useState({ visible: false, message: '', color: '' });
+    const [notification, setNotification] = useState({visible: false, message: '', color: ''});
 
     const [formData, setFormData] = useState({
         email: '',
@@ -22,7 +22,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
     // Validate form fields
     const validateForm = () => {
         const newErrors = {};
-        
+
         // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email.trim()) {
@@ -42,9 +42,9 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
     async function handleLogin(e) {
         e.preventDefault();
         setIsLoading(true);
-        setNotification({ visible: false, message: '', color: '' });
+        setNotification({visible: false, message: '', color: ''});
         setErrors({});
-        
+
         // Validate form before submitting
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
@@ -63,10 +63,16 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 method: "post",
                 headers: {
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
                 },
                 credentials: 'include',
                 body: JSON.stringify(formData),
             });
+
+            if (res.redirected) {
+                throw new Error("Unexpected redirect");
+            }
 
             const data = await res.json();
 
@@ -96,7 +102,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 });
                 localStorage.setItem("token", data.token);
                 setToken(data.token);
-                
+
                 // Delay redirect to show success message
                 setTimeout(() => {
                     closeModal();
@@ -120,10 +126,10 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
             <h1 className="">Login to your account</h1>
 
             {notification.visible && (
-                <Notification 
+                <Notification
                     title={notification.color === "red" ? "An error occurred" : "Notification"}
                     color={notification.color}
-                    onClose={() => setNotification({ visible: false, message: '', color: '' })}
+                    onClose={() => setNotification({visible: false, message: '', color: ''})}
                 >
                     {notification.message}
                 </Notification>
@@ -131,9 +137,9 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
 
             <form onSubmit={handleLogin} className="">
                 <div>
-                    <TextInput 
-                        label="Email" 
-                        type="text" 
+                    <TextInput
+                        label="Email"
+                        type="text"
                         placeholder="Email"
                         value={formData.email}
                         onChange={(e) => {
@@ -146,8 +152,8 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 </div>
 
                 <div>
-                    <PasswordInput 
-                        label="Password" 
+                    <PasswordInput
+                        label="Password"
                         placeholder="Password"
                         value={formData.password}
                         onChange={(e) => {

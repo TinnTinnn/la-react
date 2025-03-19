@@ -69,27 +69,24 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
 
             const data = await res.json();
 
-            if (!res.ok) {
-                // Handle specific error messages based on status code
-                if (res.status === 401) {
-                    setNotification({
-                        visible: true,
-                        message: "Incorrect password",
-                        color: "red"
-                    });
-                } else if (res.status === 404) {
-                    setNotification({
-                        visible: true,
-                        message: "Email not found in our system",
-                        color: "red"
-                    });
-                } else {
-                    setNotification({
-                        visible: true,
-                        message: data.message || "An error occurred during login",
-                        color: "red"
-                    });
-                }
+            if (res.status === 422) {
+                setNotification({
+                    visible: true,
+                    message: "Email not found in our system",
+                    color: "red"
+                });
+            } else if (res.status === 401) {
+                setNotification({
+                    visible: true,
+                    message: "Incorrect password",
+                    color: "red"
+                });
+            } else if (!res.ok) {
+                setNotification({
+                    visible: true,
+                    message: data.message || "An error occurred during login",
+                    color: "red"
+                });
             } else {
                 setNotification({
                     visible: true,

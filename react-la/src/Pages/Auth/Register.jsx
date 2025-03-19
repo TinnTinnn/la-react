@@ -82,32 +82,29 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
             });
 
             const data = await res.json();
-
-            if (!res.ok) {
+            
+            if (res.status === 422) {
                 setErrors(data.errors || {});
-                
-                // Check for specific error cases
-                if (res.status === 422) {
-                    if (data.errors?.email?.[0]?.includes('taken')) {
-                        setNotification({
-                            visible: true,
-                            message: "This email is already registered",
-                            color: "red"
-                        });
-                    } else {
-                        setNotification({
-                            visible: true,
-                            message: "Please check your information and try again",
-                            color: "red"
-                        });
-                    }
+                // Check if email is already taken
+                if (data.errors?.email?.[0]?.includes('taken') || data.errors?.email?.[0]?.includes('already')) {
+                    setNotification({
+                        visible: true,
+                        message: "This email is already registered",
+                        color: "red"
+                    });
                 } else {
                     setNotification({
                         visible: true,
-                        message: data.message || "An error occurred during registration",
+                        message: "Please check your information and try again",
                         color: "red"
                     });
                 }
+            } else if (!res.ok) {
+                setNotification({
+                    visible: true,
+                    message: data.message || "An error occurred during registration",
+                    color: "red"
+                });
             } else {
                 setNotification({
                     visible: true,

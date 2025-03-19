@@ -113,7 +113,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                     closeModal();
                     openSuccessModal();
                     navigate('/');
-                }, 1500);
+                }, 3000);
             }
         } catch (error) {
             console.error("Registration error:", error);

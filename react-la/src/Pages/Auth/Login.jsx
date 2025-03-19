@@ -19,12 +19,45 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
     const [errors, setErrors] = useState({});
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
+    // Validate form fields
+    const validateForm = () => {
+        const newErrors = {};
+        
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email.trim()) {
+            newErrors.email = ['Please enter your email'];
+        } else if (!emailRegex.test(formData.email)) {
+            newErrors.email = ['Invalid email format'];
+        }
+
+        // Validate password
+        if (!formData.password.trim()) {
+            newErrors.password = ['Please enter your password'];
+        }
+
+        return newErrors;
+    };
+
     async function handleLogin(e) {
         e.preventDefault();
         setIsLoading(true);
         setNotification({ visible: false, message: '', color: '' });
         setErrors({});
         
+        // Validate form before submitting
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setNotification({
+                visible: true,
+                message: "Please fill in all required fields",
+                color: "red"
+            });
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const res = await fetch(`${API_URL}/api/login`, {
                 method: "post",
@@ -38,22 +71,21 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
 
             if (data.errors) {
                 setErrors(data.errors);
-                // จัดการ error messages ตามประเภท
+                // Handle specific error messages
                 if (data.errors.email) {
                     setNotification({
                         visible: true,
-                        message: "This email is not in the system. Please check again.",
+                        message: "Email not found in our system",
                         color: "red"
                     });
                 } else if (data.errors.password) {
                     setNotification({
                         visible: true,
-                        message: "Password is incorrect. Please try again.",
+                        message: "Incorrect password",
                         color: "red"
                     });
                 }
             } else if (data.error) {
-                // กรณี Laravel ส่ง error message มาโดยตรง
                 setNotification({
                     visible: true,
                     message: data.error,
@@ -62,17 +94,17 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
             } else {
                 setNotification({
                     visible: true,
-                    message: "Login successful. You are now redirected to the home page...",
+                    message: "Login successful. Redirecting to home page...",
                     color: "green"
                 });
                 localStorage.setItem("token", data.token);
                 setToken(data.token);
                 
-                // หน่วงเวลาเล็กน้อยเพื่อให้ผู้ใช้เห็น success message
+                // Delay redirect to show success message
                 setTimeout(() => {
                     closeModal();
                     navigate('/');
-                }, 1500);
+                }, 3000);
             }
         } catch (error) {
             console.error("Login error:", error);
@@ -109,7 +141,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                         value={formData.email}
                         onChange={(e) => {
                             setFormData({...formData, email: e.target.value});
-                            setErrors({...errors, email: null}); // ล้าง error เมื่อผู้ใช้เริ่มพิมพ์
+                            setErrors({...errors, email: null});
                         }}
                         error={errors.email?.[0]}
                     />
@@ -123,7 +155,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                         value={formData.password}
                         onChange={(e) => {
                             setFormData({...formData, password: e.target.value});
-                            setErrors({...errors, password: null}); // ล้าง error เมื่อผู้ใช้เริ่มพิมพ์
+                            setErrors({...errors, password: null});
                         }}
                         error={errors.password?.[0]}
                     />

@@ -64,6 +64,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
 

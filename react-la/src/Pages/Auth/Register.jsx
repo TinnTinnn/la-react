@@ -78,6 +78,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(formData),
             });
 

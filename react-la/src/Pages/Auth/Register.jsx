@@ -1,7 +1,7 @@
 import {useContext, useState} from "react";
 import { useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
-import {TextInput, Space, Button, Anchor, PasswordInput} from "@mantine/core";
+import {TextInput, Space, Button, Anchor, PasswordInput, Notification} from "@mantine/core";
 import PropTypes from 'prop-types'
 
 
@@ -9,6 +9,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
     const { setToken } = useContext(AppContext)
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const [notification, setNotification] = useState({ visible: false, message: '', color: '' });
 
     const [formData, setFormData] = useState({
         name: '',
@@ -20,9 +21,56 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
     const [errors, setErrors] = useState({});
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
+    // ฟังก์ชันตรวจสอบความถูกต้องของข้อมูล
+    const validateForm = () => {
+        const newErrors = {};
+        
+        // ตรวจสอบชื่อ
+        if (!formData.name.trim()) {
+            newErrors.name = ['กรุณากรอกชื่อ'];
+        }
+
+        // ตรวจสอบอีเมล
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email.trim()) {
+            newErrors.email = ['กรุณากรอกอีเมล'];
+        } else if (!emailRegex.test(formData.email)) {
+            newErrors.email = ['รูปแบบอีเมลไม่ถูกต้อง'];
+        }
+
+        // ตรวจสอบรหัสผ่าน
+        if (!formData.password) {
+            newErrors.password = ['กรุณากรอกรหัสผ่าน'];
+        } else if (formData.password.length < 8) {
+            newErrors.password = ['รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร'];
+        }
+
+        // ตรวจสอบการยืนยันรหัสผ่าน
+        if (formData.password !== formData.password_confirmation) {
+            newErrors.password_confirmation = ['รหัสผ่านไม่ตรงกัน'];
+        }
+
+        return newErrors;
+    };
+
     async function handleRegister(e) {
         e.preventDefault();
         setIsLoading(true);
+        setNotification({ visible: false, message: '', color: '' });
+        setErrors({});
+
+        // ตรวจสอบความถูกต้องของข้อมูลก่อนส่งไป server
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setNotification({
+                visible: true,
+                message: "กรุณาตรวจสอบข้อมูลให้ถูกต้อง",
+                color: "red"
+            });
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/register`, {
@@ -37,16 +85,43 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
 
             if (data.errors) {
                 setErrors(data.errors);
+                // จัดการ error messages ตามประเภท
+                if (data.errors.email?.[0]?.includes('taken')) {
+                    setNotification({
+                        visible: true,
+                        message: "This email is already in use. Please use another email.",
+                        color: "red"
+                    });
+                } else {
+                    setNotification({
+                        visible: true,
+                        message: "Please check the information is correct.",
+                        color: "red"
+                    });
+                }
             } else {
+                setNotification({
+                    visible: true,
+                    message: "Registration completed. You are now redirected to the home page...",
+                    color: "green"
+                });
                 localStorage.setItem("token", data.token);
                 setToken(data.token);
-                closeModal();
-                openSuccessModal();
-                navigate('/');
+                
+                // หน่วงเวลาเล็กน้อยเพื่อให้ผู้ใช้เห็น success message
+                setTimeout(() => {
+                    closeModal();
+                    openSuccessModal();
+                    navigate('/');
+                }, 1500);
             }
         } catch (error) {
             console.error("Registration error:", error);
-            setErrors({ general: ["An error occurred during registration"] });
+            setNotification({
+                visible: true,
+                message: "Connection error occurred. Please try again.",
+                color: "red"
+            });
         } finally {
             setIsLoading(false);
         }
@@ -56,43 +131,70 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
         <>
             <h1 className="">Register a new account</h1>
 
+            {notification.visible && (
+                <Notification 
+                    title={notification.color === "red" ? "An error occurred." : "Notification"}
+                    color={notification.color}
+                    onClose={() => setNotification({ visible: false, message: '', color: '' })}
+                >
+                    {notification.message}
+                </Notification>
+            )}
+
             <form onSubmit={handleRegister} className="">
                 <div>
-                    <TextInput  label="Name" type="text" placeholder="Name"
-                           value={formData.name}
-                           onChange={(e) => setFormData({
-                               ...formData, name: e.target.value
-                           })}/>
-                    {errors.name && <p className="error">{errors.name[0]}</p>}
+                    <TextInput  
+                        label="Name" 
+                        placeholder="Name"
+                        value={formData.name}
+                        onChange={(e) => {
+                            setFormData({...formData, name: e.target.value});
+                            setErrors({...errors, name: null});
+                        }}
+                        error={errors.name?.[0]}
+                    />
                     <Space h="md"/>
                 </div>
 
                 <div>
-                    <TextInput label="Email" type="text" placeholder="Email"
-                           value={formData.email}
-                           onChange={(e) => setFormData({
-                               ...formData, email: e.target.value
-                           })}/>
-                    {errors.email && <p className="error">{errors.email[0]}</p>}
+                    <TextInput 
+                        label="Email" 
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={(e) => {
+                            setFormData({...formData, email: e.target.value});
+                            setErrors({...errors, email: null});
+                        }}
+                        error={errors.email?.[0]}
+                    />
                     <Space h="md"/>
                 </div>
 
                 <div>
-                    <PasswordInput label="Password" type="password" placeholder="Password"
-                           value={formData.password}
-                           onChange={(e) => setFormData({
-                               ...formData, password: e.target.value
-                           })}/>
-                    {errors.password && <p className="error">{errors.password[0]}</p>}
+                    <PasswordInput 
+                        label="Password" 
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={(e) => {
+                            setFormData({...formData, password: e.target.value});
+                            setErrors({...errors, password: null});
+                        }}
+                        error={errors.password?.[0]}
+                    />
                     <Space h="md"/>
                 </div>
 
                 <div>
-                    <PasswordInput label="Confirm Password" type="password" placeholder="Confirm Password"
-                           value={formData.password_confirmation}
-                           onChange={(e) => setFormData({
-                               ...formData, password_confirmation: e.target.value
-                           })}/>
+                    <PasswordInput 
+                        label="Confirm Password" 
+                        placeholder="Confirm Password"
+                        value={formData.password_confirmation}
+                        onChange={(e) => {
+                            setFormData({...formData, password_confirmation: e.target.value});
+                            setErrors({...errors, password_confirmation: null});
+                        }}
+                        error={errors.password_confirmation?.[0]}
+                    />
                     <Space h="md"/>
                 </div>
 
@@ -102,7 +204,6 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                     </Anchor>
                     <Button type="submit" variant="filled" color="green" loading={isLoading}>Register</Button>
                 </div>
-                {errors.general && <p className="error">{errors.general[0]}</p>}
             </form>
         </>
     );

@@ -27,27 +27,27 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
         
         // ตรวจสอบชื่อ
         if (!formData.name.trim()) {
-            newErrors.name = ['กรุณากรอกชื่อ'];
+            newErrors.name = ['Please enter your name'];
         }
 
         // ตรวจสอบอีเมล
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email.trim()) {
-            newErrors.email = ['กรุณากรอกอีเมล'];
+            newErrors.email = ['Please enter your email'];
         } else if (!emailRegex.test(formData.email)) {
-            newErrors.email = ['รูปแบบอีเมลไม่ถูกต้อง'];
+            newErrors.email = ['Invalid email format'];
         }
 
         // ตรวจสอบรหัสผ่าน
         if (!formData.password) {
-            newErrors.password = ['กรุณากรอกรหัสผ่าน'];
+            newErrors.password = ['Please enter your password'];
         } else if (formData.password.length < 8) {
-            newErrors.password = ['รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร'];
+            newErrors.password = ['Password must be at least 8 characters long'];
         }
 
         // ตรวจสอบการยืนยันรหัสผ่าน
         if (formData.password !== formData.password_confirmation) {
-            newErrors.password_confirmation = ['รหัสผ่านไม่ตรงกัน'];
+            newErrors.password_confirmation = ['Passwords do not match'];
         }
 
         return newErrors;
@@ -65,7 +65,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
             setErrors(validationErrors);
             setNotification({
                 visible: true,
-                message: "กรุณาตรวจสอบข้อมูลให้ถูกต้อง",
+                message: "Please check your information and try again",
                 color: "red"
             });
             setIsLoading(false);

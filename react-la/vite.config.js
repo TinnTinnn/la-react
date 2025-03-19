@@ -6,16 +6,10 @@ export default defineConfig({
   plugins: [react()],
   base: '/',
   build: {
-    outDir: 'dist',
-     rollupOptions: {
-      output: {
-        manualChunks: undefined,
-      },
-    },
+    outDir: 'dist'
   },
   publicDir: 'public',
   server: {
-    historyApiFallback: true,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
@@ -23,11 +17,7 @@ export default defineConfig({
         headers: {
           Accept: 'application/json',
         },
-      },
-      // '/storage/': {
-      //   target: 'http://127.0.0.1:8000', // รองรับไฟล์ทีเ่ก็บใน public storage
-      //   changeOrigin: true,
-      // }
+      }
     }
   }
 })

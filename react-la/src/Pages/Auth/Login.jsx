@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 export default function Login({closeModal, toggleForm, openResetModal}) {
     const {setToken} = useContext(AppContext);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         email: '',
@@ -19,26 +20,33 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
 
     async function handleLogin(e) {
         e.preventDefault();
-        const res = await fetch(`${API_URL}/api/login`, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-        });
+        setIsLoading(true);
+        
+        try {
+            const res = await fetch(`${API_URL}/api/login`, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
 
-        const data = await res.json()
+            const data = await res.json();
 
-        if (data.errors) {
-            setErrors(data.errors)
-        } else {
-            localStorage.setItem("token", data.token);
-            setToken(data.token);
-            closeModal();
-            navigate('/');
+            if (data.errors) {
+                setErrors(data.errors);
+            } else {
+                localStorage.setItem("token", data.token);
+                setToken(data.token);
+                closeModal();
+                navigate('/');
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            setErrors({ general: ["An error occurred during login"] });
+        } finally {
+            setIsLoading(false);
         }
-
-        // console.log(data);
     }
 
     return (
@@ -74,8 +82,9 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                     </Anchor>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '12px'}}>
-                    <Button type="submit">Login</Button>
+                    <Button type="submit" loading={isLoading}>Login</Button>
                 </div>
+                {errors.general && <p className="error">{errors.general[0]}</p>}
             </form>
         </>
     );

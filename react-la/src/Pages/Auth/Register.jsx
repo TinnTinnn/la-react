@@ -8,6 +8,7 @@ import PropTypes from 'prop-types'
 export default function Register({ openSuccessModal, closeModal, toggleForm  }) {
     const { setToken } = useContext(AppContext)
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -21,27 +22,34 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
 
     async function handleRegister(e) {
         e.preventDefault();
-        const res = await fetch(`${API_URL}/api/register`, {
-            method: "post",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
+        setIsLoading(true);
 
-        const data = await res.json()
+        try {
+            const res = await fetch(`${API_URL}/api/register`, {
+                method: "post",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
 
-        if (data.errors) {
-            setErrors(data.errors)
-        } else {
-            localStorage.setItem("token", data.token);
-            setToken(data.token);
-            closeModal();
-            openSuccessModal();
-            navigate('/');
+            const data = await res.json();
+
+            if (data.errors) {
+                setErrors(data.errors);
+            } else {
+                localStorage.setItem("token", data.token);
+                setToken(data.token);
+                closeModal();
+                openSuccessModal();
+                navigate('/');
+            }
+        } catch (error) {
+            console.error("Registration error:", error);
+            setErrors({ general: ["An error occurred during registration"] });
+        } finally {
+            setIsLoading(false);
         }
-
-        console.log(data);
     }
 
     return (
@@ -92,8 +100,9 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                     <Anchor onClick={toggleForm} style={{ cursor: 'pointer' }}>
                         Have and account? Login
                     </Anchor>
-                <Button type="submit" variant="filled" color="green">Register</Button>
+                    <Button type="submit" variant="filled" color="green" loading={isLoading}>Register</Button>
                 </div>
+                {errors.general && <p className="error">{errors.general[0]}</p>}
             </form>
         </>
     );

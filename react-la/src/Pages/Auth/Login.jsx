@@ -63,8 +63,8 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 method: "post",
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
-                    "X-Requested-With": "XMLHttpRequest"
+                    // "Accept": "application/json",
+                    // "X-Requested-With": "XMLHttpRequest"
                 },
                 credentials: 'include',
                 body: JSON.stringify(formData),

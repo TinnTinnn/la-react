@@ -26,7 +26,7 @@ import '@mantine/notifications/styles.css';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
-// ตั้งค่า Pusher และ Laravel Echo  for realtime notification
+// ตั้งค่า Pusher และ Laravel Echo  for realtime notification..
 window.Pusher = Pusher;
 
 window.Echo = new Echo({

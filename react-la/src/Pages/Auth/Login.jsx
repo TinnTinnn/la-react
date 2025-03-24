@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 
 export default function Login({closeModal, toggleForm, openResetModal}) {
-    const {setToken} = useContext(AppContext);
+    const {login} = useContext(AppContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [notification, setNotification] = useState({visible: false, message: '', color: ''});
@@ -100,8 +100,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                     message: "Login successful. Redirecting to home page...",
                     color: "green"
                 });
-                localStorage.setItem("token", data.token);
-                setToken(data.token);
+                login(data.token);
 
                 // Delay redirect to show success message
                 setTimeout(() => {

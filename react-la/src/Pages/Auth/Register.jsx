@@ -111,7 +111,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
             } else {
                 setNotification({
                     visible: true,
-                    message: "Registration successful. Redirecting to home page...",
+                    message: "Registration successful!",
                     color: "green"
                 });
                 localStorage.setItem("token", data.token);

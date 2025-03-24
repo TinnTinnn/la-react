@@ -42,7 +42,9 @@ const HeaderContent = ({opened, toggle,}) => {
                 // เพื่อให้อัพเดท state ทันทีที่ API สำเร็จ
                 setForNotifications(prevNotifications =>
                     prevNotifications.map(notif =>
-                    notif.id === notificationId ? {...notif, read_status: 1} : notif
+                        notif.id === notificationId
+                            ? { ...notif, read_status: 1 }
+                            : notif
                     )
                 );
 
@@ -123,6 +125,7 @@ const HeaderContent = ({opened, toggle,}) => {
             console.log("User is logged out, cannot fetch notifications.");
             return;
         }
+
         const fetchNotifications = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/notifications`, {
@@ -130,12 +133,8 @@ const HeaderContent = ({opened, toggle,}) => {
                 });
                 const data = await response.json();
 
-
                 if (Array.isArray(data)) {
-                    setForNotifications(prevNotifications => [
-                        ...(Array.isArray(prevNotifications) ? prevNotifications : []),
-                        ...data
-                    ]);
+                    setForNotifications(data);
                 } else {
                     console.error("Invalid data format", data);
                 }
@@ -144,7 +143,23 @@ const HeaderContent = ({opened, toggle,}) => {
             }
         };
 
+        // เรียกครั้งแรกเพื่อโหลดข้อมูลเริ่มต้น
         fetchNotifications();
+
+        // ตั้งค่า WebSocket listener
+        window.Echo.channel('notification')
+            .listen('test.notification', (e) => {
+                console.log('New notification received:', e);
+                // เพิ่มการแจ้งเตือนใหม่เข้าไปในรายการ
+                setForNotifications(prevNotifications => [e, ...prevNotifications]);
+                // แสดงการแจ้งเตือนทันที
+                showNotification('New Notification', e.message);
+            });
+
+        // cleanup เมื่อ component unmount
+        return () => {
+            window.Echo.leave('notification');
+        };
     }, [token]);
 
 

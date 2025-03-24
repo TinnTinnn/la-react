@@ -26,6 +26,15 @@ import '@mantine/notifications/styles.css';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
+// ตั้งค่า Pusher และ Laravel Echo
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true
+});
 
 export default function App() {
     const {user} = useContext(AppContext);
@@ -56,16 +65,6 @@ export default function App() {
     });
 
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-
-    // Laravel Echo ที่มี Listen จาก Pusher อีกทีนีง
-    // window.Pusher = Pusher;
-    //
-    // window.Echo = new Echo({
-    //     broadcaster: 'pusher',
-    //     key: import.meta.env.VITE_PUSHER_APP_KEY,
-    //     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    //     forceTLS: true
-    // });
 
     useEffect(() => {
         const handleResize = () => setScreenWidth(window.innerWidth);

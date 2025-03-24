@@ -3,7 +3,7 @@ import {createContext, useEffect, useState} from "react";
 export const AppContext = createContext();
 
 export default function AppProvider({children}) {
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [token, setToken] = useState(sessionStorage.getItem('token'));
     const [user, setUser] = useState(null);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
@@ -43,14 +43,14 @@ export default function AppProvider({children}) {
     // ฟังก์ชันสำหรับ login
     const login = (newToken) => {
         setToken(newToken);
-        localStorage.setItem('token', newToken);
+        sessionStorage.setItem('token', newToken);
     };
 
     // ฟังก์ชันสำหรับ logout
     const logout = () => {
         setToken(null);
         setUser(null);
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
     };
 
     return (

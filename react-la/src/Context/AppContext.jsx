@@ -3,7 +3,7 @@ import {createContext, useEffect, useState} from "react";
 export const AppContext = createContext();
 
 export default function AppProvider({children}) {
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('token'));
     const [user, setUser] = useState(null);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
@@ -23,8 +23,8 @@ export default function AppProvider({children}) {
             });
 
             if (!res.ok) {
-                setToken(null);
-                setUser(null);
+                // ถ้า token ไม่ถูกต้อง ให้ logout
+                logout();
                 return;
             }
 
@@ -32,8 +32,7 @@ export default function AppProvider({children}) {
             setUser(data);
         } catch (error) {
             console.error('Error fetching user:', error);
-            setToken(null);
-            setUser(null);
+            logout();
         }
     }
 
@@ -44,12 +43,14 @@ export default function AppProvider({children}) {
     // ฟังก์ชันสำหรับ login
     const login = (newToken) => {
         setToken(newToken);
+        localStorage.setItem('token', newToken);
     };
 
     // ฟังก์ชันสำหรับ logout
     const logout = () => {
         setToken(null);
         setUser(null);
+        localStorage.removeItem('token');
     };
 
     return (

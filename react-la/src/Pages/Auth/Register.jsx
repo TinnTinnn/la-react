@@ -72,6 +72,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
         }
 
         try {
+            console.log("Starting fetch request...");
             const res = await fetch(`${API_URL}/api/register`, {
                 method: "post",
                 headers: {
@@ -82,12 +83,17 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
                 credentials: 'include',
                 body: JSON.stringify(formData),
             });
-            console.log("Response status:", res.status);
-            console.log("Response headers:", [...res.headers.entries()]);
+            console.log("Fetch response status:", res.status);
+            console.log("Fetch response headers:", [...res.headers.entries()]);
+
+            if (!res.ok && res.status !== 201) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            
             const data = await res.json();
             console.log("Response data:", data);
 
-           
+
             
             if (res.status === 422) {
                 setErrors(data.errors || {});

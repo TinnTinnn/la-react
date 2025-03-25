@@ -37,11 +37,19 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
             newErrors.email = ['Invalid email format'];
         }
 
-        // ตรวจสอบรหัสผ่าน..
+        // ตรวจสอบรหัสผ่าน
         if (!formData.password) {
             newErrors.password = ['Please enter your password'];
         } else if (formData.password.length < 8) {
             newErrors.password = ['Password must be at least 8 characters long'];
+        } else if (!/[A-Z]/.test(formData.password)) {
+            newErrors.password = ['Password must contain at least one uppercase letter'];
+        } else if (!/[a-z]/.test(formData.password)) {
+            newErrors.password = ['Password must contain at least one lowercase letter'];
+        } else if (!/[0-9]/.test(formData.password)) {
+            newErrors.password = ['Password must contain at least one number'];
+        } else if (!/[!@#$%^&*]/.test(formData.password)) {
+            newErrors.password = ['Password must contain at least one special character (!@#$%^&*)'];
         }
 
         // ตรวจสอบการยืนยันรหัสผ่าน
@@ -72,7 +80,6 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
         }
 
         try {
-            console.log("Starting fetch request...");
             const res = await fetch(`${API_URL}/api/register`, {
                 method: "post",
                 headers: {
@@ -83,17 +90,8 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
                 credentials: 'include',
                 body: JSON.stringify(formData),
             });
-            console.log("Fetch response status:", res.status);
-            console.log("Fetch response headers:", [...res.headers.entries()]);
 
-            if (!res.ok && res.status !== 201) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-            
             const data = await res.json();
-            console.log("Response data:", data);
-
-
             
             if (res.status === 422) {
                 setErrors(data.errors || {});
@@ -229,7 +227,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
 }
 
 Register.propTypes = {
-    openSuccessModal: PropTypes.func,
-    closeModal: PropTypes.func,
-    toggleForm: PropTypes.func,
+    openSuccessModal: PropTypes.func.isRequired,
+    closeModal: PropTypes.func.isRequired,
+    toggleForm: PropTypes.func.isRequired,
 };

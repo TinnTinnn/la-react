@@ -5,7 +5,8 @@ import {TextInput, Space, Button, Anchor, PasswordInput, Notification} from "@ma
 import PropTypes from 'prop-types'
 
 
-export default function Register({ openSuccessModal, closeModal, toggleForm, setToken, setUser }) {
+export default function Register({ openSuccessModal, closeModal, toggleForm }) {
+    const { setToken, setUser } = useContext(AppContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [notification, setNotification] = useState({ visible: false, message: '', color: '' });
@@ -221,6 +222,4 @@ Register.propTypes = {
     openSuccessModal: PropTypes.func,
     closeModal: PropTypes.func,
     toggleForm: PropTypes.func,
-    setToken: PropTypes.func,
-    setUser: PropTypes.func,
 };

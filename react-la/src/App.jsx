@@ -28,7 +28,7 @@ import Pusher from 'pusher-js';
 
 
 export default function App() {
-    const {user} = useContext(AppContext);
+    const {user, setUser, token, setToken} = useContext(AppContext);
     const [opened, {toggle}] = useDisclosure();
     const theme = createTheme({
         breakpoints: {
@@ -97,7 +97,10 @@ export default function App() {
                             height: 65,
                         }}
                     >
-                        <HeaderContent opened={opened} toggle={toggle}/>
+                        <HeaderContent 
+                            opened={opened}
+                            toggle={toggle}
+                        />
                     </AppShell.Header>
                     <AppShell.Navbar style={{color: 'white', backgroundColor: '#3572EF'}}
                     >

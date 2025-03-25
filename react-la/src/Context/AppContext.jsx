@@ -1,6 +1,12 @@
 import {createContext, useEffect, useState} from "react";
 
-export const AppContext = createContext();
+export const AppContext = createContext({
+    token: null,
+    setToken: () => {},
+    user: null,
+    setUser: () => {}
+});
+
 export default function AppProvider({children}) {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [user, setUser] = useState(null);
@@ -25,8 +31,15 @@ export default function AppProvider({children}) {
         }
     }, [token]);
 
+    const value = {
+        token,
+        setToken,
+        user,
+        setUser
+    };
+
     return (
-        <AppContext.Provider value={{token, setToken, user, setUser}}>
+        <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
     );

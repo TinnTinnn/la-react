@@ -100,9 +100,8 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                     message: "Login successful. Redirecting to home page...",
                     color: "green"
                 });
-                localStorage.setItem("token", data.token);
                 setToken(data.token);
-
+                
                 // Delay redirect to show success message
                 setTimeout(() => {
                     closeModal();

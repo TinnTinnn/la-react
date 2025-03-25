@@ -121,7 +121,6 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
                     message: "Registration successful. Redirecting to home page...",
                     color: "green"
                 });
-                localStorage.setItem("token", data.token);
                 setToken(data.token);
                 setUser(data.user);
                 

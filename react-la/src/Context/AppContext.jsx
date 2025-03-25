@@ -8,7 +8,7 @@ export const AppContext = createContext({
 });
 
 export default function AppProvider({children}) {
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [token, setToken] = useState(sessionStorage.getItem('token'));
     const [user, setUser] = useState(null);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
@@ -22,6 +22,11 @@ export default function AppProvider({children}) {
         const data = await res.json();
         if (res.ok) {
             setUser(data);
+        } else {
+            // ถ้า token ไม่ถูกต้อง ให้ลบออก
+            sessionStorage.removeItem('token');
+            setToken(null);
+            setUser(null);
         }
     }
 
@@ -33,7 +38,14 @@ export default function AppProvider({children}) {
 
     const value = {
         token,
-        setToken,
+        setToken: (newToken) => {
+            if (newToken) {
+                sessionStorage.setItem('token', newToken);
+            } else {
+                sessionStorage.removeItem('token');
+            }
+            setToken(newToken);
+        },
         user,
         setUser
     };

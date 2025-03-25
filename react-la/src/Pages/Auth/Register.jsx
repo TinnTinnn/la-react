@@ -38,7 +38,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
             newErrors.email = ['Invalid email format'];
         }
 
-        // ตรวจสอบรหัสผ่าน
+        // ตรวจสอบรหัสผ่าน..
         if (!formData.password) {
             newErrors.password = ['Please enter your password'];
         } else if (formData.password.length < 8) {

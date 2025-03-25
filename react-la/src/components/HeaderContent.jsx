@@ -15,8 +15,8 @@ import {notifications} from "@mantine/notifications";
 import axios from "axios";
 
 
-const HeaderContent = ({opened, toggle,}) => {
-    const {user, token, setUser, setToken} = useContext(AppContext);
+const HeaderContent = ({opened, toggle, token, setToken, setUser}) => {
+    const {user} = useContext(AppContext);
     const navigate = useNavigate()
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
@@ -318,7 +318,13 @@ const HeaderContent = ({opened, toggle,}) => {
                         openResetModal={openResetModalFromLogin}
                     />
                 ) : (
-                    <Register closeModal={closeRegister} openSuccessModal={openSuccess} toggleForm={toggleForm}/>
+                    <Register 
+                        openSuccessModal={openSuccess}
+                        closeModal={closeRegister}
+                        toggleForm={toggleForm}
+                        setToken={setToken}
+                        setUser={setUser}
+                    />
                 )}
             </Modal>
 
@@ -379,5 +385,8 @@ const HeaderContent = ({opened, toggle,}) => {
 HeaderContent.propTypes = {
     opened: PropTypes.bool.isRequired,
     toggle: PropTypes.func.isRequired,
+    token: PropTypes.string,
+    setToken: PropTypes.func.isRequired,
+    setUser: PropTypes.func.isRequired
 }
 export default HeaderContent;

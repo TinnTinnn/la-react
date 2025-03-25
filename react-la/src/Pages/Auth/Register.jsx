@@ -5,12 +5,11 @@ import {TextInput, Space, Button, Anchor, PasswordInput, Notification} from "@ma
 import PropTypes from 'prop-types'
 
 
-export default function Register({ openSuccessModal, closeModal, toggleForm  }) {
-    const { setToken } = useContext(AppContext)
+export default function Register({ openSuccessModal, closeModal, toggleForm, setToken, setUser }) {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [notification, setNotification] = useState({ visible: false, message: '', color: '' });
-
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -18,7 +17,6 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
         password_confirmation: '',
     });
 
-    const [errors, setErrors] = useState({});
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
     // ฟังก์ชันตรวจสอบความถูกต้องของข้อมูล
@@ -116,6 +114,7 @@ export default function Register({ openSuccessModal, closeModal, toggleForm  }) 
                 });
                 localStorage.setItem("token", data.token);
                 setToken(data.token);
+                setUser(data.user);
                 
                 // Delay redirect to show success message
                 setTimeout(() => {
@@ -222,4 +221,6 @@ Register.propTypes = {
     openSuccessModal: PropTypes.func,
     closeModal: PropTypes.func,
     toggleForm: PropTypes.func,
+    setToken: PropTypes.func,
+    setUser: PropTypes.func,
 };

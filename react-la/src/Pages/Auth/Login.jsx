@@ -70,11 +70,25 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 body: JSON.stringify(formData),
             });
 
-            if (res.redirected) {
-                throw new Error("Unexpected redirect");
+            // ตรวจสอบว่า response มีเนื้อหาหรือไม่
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Response is not JSON");
             }
 
-            const data = await res.json();
+            // ตรวจสอบว่า response มีเนื้อหาหรือไม่
+            const text = await res.text();
+            if (!text) {
+                throw new Error("Empty response");
+            }
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error("JSON parse error:", e);
+                throw new Error("Invalid JSON response");
+            }
 
             if (res.status === 422) {
                 setNotification({
@@ -112,7 +126,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
             console.error("Login error:", error);
             setNotification({
                 visible: true,
-                message: "Connection error occurred. Please try again.",
+                message: error.message || "Connection error occurred. Please try again.",
                 color: "red"
             });
         } finally {

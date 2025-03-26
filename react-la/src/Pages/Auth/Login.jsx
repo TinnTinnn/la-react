@@ -126,7 +126,7 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
             console.error("Login error:", error);
             setNotification({
                 visible: true,
-                message: error.message || "Connection error occurred. Please try again.",
+                message: "Connection error occurred. Please try again.",
                 color: "red"
             });
         } finally {

@@ -5,7 +5,7 @@ import {TextInput, Space, Button, Anchor, PasswordInput, Notification} from "@ma
 import PropTypes from 'prop-types'
 
 
-export default function Register({ openSuccessModal, closeModal, toggleForm }) {
+export default function Register({  closeModal, toggleForm }) {
     const { setToken, setUser } = useContext(AppContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -127,7 +127,6 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
                 // Delay redirect to show success message
                 setTimeout(() => {
                     closeModal();
-                    openSuccessModal();
                     navigate('/');
                 }, 2000);
             }
@@ -226,7 +225,6 @@ export default function Register({ openSuccessModal, closeModal, toggleForm }) {
 }
 
 Register.propTypes = {
-    openSuccessModal: PropTypes.func.isRequired,
-    closeModal: PropTypes.func.isRequired,
-    toggleForm: PropTypes.func.isRequired,
+    closeModal: PropTypes.func,
+    toggleForm: PropTypes.func,
 };

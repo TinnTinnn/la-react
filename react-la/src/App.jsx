@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route,} from "react-router-dom";
+import {BrowserRouter, Routes, Route, useNavigate} from "react-router-dom";
 import Layout from "./Pages/Layout.jsx";
 import MemberManagement from "./Pages/Navbar/MemberManagement.jsx";
 import './App.css'
@@ -28,7 +28,7 @@ import Pusher from 'pusher-js';
 
 
 export default function App() {
-    const {user, setUser, token, setToken} = useContext(AppContext);
+    const {user, setUser, setToken, token} = useContext(AppContext);
     const [opened, {toggle}] = useDisclosure();
     const theme = createTheme({
         breakpoints: {
@@ -97,7 +97,7 @@ export default function App() {
                             height: 65,
                         }}
                     >
-                        <HeaderContent 
+                        <HeaderContent
                             opened={opened}
                             toggle={toggle}
                         />
@@ -134,7 +134,7 @@ export default function App() {
                                 <Route path="/overview" element={<Overview/>}/>
                                 <Route path="/analytics" element={<Analytics/>}/>
                                 <Route path="/saas" element={<Saas/>}/>
-                                <Route path="/register" element={user ? <MemberManagement/> : <Register/>}/>
+                                <Route path="/register" element={ user ?   <MemberManagement/>  :  <Register/>                                }/>
                                 <Route path="/login" element={user ? <MemberManagement/> : <Login/>}/>
                                 <Route path="/create" element={user ? <Create/> : <Login/>}/>
                                 <Route path="/members/:id" element={<Show/>}/>

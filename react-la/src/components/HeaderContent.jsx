@@ -77,7 +77,6 @@ const HeaderContent = ({opened, toggle}) => {
     // จัดการเกี่ยวกับ Modals สำหรับ Register, Login, และ Success
     const [openedRegister, {open: openRegister, close: closeRegister}] = useDisclosure(false);
     const [openedLogin, {open: openLogin, close: closeLogin}] = useDisclosure(false);
-    const [openedSuccess, {open: openSuccess, close: closeSuccess}] = useDisclosure(false);
     const [openedReset, {open: openReset, close: closeReset}] = useDisclosure(false);
 
     // เพิ่ม state ส่วนนี้เพื่อ Toggle ระหว่าง Login และ Register
@@ -318,8 +317,7 @@ const HeaderContent = ({opened, toggle}) => {
                         openResetModal={openResetModalFromLogin}
                     />
                 ) : (
-                    <Register 
-                        openSuccessModal={openSuccess}
+                    <Register
                         closeModal={closeRegister}
                         toggleForm={toggleForm}
                     />
@@ -336,13 +334,6 @@ const HeaderContent = ({opened, toggle}) => {
             </Modal>
 
 
-            {/*Modal สำหรับ Success*/}
-            <Modal opened={openedSuccess} onClose={closeSuccess} title="Registration Successful" centered>
-                <p>Your registration was successful!</p>
-                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                    <Button onClick={closeSuccess}>Close</Button>
-                </div>
-            </Modal>
 
             {/*Modal สำหรับ User ที่ Login เพื่อดูและจัดการ Account ตัวเอง*/}
             <Modal

@@ -27,7 +27,6 @@ class ProfilePictureController extends Controller
 
         // Upload profile picture to S3
         $file = $request->file('profile_picture');
-        $fileName = 'profile_pictures/' . time() . '-' . $file->getClientOriginalName();
         $disk = Storage::disk('s3');
 
         // Delete old picture if exists
@@ -39,22 +38,30 @@ class ProfilePictureController extends Controller
         }
 
         // Upload new picture
-        $uploaded = $disk->put($fileName, file_get_contents($file));
-        if (!$uploaded) {
+        try {
+            $path = $disk->putFileAs('profile_pictures', $file, time() . '-' . $file->getClientOriginalName());
+            if (!$path) {
+                return response()->json([
+                    'error' => 'Failed to upload profile picture',
+                    'message' => 'Could not upload to S3'
+                ], 500);
+            }
+
+            // Save new URL and return response
+            $fullUrl = $disk->url($path);
+            $entity->profile_picture = $fullUrl;
+            $entity->save();
+
+            return response()->json([
+                'message' => 'Profile picture updated successfully',
+                'profile_picture' => $fullUrl,
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return response()->json([
                 'error' => 'Failed to upload profile picture',
-                'message' => 'Could not upload to S3'
+                'message' => 'An error occurred while uploading to S3'
             ], 500);
         }
-
-        // Save new URL and return response
-        $fullUrl = $disk->url($fileName);
-        $entity->profile_picture = $fullUrl;
-        $entity->save();
-
-        return response()->json([
-            'message' => 'Profile picture updated successfully',
-            'profile_picture' => $fullUrl,
-        ]);
     }
 }

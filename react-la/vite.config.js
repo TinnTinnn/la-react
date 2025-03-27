@@ -10,15 +10,13 @@ export default defineConfig({
   },
   publicDir: 'public',
   server: {
-    // Proxy configuration for local development only
-    // This helps avoid CORS issues when testing locally
-    // Production environment will use direct API calls
     proxy: {
-      '^https://la-react-backend.onrender.com/api': {
-        target: 'https://la-react-backend.onrender.com',
+      '/api': {
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^https:\/\/la-react-backend\.onrender\.com/, '')
+        headers: {
+          Accept: 'application/json',
+        },
       }
     }
   }

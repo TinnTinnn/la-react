@@ -91,25 +91,7 @@ export default function Register({  closeModal, toggleForm }) {
                 body: JSON.stringify(formData),
             });
 
-            // ตรวจสอบว่า response มีเนื้อหาหรือไม่
-            const contentType = res.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Response is not JSON");
-            }
-
-            // ตรวจสอบว่า response มีเนื้อหาหรือไม่
-            const text = await res.text();
-            if (!text) {
-                throw new Error("Empty response");
-            }
-
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error("JSON parse error:", e);
-                throw new Error("Invalid JSON response");
-            }
+            const data = await res.json();
             
             if (res.status === 422) {
                 setErrors(data.errors || {});
@@ -152,7 +134,7 @@ export default function Register({  closeModal, toggleForm }) {
             console.error("Registration error:", error);
             setNotification({
                 visible: true,
-                message: error.message || "Connection error occurred. Please try again.",
+                message: "Connection error occurred. Please try again.",
                 color: "red"
             });
         } finally {

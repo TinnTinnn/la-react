@@ -70,25 +70,11 @@ export default function Login({closeModal, toggleForm, openResetModal}) {
                 body: JSON.stringify(formData),
             });
 
-            // ตรวจสอบว่า response มีเนื้อหาหรือไม่
-            const contentType = res.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Response is not JSON");
+            if (res.redirected) {
+                throw new Error("Unexpected redirect");
             }
 
-            // ตรวจสอบว่า response มีเนื้อหาหรือไม่
-            const text = await res.text();
-            if (!text) {
-                throw new Error("Empty response");
-            }
-
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.error("JSON parse error:", e);
-                throw new Error("Invalid JSON response");
-            }
+            const data = await res.json();
 
             if (res.status === 422) {
                 setNotification({

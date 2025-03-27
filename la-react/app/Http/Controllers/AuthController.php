@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -65,8 +66,16 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-       $request->user()->tokens()->delete();
-
-        return response()->json(['message' => 'Logged out successfully'], 204);
+       try {
+           $request->user()->tokens()->delete();
+           Log::info('User logged out successfully', ['user_id' => $request->user()->id]);
+           return response()->json(['message' => 'Logged out successfully'], 200);
+       } catch (\Exception $e) {
+           Log::error('Error during logout', [
+               'user_id' => $request->user()->id,
+               'error' => $e->getMessage()
+           ]);
+           return response()->json(['error' => 'Logout failed'], 500);
+       }
     }
 }

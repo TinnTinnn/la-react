@@ -119,7 +119,7 @@ const HeaderContent = ({opened, toggle}) => {
     // ฟังค์ชั่น สำหรับ Fetch API ของ Notifications
     useEffect(() => {
         if (!token) {
-            console.log("User is logged out, cannot fetch notifications.");
+            // console.log("User is logged out, cannot fetch notifications.");
             return;
         }
         const fetchNotifications = async () => {

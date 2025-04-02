@@ -1,8 +1,9 @@
-import {useContext, useState} from "react";
+import {useContext, useRef, useState} from "react";
 import { useNavigate} from "react-router-dom";
 import {AppContext} from "../../Context/AppContext.jsx";
 import {TextInput, Space, Button, Anchor, PasswordInput, Notification} from "@mantine/core";
 import PropTypes from 'prop-types'
+import PasswordValidationPopover from "../../components/PasswordValidationPopover.jsx";
 
 
 export default function Register({  closeModal, toggleForm }) {
@@ -17,6 +18,9 @@ export default function Register({  closeModal, toggleForm }) {
         password: '',
         password_confirmation: '',
     });
+
+    const [showPasswordValidation, setShowPasswordValidation] = useState(false);
+    const passwordInputRef = useRef(null);
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
@@ -37,19 +41,17 @@ export default function Register({  closeModal, toggleForm }) {
             newErrors.email = ['Invalid email format'];
         }
 
-        // ตรวจสอบรหัสผ่าน
-        if (!formData.password) {
-            newErrors.password = ['Please enter your password'];
-        } else if (formData.password.length < 8) {
-            newErrors.password = ['Password must be at least 8 characters long'];
-        } else if (!/[A-Z]/.test(formData.password)) {
-            newErrors.password = ['Password must contain at least one uppercase letter'];
-        } else if (!/[a-z]/.test(formData.password)) {
-            newErrors.password = ['Password must contain at least one lowercase letter'];
-        } else if (!/[0-9]/.test(formData.password)) {
-            newErrors.password = ['Password must contain at least one number'];
-        } else if (!/[!@#$%^&*]/.test(formData.password)) {
-            newErrors.password = ['Password must contain at least one special character (!@#$%^&*)'];
+        // ตรวจสอบรหัสผ่าน (เราจะใช้ PasswordValidationPopover สำหรับ realtime validation)
+        // แต่ยังตรวจสอบความถูกต้องอีกครั้งก่อนส่งข้อมูล
+        const passwordValid =
+            formData.password.length >= 8 &&
+            /[A-Z]/.test(formData.password) &&
+            /[a-z]/.test(formData.password) &&
+            /[0-9]/.test(formData.password) &&
+            /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+
+        if (!passwordValid) {
+            newErrors.password = ['Password does not meet all requirements'];
         }
 
         // ตรวจสอบการยืนยันรหัสผ่าน
@@ -186,7 +188,8 @@ export default function Register({  closeModal, toggleForm }) {
                 </div>
 
                 <div>
-                    <PasswordInput 
+                    <PasswordInput
+                        ref={passwordInputRef}
                         label="Password" 
                         placeholder="Password"
                         value={formData.password}
@@ -195,7 +198,12 @@ export default function Register({  closeModal, toggleForm }) {
                             setErrors({...errors, password: null});
                         }}
                         error={errors.password?.[0]}
+                        onFocus={() => setShowPasswordValidation(true)}
+                        onBlur={() => setShowPasswordValidation(false)}
                     />
+                    {showPasswordValidation && (
+                        <PasswordValidationPopover password={formData.password} />
+                    )}
                     <Space h="md"/>
                 </div>
 

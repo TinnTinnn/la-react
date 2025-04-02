@@ -187,7 +187,7 @@ export default function Register({  closeModal, toggleForm }) {
                     <Space h="md"/>
                 </div>
 
-                <div>
+                <div style={{ position: 'relative' }}>
                     <PasswordInput
                         ref={passwordInputRef}
                         label="Password" 

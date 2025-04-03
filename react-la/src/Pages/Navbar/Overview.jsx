@@ -5,10 +5,11 @@ import MembershipExpirationChart from "../../components/Overviews/MembershipExpi
 import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.jsx";
 import MemberAge from "../../components/Overviews/MemberAge.jsx";
 import MemberRegistered from "../../components/Overviews/MemberRegistered.jsx";
+import { useLoading } from "../../Context/LoadingContext.jsx";
 
 
 export default function Overview() {
-
+    const { startLoading, stopLoading } = useLoading();
     const [stats, setStats] = useState({
         totalMembers: 0,
         newMembers: 0,
@@ -38,6 +39,7 @@ export default function Overview() {
         async function fetchStats() {
             const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
             try {
+                startLoading(); // เริ่ม loading state
                 const res = await fetch(`${API_URL}/api/members/stats`, {
                     method: 'GET',
                     headers: {
@@ -64,12 +66,13 @@ export default function Overview() {
                 }
             } catch (error) {
                 console.error("Error fetching member stats:", error);
+            } finally {
+                stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
             }
         }
 
         fetchStats();
-    }, []);  // useEffect จะทำงานแค่ครั้งเดียวเมื่อ component ถูก mount
-
+    }, [startLoading, stopLoading]);  // เพิ่ม dependencies
 
     // จัดเตรียมข้อมูลสำหรับ DonutChart
     const DonutChartData = [
@@ -238,5 +241,3 @@ export default function Overview() {
     );
 
 }
-
-

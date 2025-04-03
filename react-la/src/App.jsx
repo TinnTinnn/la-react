@@ -6,6 +6,7 @@ import Register from "./Pages/Auth/Register.jsx";
 import Login from "./Pages/Auth/Login.jsx";
 import {useContext, useEffect, useState,} from "react";
 import {AppContext} from "./Context/AppContext.jsx";
+import { LoadingProvider } from "./Context/LoadingContext.jsx";
 import Create from "./Pages/Posts/Create.jsx";
 import Show from "./Pages/Posts/Show.jsx";
 import Update from "./Pages/Posts/Update.jsx";
@@ -77,75 +78,76 @@ export default function App() {
 
     return (
         <MantineProvider theme={theme}>
-            <Notifications/>
-            <BrowserRouter>
+            <LoadingProvider>
+                <Notifications/>
+                <BrowserRouter>
 
-                <AppShell
-                    // header={{height:70}}
-                    navbar={{
-                        width: 300,
-                        breakpoint: 'sm',
-                        collapsed: {mobile: !opened},
-                    }}
-                    theme={theme}
-                    padding="md"
-                >
-                    <AppShell.Header
-                        style={{
-                            borderBottom: 'none',
-                            boxShadow: 'none',
-                            height: 65,
+                    <AppShell
+                        // header={{height:70}}
+                        navbar={{
+                            width: 300,
+                            breakpoint: 'sm',
+                            collapsed: {mobile: !opened},
                         }}
+                        theme={theme}
+                        padding="md"
                     >
-                        <HeaderContent
-                            opened={opened}
-                            toggle={toggle}
-                        />
-                    </AppShell.Header>
-                    <AppShell.Navbar style={{color: 'white', backgroundColor: '#3572EF'}}
-                    >
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <Text style={{paddingLeft: '20px', paddingTop: '10px'}}>
-                                <FontAwesomeIcon icon={faSignature}/>
-                                MyMember
-                            </Text>
-                            {opened && screenWidth < 768 && (
-                                <div onClick={toggle} className="close-button">
-                                    <CloseButton size={24} color="white"/>
-                                </div>
-                            )}
-                        </div>
-                        <hr style={{
-                            border: '1px solid  grey',
-                            width: '100%',
-                            marginTop: '10px',
-                            marginBottom: '10px'
-                        }}/>
-                        <div style={{marginTop: '10px', marginLeft: '20px', marginBottom: '10px'}}>
-                            Dashboard
-                        </div>
-                        <DashboardButtons toggle={toggle}/>
-                    </AppShell.Navbar>
-                    <AppShell.Main>
-                        <Routes>
-                            <Route path="/" element={<Layout/>}>
-                                <Route index element={<Overview/>}/>
-                                <Route path="/membermanagement" element={<MemberManagement/>}/>
-                                <Route path="/overview" element={<Overview/>}/>
-                                <Route path="/analytics" element={<Analytics/>}/>
-                                <Route path="/saas" element={<Saas/>}/>
-                                <Route path="/register" element={ user ?   <MemberManagement/>  :  <Register/>                                }/>
-                                <Route path="/login" element={user ? <MemberManagement/> : <Login/>}/>
-                                <Route path="/create" element={user ? <Create/> : <Login/>}/>
-                                <Route path="/members/:id" element={<Show/>}/>
-                                <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
-                                <Route path="/reset-password" element={<ResetPasswordForm/>}/>
-                                <Route path="/all-notificatons" element={<AllNotifications/>}/>
-                            </Route>
-                        </Routes>
-                    </AppShell.Main>
-                </AppShell>
-            </BrowserRouter>
+                        <AppShell.Header
+                            style={{
+                                borderBottom: 'none',
+                                boxShadow: 'none',
+                                height: 65,
+                            }}
+                        >
+                            <HeaderContent
+                                opened={opened}
+                                toggle={toggle}
+                            />
+                        </AppShell.Header>
+                        <AppShell.Navbar style={{color: 'white', backgroundColor: '#3572EF'}}
+                        >
+                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                                <Text style={{paddingLeft: '20px', paddingTop: '10px'}}>
+                                    <FontAwesomeIcon icon={faSignature}/>
+                                    MyMember
+                                </Text>
+                                {opened && screenWidth < 768 && (
+                                    <div onClick={toggle} className="close-button">
+                                        <CloseButton size={24} color="white"/>
+                                    </div>
+                                )}
+                            </div>
+                            <hr style={{
+                                border: '1px solid  grey',
+                                width: '100%',
+                                marginTop: '10px',
+                                marginBottom: '10px'
+                            }}/>
+                            <div style={{marginTop: '10px', marginLeft: '20px', marginBottom: '10px'}}>
+                                Dashboard
+                            </div>
+                            <DashboardButtons toggle={toggle}/>
+                        </AppShell.Navbar>
+                        <AppShell.Main>
+                            <Routes>
+                                <Route path="/" element={<Layout/>}>
+                                    <Route index element={<Overview/>}/>
+                                    <Route path="/membermanagement" element={<MemberManagement/>}/>
+                                    <Route path="/overview" element={<Overview/>}/>
+                                    <Route path="/analytics" element={<Analytics/>}/>
+                                    <Route path="/saas" element={<Saas/>}/>
+                                    <Route path="/register" element={ user ?   <MemberManagement/>  :  <Register/>                                }/>
+                                    <Route path="/login" element={user ? <MemberManagement/> : <Login/>}/>
+                                    <Route path="/create" element={user ? <Create/> : <Login/>}/>
+                                    <Route path="/members/:id" element={<Show/>}/>
+                                    <Route path="/members/update/:id" element={user ? <Update/> : <Login/>}/>
+                                    <Route path="/reset-password" element={<ResetPasswordForm/>}/>
+                                    <Route path="/all-notificatons" element={<AllNotifications/>}/>
+                                </Route>
+                            </Routes>
+                        </AppShell.Main>
+                    </AppShell>
+                </BrowserRouter>
+            </LoadingProvider>
         </MantineProvider>);
 }
-

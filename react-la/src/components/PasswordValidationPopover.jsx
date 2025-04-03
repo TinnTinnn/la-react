@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import { Box, List, ThemeIcon, Text } from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons-react';
+import {Box, List, ThemeIcon, Text} from '@mantine/core';
+import {IconCheck, IconX} from '@tabler/icons-react';
 
 export default function PasswordValidationPopover({password}) {
     const [validations, setValidations] = useState({
@@ -22,49 +22,49 @@ export default function PasswordValidationPopover({password}) {
     }, [password]);
 
     return (
-        <Box mt="xs" mb="md" p="xs" style={{ border: '1px solid #e9ecef', borderRadius: '4px' }}>
+        <Box mt="xs" mb="md" p="xs" style={{border: '1px solid #e9ecef', borderRadius: '4px'}}>
             <Text fw={600} mb={8}>Password must contain:</Text>
             <List spacing="xs" size="sm">
-                <List.Item 
+                <List.Item
                     icon={
                         <ThemeIcon color={validations.length ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.length ? <IconCheck size={14} /> : <IconX size={14} />}
+                            {validations.length ? <IconCheck size={14}/> : <IconX size={14}/>}
                         </ThemeIcon>
                     }
                 >
                     <Text c={validations.length ? 'green' : 'red'}>At least 8 characters</Text>
                 </List.Item>
-                <List.Item 
+                <List.Item
                     icon={
                         <ThemeIcon color={validations.uppercase ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.uppercase ? <IconCheck size={14} /> : <IconX size={14} />}
+                            {validations.uppercase ? <IconCheck size={14}/> : <IconX size={14}/>}
                         </ThemeIcon>
                     }
                 >
                     <Text c={validations.uppercase ? 'green' : 'red'}>1 uppercase letter</Text>
                 </List.Item>
-                <List.Item 
+                <List.Item
                     icon={
                         <ThemeIcon color={validations.lowercase ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.lowercase ? <IconCheck size={14} /> : <IconX size={14} />}
+                            {validations.lowercase ? <IconCheck size={14}/> : <IconX size={14}/>}
                         </ThemeIcon>
                     }
                 >
                     <Text c={validations.lowercase ? 'green' : 'red'}>1 lowercase letter</Text>
                 </List.Item>
-                <List.Item 
+                <List.Item
                     icon={
                         <ThemeIcon color={validations.number ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.number ? <IconCheck size={14} /> : <IconX size={14} />}
+                            {validations.number ? <IconCheck size={14}/> : <IconX size={14}/>}
                         </ThemeIcon>
                     }
                 >
                     <Text c={validations.number ? 'green' : 'red'}>1 number</Text>
                 </List.Item>
-                <List.Item 
+                <List.Item
                     icon={
                         <ThemeIcon color={validations.special ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.special ? <IconCheck size={14} /> : <IconX size={14} />}
+                            {validations.special ? <IconCheck size={14}/> : <IconX size={14}/>}
                         </ThemeIcon>
                     }
                 >
@@ -72,3 +72,5 @@ export default function PasswordValidationPopover({password}) {
                 </List.Item>
             </List>
         </Box>
+    )
+}

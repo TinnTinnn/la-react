@@ -102,8 +102,8 @@ export default function MemberManagement() {
         } finally {
             stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
         }
-    }, [startLoading, stopLoading, API_URL]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // ลบ dependencies เพื่อป้องกัน infinity loop
 
     const handleSearch = (query) => {
         const lowerQuery = query.toLowerCase();
@@ -483,7 +483,8 @@ export default function MemberManagement() {
         return () => {
             hasCalledApi.current = false; // Reset เมื่อ component unmount
         };
-    }, [getMembers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // ลบ getMembers จาก dependencies เพื่อป้องกัน infinity loop
 
     // อัปเดท filteredMembers เมื่อ members เปลี่ยน
     useEffect(() => {

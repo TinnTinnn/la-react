@@ -35,7 +35,7 @@ export const LoadingProvider = ({ children }) => {
     <LoadingContext.Provider value={{ isLoading, startLoading, stopLoading }}>
       {children}
       {isLoading && (
-        <Overlay opacity={0.6} color="#fff" zIndex={1000} />
+        <Overlay fixed opacity={0.6} color="#fff" zIndex={1000} />
       )}
       {isLoading && (
         <Box 
@@ -52,9 +52,7 @@ export const LoadingProvider = ({ children }) => {
             pointerEvents: 'none'
           }}
         >
-          <Center>
-            <Loader size="xl" color="blue" />
-          </Center>
+          <Loader size="xl" color="blue" />
         </Box>
       )}
     </LoadingContext.Provider>
@@ -63,16 +61,3 @@ export const LoadingProvider = ({ children }) => {
 
 // Custom hook สำหรับใช้งาน loading state ได้ง่ายๆ
 export const useLoading = () => useContext(LoadingContext);
-
-// Higher-order function สำหรับครอบ API call ให้แสดง loading อัตโนมัติ
-export const withLoading = (apiCall) => {
-  return async (...args) => {
-    const { startLoading, stopLoading } = useLoading();
-    try {
-      startLoading();
-      return await apiCall(...args);
-    } finally {
-      stopLoading();
-    }
-  };
-};

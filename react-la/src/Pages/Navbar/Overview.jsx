@@ -1,5 +1,5 @@
 import {Grid, Container, Title,} from '@mantine/core';
-import { useEffect, useState} from "react";
+import { useEffect, useState, useCallback} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
 import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.jsx";
@@ -35,44 +35,44 @@ export default function Overview() {
 
     });
 
-    useEffect(() => {
-        async function fetchStats() {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-            try {
-                startLoading(); // เริ่ม loading state
-                const res = await fetch(`${API_URL}/api/members/stats`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+    // สร้าง fetchStats function ด้วย useCallback เพื่อป้องกัน infinite loop
+    const fetchStats = useCallback(async () => {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+        try {
+            startLoading(); // เริ่ม loading state
+            const res = await fetch(`${API_URL}/api/members/stats`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await res.json();
+
+            // อัพเดท state ด้วยข้อมูลที่ได้รับจาก API
+            if (res.ok) {
+                setStats({
+                    totalMembers: data.totalMembers,
+                    newMembers: data.newMembers,
+                    todayMembers: data.todayMembers,
+                    activeMembers: data.activeMembers,
+                    expiredMembers: data.expiredMembers,
+                    membershipType: data.membershipType,
+                    ageRanges: data.ageRanges,
+                    registeredMembers: data.registeredMembers,
                 });
-                const data = await res.json();
-                // console.log("API Response Data:", data); // แสดงข้อมู,จาก API
-
-                // อัพเดท state ด้วยข้อมูลที่ได้รับจาก API
-                if (res.ok) {
-                    setStats({
-                        totalMembers: data.totalMembers,
-                        newMembers: data.newMembers,
-                        todayMembers: data.todayMembers,
-                        activeMembers: data.activeMembers,
-                        expiredMembers: data.expiredMembers,
-                        membershipType: data.membershipType,
-                        ageRanges: data.ageRanges,
-                        registeredMembers: data.registeredMembers,
-                    });
-                } else {
-                    console.error("Failed to fetch member stats", data);
-                }
-            } catch (error) {
-                console.error("Error fetching member stats:", error);
-            } finally {
-                stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
+            } else {
+                console.error("Failed to fetch member stats", data);
             }
+        } catch (error) {
+            console.error("Error fetching member stats:", error);
+        } finally {
+            stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
         }
+    }, [startLoading, stopLoading]); // ระบุ dependencies ที่จำเป็นเท่านั้น
 
+    useEffect(() => {
         fetchStats();
-    }, [startLoading, stopLoading]);  // เพิ่ม dependencies
+    }, []); // ไม่ต้องใส่ dependencies เพื่อให้ useEffect ทำงานเพียงครั้งเดียวตอน mount
 
     // จัดเตรียมข้อมูลสำหรับ DonutChart
     const DonutChartData = [

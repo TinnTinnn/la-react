@@ -1,7 +1,8 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState, useRef, useCallback} from "react";
 // import {useNavigate,} from "react-router-dom";
 import {Button, TextInput,} from '@mantine/core';
 import {AppContext} from "../../Context/AppContext.jsx";
+import { useLoading } from "../../Context/LoadingContext.jsx";
 import CreateModal from "../../components/Modals/CreateModal.jsx";
 import ActionModal from "../../components/Modals/ActionModal.jsx";
 import MembersTable from "../../components/MembersTable.jsx";
@@ -15,6 +16,8 @@ import {notifications} from "@mantine/notifications";
 export default function MemberManagement() {
     const [members, setMembers] = useState([]);
     const {user, token} = useContext(AppContext);
+    const { startLoading, stopLoading, isLoading } = useLoading();
+    const hasCalledApi = useRef(false);
     const [message, setMessage] = useState(null);
     const [opened, setOpened] = useState(false);
     const [confirmModalOpened, setConfirmModalOpened] = useState(false);
@@ -25,9 +28,6 @@ export default function MemberManagement() {
     const [editModalOpened, setEditModalOpened] = useState(false);
     const [memberToEdit, setMemberToEdit] = useState(null);
     const [selectedFileName, setSelectedFileName] = useState("Profile Picture here");
-
-
-
 
     // สำหรับการทำ Paginate
     const [filteredMembers, setFilteredMembers] = useState(members); // ผลลัพธ์การ search
@@ -79,16 +79,30 @@ export default function MemberManagement() {
 
 
     // const navigate = useNavigate();
-    async function getMembers() {
-        const res = await fetch(`${API_URL}/api/members`)
-        const data = await res.json();
-
-        if (res.ok) {
-            setMembers(data);
-            setFilteredMembers(data);
+    // สร้าง getMembers function ด้วย useCallback เพื่อป้องกัน infinite loop
+    const getMembers = useCallback(async () => {
+        // ตรวจสอบว่าได้เรียก API ไปแล้วหรือยัง ถ้าเรียกแล้วให้ return ออกไปเลย
+        if (hasCalledApi.current) {
+            return;
         }
-    }
+        
+        try {
+            startLoading(); // เริ่ม loading state
+            const res = await fetch(`${API_URL}/api/members`)
+            const data = await res.json();
 
+            if (res.ok) {
+                setMembers(data);
+                setFilteredMembers(data);
+                hasCalledApi.current = true; // ตั้งค่าเป็น true เพื่อบอกว่าได้เรียก API แล้ว
+            }
+        } catch (error) {
+            console.error("Error fetching members:", error);
+            hasCalledApi.current = false; // ถ้าเกิดข้อผิดพลาด ให้ reset เพื่อให้สามารถลองใหม่ได้
+        } finally {
+            stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
+        }
+    }, [startLoading, stopLoading, API_URL]);
 
 
     const handleSearch = (query) => {
@@ -122,6 +136,8 @@ export default function MemberManagement() {
                 setErrors(validationErrors);
                 return;
             }
+
+            startLoading(); // เริ่ม loading state
 
             // เตรียมพร้อมข้อมูลเพื่อส่ง
             const formDataToSend = new FormData();
@@ -181,6 +197,8 @@ export default function MemberManagement() {
             resetFormData();
         } catch (error) {
             console.error("An unexpected error occurred:", error);
+        } finally {
+            stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
         }
     }
 
@@ -257,20 +275,21 @@ export default function MemberManagement() {
             return; // หยุดการทำงานหากมีข้อผิดพลาด
         }
 
-        // สร้างข้อมูล JSON เพื่อส่งไปยัง Back-end
-        const payload = {
-            member_name: memberToEdit.member_name,
-            age: memberToEdit.age,
-            gender: memberToEdit.gender,
-            phone_number: formatPhoneNumber(memberToEdit.phone_number),
-            email: memberToEdit.email,
-            address: memberToEdit.address || null,
-            notes: memberToEdit.notes || null,
-            membership_type: memberToEdit.membership_type,
-            expiration_date: memberToEdit.expiration_date,
-        };
-
         try {
+            startLoading(); // เริ่ม loading state
+            // สร้างข้อมูล JSON เพื่อส่งไปยัง Back-end
+            const payload = {
+                member_name: memberToEdit.member_name,
+                age: memberToEdit.age,
+                gender: memberToEdit.gender,
+                phone_number: formatPhoneNumber(memberToEdit.phone_number),
+                email: memberToEdit.email,
+                address: memberToEdit.address || null,
+                notes: memberToEdit.notes || null,
+                membership_type: memberToEdit.membership_type,
+                expiration_date: memberToEdit.expiration_date,
+            };
+
             // ส่งข้อมูลไปยัง back-end
             console.log(`Fetching URL: ${API_URL}/api/members/${memberToEdit.id}`);
             const res = await fetch(`${API_URL}/api/members/${memberToEdit.id}`, {
@@ -300,10 +319,13 @@ export default function MemberManagement() {
             setMessage("Member updated successfully.");
             setOpened(true);
             resetFormData(); // รีเซ็ตฟอร์ม
+            hasCalledApi.current = false; // Reset เพื่อให้สามารถโหลดข้อมูลใหม่ได้
             getMembers(); // รีเฟรชรายการสมาชิก
         } catch (error) {
             console.error("An unexpected error occurred:", error);
             setErrors({updateError: ["An unexpected error occurred."]});
+        } finally {
+            stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
         }
     }
 
@@ -311,6 +333,8 @@ export default function MemberManagement() {
         const formData = new FormData();
         formData.append("profile_picture", file);
         formData.append("member_id", memberId);
+
+        startLoading(); // เริ่ม loading state
 
         fetch(`${API_URL}/api/upload-profile-picture`, {
             method: "POST",
@@ -356,6 +380,7 @@ export default function MemberManagement() {
                     message: "Profile picture updated successfully.",
                     color: "green",
                 });
+                stopLoading(); // หยุด loading state เมื่อสำเร็จ
             })
             .catch((error) => {
                 console.error("Upload failed:", error);
@@ -364,6 +389,7 @@ export default function MemberManagement() {
                     message: "Failed to update profile picture. Please try again.",
                     color: "red",
                 });
+                stopLoading(); // หยุด loading state เมื่อเกิดข้อผิดพลาด
             });
     };
 
@@ -416,36 +442,48 @@ export default function MemberManagement() {
 
     async function confirmDelete() {
         if (!memberToDelete) return
-        const res = await fetch(`${API_URL}/api/members/${memberToDelete}`, {
-            method: 'DELETE',
-            headers: {
-                Authorization: `Bearer ${token}`,  // ใช้ Token สำหรับการ Auth
-                'Content-Type': 'application/json'
-            }
-        });
+        try {
+            startLoading(); // เริ่ม loading state
+            const res = await fetch(`${API_URL}/api/members/${memberToDelete}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`,  // ใช้ Token สำหรับการ Auth
+                    'Content-Type': 'application/json'
+                }
+            });
 
-        if (res.ok) {
-            if (res.status === 204) {
-                setMessage('Member deleted successfully.');
-                setOpened(true);
-                // Update member เมื่อลบแล้ว
-                setMembers(members.filter(member => member.id !== memberToDelete));
+            if (res.ok) {
+                if (res.status === 204) {
+                    setMessage('Member deleted successfully.');
+                    setOpened(true);
+                    // Update member เมื่อลบแล้ว
+                    setMembers(members.filter(member => member.id !== memberToDelete));
+                } else {
+                    const data = await res.json();
+                    console.log(data);
+                }
             } else {
-                const data = await res.json();
-                console.log(data);
+                const errorData = await res.json();
+                console.log(errorData);
             }
-        } else {
-            const errorData = await res.json();
-            console.log(errorData);
+            setConfirmModalOpened(false);
+            setMemberToDelete(null);
+        } catch (error) {
+            console.error("Error deleting member:", error);
+        } finally {
+            stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
         }
-        setConfirmModalOpened(false);
-        setMemberToDelete(null);
     }
 
     // ดึงข้อมูลสมาชิกเมื่อโหลดหน้า
     useEffect(() => {
         getMembers();
-    }, []);
+        
+        // Cleanup function เมื่อ component unmount
+        return () => {
+            hasCalledApi.current = false; // Reset เมื่อ component unmount
+        };
+    }, [getMembers]);
 
     // อัปเดท filteredMembers เมื่อ members เปลี่ยน
     useEffect(() => {
@@ -542,8 +580,8 @@ export default function MemberManagement() {
                 handleReadMore={handleReadMore}
                 handleEdit={handleEdit}
                 handleDelete={handleDelete}
+                isLoading={isLoading}
             />
         </>
     );
 }
-

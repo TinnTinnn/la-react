@@ -1,14 +1,20 @@
-import {Button, Menu, Table, Pagination, Avatar} from "@mantine/core";
+import {Button, Menu, Table, Pagination, Avatar, LoadingOverlay, Box} from "@mantine/core";
 import PropTypes from "prop-types";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faCommentDots, faEllipsisVertical,  faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
 
 
-function MembersTable({members,totalMembers, itemsPerPage, activePage, onPageChange, handleReadMore, handleEdit, handleDelete,}) {
+function MembersTable({members, totalMembers, itemsPerPage, activePage, onPageChange, handleReadMore, handleEdit, handleDelete, isLoading}) {
     const totalPages = Math.ceil(totalMembers / itemsPerPage); // คำนวณจำนวนหน้า
 
     return (
-        <>
+        <Box pos="relative">
+            <LoadingOverlay 
+                visible={isLoading} 
+                zIndex={1000}
+                overlayProps={{ blur: 2, opacity: 0.6 }}
+                loaderProps={{ size: 'xl', color: 'blue', variant: 'bars' }}
+            />
             {members.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
                     <Table.Thead>
@@ -84,8 +90,7 @@ function MembersTable({members,totalMembers, itemsPerPage, activePage, onPageCha
                 onChange={onPageChange}
                 style={{marginTop: 20}}
             />
-
-        </>
+        </Box>
     )
 }
 
@@ -110,6 +115,7 @@ MembersTable.propTypes = {
     handleReadMore: PropTypes.func.isRequired,
     handleEdit: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,
+    isLoading: PropTypes.bool, // สถานะการโหลดข้อมูล
 };
 
 export default MembersTable

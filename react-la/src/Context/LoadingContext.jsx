@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from 'react';
-import { Loader, Overlay, Center, Box } from '@mantine/core';
+import { LoadingOverlay } from '@mantine/core';
 
 // สร้าง Context สำหรับจัดการสถานะการโหลด
 export const LoadingContext = createContext({
@@ -34,27 +34,12 @@ export const LoadingProvider = ({ children }) => {
   return (
     <LoadingContext.Provider value={{ isLoading, startLoading, stopLoading }}>
       {children}
-      {isLoading && (
-        <Overlay fixed opacity={0.6} color="#fff" zIndex={1000} />
-      )}
-      {isLoading && (
-        <Box 
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1001,
-            pointerEvents: 'none'
-          }}
-        >
-          <Loader size="xl" color="blue" />
-        </Box>
-      )}
+      <LoadingOverlay 
+        visible={isLoading} 
+        zIndex={1000}
+        overlayProps={{ blur: 2, opacity: 0.6 }}
+        loaderProps={{ size: 'xl', color: 'blue', variant: 'bars' }}
+      />
     </LoadingContext.Provider>
   );
 };

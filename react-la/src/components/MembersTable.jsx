@@ -1,4 +1,4 @@
-import {Button, Menu, Table, Pagination, Avatar, LoadingOverlay, Box} from "@mantine/core";
+import {Button, Menu, Table, Pagination, Avatar, Box} from "@mantine/core";
 import PropTypes from "prop-types";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faCommentDots, faEllipsisVertical,  faUserMinus, faUserPen} from "@fortawesome/free-solid-svg-icons";
@@ -8,13 +8,7 @@ function MembersTable({members, totalMembers, itemsPerPage, activePage, onPageCh
     const totalPages = Math.ceil(totalMembers / itemsPerPage); // คำนวณจำนวนหน้า
 
     return (
-        <Box pos="relative">
-            <LoadingOverlay 
-                visible={isLoading} 
-                zIndex={1000}
-                overlayProps={{ blur: 2, opacity: 0.6 }}
-                loaderProps={{ size: 'xl', color: 'blue', variant: 'bars' }}
-            />
+        <Box>
             {members.length > 0 ? (
                 <Table striped highlightOnHover withTableBorder className="text-center">
                     <Table.Thead>

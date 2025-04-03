@@ -1,5 +1,5 @@
 import {Grid, Container, Title,} from '@mantine/core';
-import { useEffect, useState, useCallback} from "react";
+import { useEffect, useState, useCallback, useRef} from "react";
 import MemberStatsCard from "../../components/Overviews/MemberStatsCard.jsx";
 import MembershipExpirationChart from "../../components/Overviews/MembershipExpirationChart.jsx";
 import MemberShipTypeCard from "../../components/Overviews/MemberShipTypeCard.jsx";
@@ -10,6 +10,7 @@ import { useLoading } from "../../Context/LoadingContext.jsx";
 
 export default function Overview() {
     const { startLoading, stopLoading } = useLoading();
+    const hasCalledApi = useRef(false); // ใช้ ref เพื่อติดตามว่าได้เรียก API ไปแล้วหรือยัง
     const [stats, setStats] = useState({
         totalMembers: 0,
         newMembers: 0,
@@ -37,6 +38,13 @@ export default function Overview() {
 
     // สร้าง fetchStats function ด้วย useCallback เพื่อป้องกัน infinite loop
     const fetchStats = useCallback(async () => {
+        // ตรวจสอบว่าได้เรียก API ไปแล้วหรือยัง ถ้าเรียกแล้วให้ return ออกไปเลย
+        if (hasCalledApi.current) {
+            return;
+        }
+        
+        hasCalledApi.current = true; // ตั้งค่าเป็น true เพื่อบอกว่าได้เรียก API แล้ว
+        
         const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
         try {
             startLoading(); // เริ่ม loading state
@@ -65,6 +73,7 @@ export default function Overview() {
             }
         } catch (error) {
             console.error("Error fetching member stats:", error);
+            hasCalledApi.current = false; // ถ้าเกิดข้อผิดพลาด ให้ reset เพื่อให้สามารถลองใหม่ได้
         } finally {
             stopLoading(); // หยุด loading state ไม่ว่าจะสำเร็จหรือเกิดข้อผิดพลาด
         }
@@ -72,6 +81,11 @@ export default function Overview() {
 
     useEffect(() => {
         fetchStats();
+        
+        // Cleanup function เมื่อ component unmount
+        return () => {
+            hasCalledApi.current = false; // Reset เมื่อ component unmount
+        };
     }, []); // ไม่ต้องใส่ dependencies เพื่อให้ useEffect ทำงานเพียงครั้งเดียวตอน mount
 
     // จัดเตรียมข้อมูลสำหรับ DonutChart

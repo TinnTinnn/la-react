@@ -199,9 +199,9 @@ export default function Register({  closeModal, toggleForm }) {
                         }}
                         error={errors.password?.[0]}
                         onFocus={() => setShowPasswordValidation(true)}
-                        onBlur={() => setTimeout(() => setShowPasswordValidation(false), 200)}
+                        onBlur={() => setShowPasswordValidation(false)}
                     />
-                    {showPasswordValidation && formData.password.length > 0 && (
+                    {showPasswordValidation && (
                         <PasswordValidationPopover password={formData.password} />
                     )}
                     <Space h="md"/>

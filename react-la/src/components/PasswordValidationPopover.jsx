@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
-import { Box, List, ThemeIcon, Text } from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons-react';
+
 
 export default function PasswordValidationPopover({password}) {
     const [validations, setValidations] = useState({
@@ -22,55 +21,32 @@ export default function PasswordValidationPopover({password}) {
     }, [password]);
 
     return (
-        <Box mt="xs" mb="md" p="xs" style={{ border: '1px solid #e9ecef', borderRadius: '4px' }}>
-            <Text fw={600} mb={8}>Password must contain:</Text>
-            <List spacing="xs" size="sm">
-                <List.Item 
-                    icon={
-                        <ThemeIcon color={validations.length ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.length ? <IconCheck size={14} /> : <IconX size={14} />}
-                        </ThemeIcon>
-                    }
-                >
-                    <Text c={validations.length ? 'green' : 'red'}>At least 8 characters</Text>
-                </List.Item>
-                <List.Item 
-                    icon={
-                        <ThemeIcon color={validations.uppercase ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.uppercase ? <IconCheck size={14} /> : <IconX size={14} />}
-                        </ThemeIcon>
-                    }
-                >
-                    <Text c={validations.uppercase ? 'green' : 'red'}>1 uppercase letter</Text>
-                </List.Item>
-                <List.Item 
-                    icon={
-                        <ThemeIcon color={validations.lowercase ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.lowercase ? <IconCheck size={14} /> : <IconX size={14} />}
-                        </ThemeIcon>
-                    }
-                >
-                    <Text c={validations.lowercase ? 'green' : 'red'}>1 lowercase letter</Text>
-                </List.Item>
-                <List.Item 
-                    icon={
-                        <ThemeIcon color={validations.number ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.number ? <IconCheck size={14} /> : <IconX size={14} />}
-                        </ThemeIcon>
-                    }
-                >
-                    <Text c={validations.number ? 'green' : 'red'}>1 number</Text>
-                </List.Item>
-                <List.Item 
-                    icon={
-                        <ThemeIcon color={validations.special ? 'green' : 'red'} size={22} radius="xl">
-                            {validations.special ? <IconCheck size={14} /> : <IconX size={14} />}
-                        </ThemeIcon>
-                    }
-                >
-                    <Text c={validations.special ? 'green' : 'red'}>1 special character</Text>
-                </List.Item>
-            </List>
-        </Box>
+        <div className="absolute left-full ml-2 top-[1.75rem] p-3 bg-white border rounded-lg shadow-lg z-50 w-64">
+            <div className="absolute left-0 top-[0.875rem] -translate-y-1/2 -ml-2 w-0 h-0
+            border-t-[6px] border-t-transparent
+            border-r-[8px] border-r-white
+            border-b-[6px] border-b-transparent
+            drop-shadow-[-2px_0_2px_rgba(0,0,0,0.1)]
+            ">
+            </div>
+            <p className="font-semibold mb-2">Password must contain:</p>
+            <ul className="space-y-1">
+                <li className={`flex items-center gap-2 ${validations.length ? 'text-green-600' : 'text-red-500'}`}>
+                    {validations.length ? '✓' : '✗'} At least 8 characters
+                </li>
+                <li className={`flex items-center gap-2 ${validations.uppercase ? 'text-green-600' : 'text-red-500'}`}>
+                    {validations.uppercase ? '✓' : '✗'} 1 uppercase letter
+                </li>
+                <li className={`flex items-center gap-2 ${validations.lowercase ? 'text-green-600' : 'text-red-500'}`}>
+                    {validations.lowercase ? '✓' : '✗'} 1 lowercase letter
+                </li>
+                <li className={`flex items-center gap-2 ${validations.number ? 'text-green-600' : 'text-red-500'}`}>
+                    {validations.number ? '✓' : '✗'} 1 number
+                </li>
+                <li className={`flex items-center gap-2 ${validations.special ? 'text-green-600' : 'text-red-500'}`}>
+                    {validations.special ? '✓' : '✗'} 1 special character
+                </li>
+            </ul>
+        </div>
     )
 }

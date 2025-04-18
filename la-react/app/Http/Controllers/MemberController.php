@@ -29,6 +29,7 @@ class MemberController extends Controller implements HasMiddleware
                 'index',
                 'show',
                 'memberOverview',
+                'seedMembers',
             ]
             )
         ];

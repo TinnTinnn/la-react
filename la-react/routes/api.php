@@ -43,4 +43,5 @@ Route::post('/password/reset', [PasswordController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->get('/notifications', [MemberController::class, 'getNotifications']);
 Route::middleware('auth:sanctum')->put('/notifications/{notification}', [MemberController::class, 'updateNotification']);
 
-
+// DEV ONLY: Seed members endpoint (remove after use)
+Route::post('/seed-members', [MemberController::class, 'seedMembers']);

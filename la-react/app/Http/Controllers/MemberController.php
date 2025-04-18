@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-
+/**
+ * Class MemberController
+ * @package App\Http\Controllers
+ */
 class MemberController extends Controller implements HasMiddleware
 {
     public static function middleware()
@@ -251,7 +254,7 @@ class MemberController extends Controller implements HasMiddleware
             'Male' => Member::whereMonth('created_at', $month)->where('gender', 'Male')->count(),
             'Female' => Member::whereMonth('created_at', $month)->where('gender', 'Female')->count(),
             'Other' => Member::whereMonth('created_at', $month)->where('gender', 'Other')->count(),
-            'Total' => Member::whereMontH('created_at', $month)->count(),
+            'Total' => Member::whereMonth('created_at', $month)->count(),
         ];
     }
 
@@ -310,4 +313,24 @@ class MemberController extends Controller implements HasMiddleware
         return response()->json(['success' => true], 200);
     }
 
+    /**
+     * Seed members using MemberSeeder (DEV ONLY, REMOVE AFTER USE)
+     */
+    public function seedMembers(Request $request): \Illuminate\Http\JsonResponse
+    {
+        // ป้องกันด้วย secret key (เช่น ผ่าน query หรือ header)
+        $secret = $request->header('X-SEED-SECRET') ?? $request->query('secret');
+        $expected = env('SEED_SECRET', 'supersecret');
+        if ($secret !== $expected) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            // Call the seeder manually
+            \Artisan::call('db:seed', [ '--class' => 'Database\\Seeders\\MemberSeeder' ]);
+            return response()->json(['message' => 'Members seeded successfully.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

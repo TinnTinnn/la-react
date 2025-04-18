@@ -319,7 +319,6 @@ class MemberController extends Controller implements HasMiddleware
      */
     public function seedMembers(Request $request): \Illuminate\Http\JsonResponse
     {
-        // ป้องกันด้วย secret key (เช่น ผ่าน query หรือ header)
         $secret = $request->header('X-SEED-SECRET') ?? $request->query('secret');
         $expected = env('SEED_SECRET', 'supersecret');
         if ($secret !== $expected) {
@@ -327,10 +326,16 @@ class MemberController extends Controller implements HasMiddleware
         }
 
         try {
-            // Call the seeder manually
-            \Artisan::call('db:seed', [ '--class' => 'Database\\Seeders\\MemberSeeder' ]);
-            return response()->json(['message' => 'Members seeded successfully.'], 200);
+            \Log::info('Controller: start direct seeding');
+            Member::factory()->count(10)->create();
+            \Log::info('Controller: finish direct seeding');
+            return response()->json([
+                'message' => 'Members seeded directly.',
+                'db' => env('DB_DATABASE'),
+                'host' => env('DB_HOST')
+            ], 200);
         } catch (\Exception $e) {
+            \Log::error($e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

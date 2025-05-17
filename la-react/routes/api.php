@@ -44,4 +44,4 @@ Route::middleware('auth:sanctum')->get('/notifications', [MemberController::clas
 Route::middleware('auth:sanctum')->put('/notifications/{notification}', [MemberController::class, 'updateNotification']);
 
 // DEV ONLY: Seed members endpoint (remove after use)
-// Route::post('/seed-members', [MemberController::class, 'seedMembers']);
+Route::post('/seed-members', [MemberController::class, 'seedMembers']);

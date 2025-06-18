@@ -317,26 +317,26 @@ class MemberController extends Controller implements HasMiddleware
     /**
      * Seed members using MemberSeeder (DEV ONLY, REMOVE AFTER USE)
      */
-//     public function seedMembers(Request $request): \Illuminate\Http\JsonResponse
-//     {
-//         $secret = $request->header('X-SEED-SECRET') ?? $request->query('secret');
-//         $expected = env('SEED_SECRET', 'supersecret');
-//         if ($secret !== $expected) {
-//             return response()->json(['error' => 'Unauthorized'], 401);
-//         }
-//
-//         try {
-//             \Log::info('Controller: start direct seeding');
-//             Member::factory()->count(10)->create();
-//             \Log::info('Controller: finish direct seeding');
-//             return response()->json([
-//                 'message' => 'Members seeded directly.',
-//                 'db' => env('DB_DATABASE'),
-//                 'host' => env('DB_HOST')
-//             ], 200);
-//         } catch (\Exception $e) {
-//             \Log::error($e->getMessage());
-//             return response()->json(['error' => $e->getMessage()], 500);
-//         }
-//     }
+    public function seedMembers(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $secret = $request->header('X-SEED-SECRET') ?? $request->query('secret');
+        $expected = env('SEED_SECRET', 'supersecret');
+        if ($secret !== $expected) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            \Log::info('Controller: start direct seeding');
+            Member::factory()->count(10)->create();
+            \Log::info('Controller: finish direct seeding');
+            return response()->json([
+                'message' => 'Members seeded directly.',
+                'db' => env('DB_DATABASE'),
+                'host' => env('DB_HOST')
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
